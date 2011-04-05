@@ -1,7 +1,11 @@
 package application;
 
+import items.OpenMenuItem;
+import items.SaveMenuItem;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.URL;
@@ -9,6 +13,7 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
+import javax.swing.KeyStroke;
 
 import tools.EraserTool;
 import tools.FreehandTool;
@@ -23,6 +28,7 @@ import views.ControlPanelView;
 import views.DrawingCanvasView;
 import views.MenuBarView;
 import views.ToolBarView;
+import controllers.FileMenuItemController;
 import controllers.ToolController;
 
 /**
@@ -71,7 +77,8 @@ public class MultiDraw extends JApplet {
 		toolList = createToolList();
 		toolBar = createToolBarView(toolList);
 		getContentPane().add(toolBar, BorderLayout.WEST);
-		menuBar = createMenuBarView(toolList);
+		menuBar = createMenuBarView(toolList, new FileMenuItemController( new OpenMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK)),
+				new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)));
 		getContentPane().add(menuBar, BorderLayout.NORTH);
 	}
 
@@ -110,10 +117,12 @@ public class MultiDraw extends JApplet {
 	 * 
 	 * @param toolList
 	 *            list of tools to display on the view; null list is accepted
+	 * @param items
+	 * 			  all the menu options you could ever want
 	 * @return newly initialized ToolBarView with indicated tools included
 	 **/
-	protected MenuBarView createMenuBarView(ToolList toolList) {
-		return new MenuBarView(toolList);
+	protected MenuBarView createMenuBarView(ToolList toolList, FileMenuItemController ... items) {
+		return new MenuBarView(toolList, items);
 	}
 
 	/**

@@ -205,7 +205,7 @@ public class MultiDraw extends JApplet {
 	/* Main method */
 	public static void main(String[] args) {
 		JFrame frame = new JFrame();
-		frame.setTitle("ObjectDraw Fifth Iteration");
+		frame.setTitle("MultiDraw");
 		frame.getContentPane().setLayout(new BorderLayout());
 		frame.getContentPane().add(new MultiDraw(false), BorderLayout.CENTER);
 		frame.addWindowListener(new AppCloser());

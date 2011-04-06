@@ -252,4 +252,11 @@ public class DrawingCanvasView extends JLayeredPane {
 	public void setControlPanelView(ControlPanelView controlPanelView) {
 		this.controlPanelView = controlPanelView;
 	}
+
+	public void drawObjects(ArrayList<CanvasShape> importedShapes) {
+		for ( CanvasShape shape : importedShapes ){
+			shape.redraw(imageBufferGraphics);
+			shapes.add(0, shape);
+		}
+	}
 }

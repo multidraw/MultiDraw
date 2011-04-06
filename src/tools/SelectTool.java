@@ -11,7 +11,7 @@ import java.awt.geom.Line2D;
 
 import tools.shapes.CanvasShape;
 import tools.shapes.TwoEndShape;
-import tools.utils.Borders;
+import utils.Borders;
 import views.DrawingCanvasView;
 
 public class SelectTool extends Tool {

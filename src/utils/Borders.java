@@ -1,4 +1,4 @@
-package tools.utils;
+package utils;
 
 import java.awt.Point;
 import java.awt.Rectangle;

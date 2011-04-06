@@ -6,7 +6,7 @@ import java.awt.Point;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
-import tools.utils.Borders;
+import utils.Borders;
 
 public abstract class CanvasShape {
 	protected boolean selected;

@@ -9,7 +9,11 @@ public class MdwFileFilter extends FileFilter {
 	public final String multiExt = "mdw";
 
 	public boolean accept(File f) {
-		if ( getExtension(f) == multiExt )
+		if ( f.isDirectory() )
+			return true;
+		
+		String ext = getExtension(f);
+		if ( ext != null && ext.equals(multiExt) )
 			return true;
 		return false;
 	}

@@ -8,7 +8,6 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
 
 import tools.shapes.FreehandShape;
 import tools.shapes.LineShape;
@@ -16,6 +15,7 @@ import tools.shapes.OvalShape;
 import tools.shapes.RectangleShape;
 import tools.shapes.TextShape;
 import tools.utils.XMLCanvasWrapper;
+import utils.MdwFileFilter;
 import views.DrawingCanvasView;
 
 import com.thoughtworks.xstream.XStream;
@@ -40,39 +40,7 @@ public class OpenMenuItem extends FileMenuItem {
 
 	public void actionPerformed(ActionEvent e) {
 		JFileChooser fc = new JFileChooser();
-		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		fc.addChoosableFileFilter(new FileFilter(){
-
-			@Override
-			public boolean accept(File f) {
-				if (f.isDirectory()) {
-					return true;
-				}
-
-				if ( "mdw".equals(getExtension(f)))
-					return true;
-				return false;
-			}
-
-			public String getDescription() {
-				return "MultiDraw File (*.mdw)";
-			}
-
-			/**
-			 * Returns the extension of a file.
-			 * @param f File to grab the extension
-			 * @return String the file extension
-			 */
-			private String getExtension(File f) {
-				String ext = null, s = f.getName();
-				int i = s.lastIndexOf(".");
-
-				if ( i > 0 && i < s.length() - 1 ){
-					ext = s.substring(i+1).toLowerCase();
-				}
-				return ext;
-			}
-		});
+		fc.addChoosableFileFilter(new MdwFileFilter());
 
 		int returnVal = fc.showOpenDialog(canvas);
 
@@ -101,7 +69,7 @@ public class OpenMenuItem extends FileMenuItem {
 			while ((line = reader.readLine()) != null) {
 				contents.append(line + "\n");
 			}
-			
+
 			XMLCanvasWrapper wrapper = (XMLCanvasWrapper) xstream.fromXML(contents.toString());
 			canvas.setObjects(wrapper.getShapes());
 
@@ -116,8 +84,7 @@ public class OpenMenuItem extends FileMenuItem {
 			if (reader != null)
 				reader.close();
 		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
+			ex.printStackTrace();}
 	}
 
 }

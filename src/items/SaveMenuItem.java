@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 import tools.shapes.FreehandShape;
 import tools.shapes.LineShape;
@@ -15,6 +16,7 @@ import tools.shapes.OvalShape;
 import tools.shapes.RectangleShape;
 import tools.shapes.TextShape;
 import tools.utils.XMLCanvasWrapper;
+import utils.MdwFileFilter;
 import views.DrawingCanvasView;
 
 import com.thoughtworks.xstream.XStream;
@@ -41,36 +43,50 @@ public class SaveMenuItem extends FileMenuItem {
 
 	public void actionPerformed(ActionEvent e) {
 		JFileChooser fc = new JFileChooser();
-		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		fc.addChoosableFileFilter(new MdwFileFilter());
+		fc.setSelectedFile(new File("temp.mdw"));
 		int returnVal = fc.showSaveDialog(canvas);
 
 		if ( returnVal == JFileChooser.APPROVE_OPTION ){
 			File file = fc.getSelectedFile();
+
+			if ( file.exists() ){
+				int response = JOptionPane.showConfirmDialog(null, file.getName() +
+						" already exists.\nDo you want to replace it?", 
+						"Confirm Save As", JOptionPane.OK_CANCEL_OPTION, 
+						JOptionPane.QUESTION_MESSAGE);
+				if ( response == JOptionPane.CANCEL_OPTION ) return;
+			} 
+
 			openWriter(file);
 			wrapper.setShapes(canvas.getObjects());
 			appendToFile(xstream.toXML(wrapper));
 			closeWriter();
 		}
 	}
-	
+
 	public void openWriter(File file) {
 		try {
 			writer = new BufferedWriter(new FileWriter(file));	
 		} catch (FileNotFoundException ex) {
-			ex.printStackTrace();
+			JOptionPane.showMessageDialog(null, "An error occurred while opening the new file.",
+					"I/O Error", JOptionPane.ERROR_MESSAGE);
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			JOptionPane.showMessageDialog(null, "An error occurred while opening the new file.",
+					"I/O Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
-	
+
 	public void appendToFile(String xmlObject) {
 		try {
 			writer.append(xmlObject);
 			writer.newLine();
 		} catch (IOException e) {
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "An error occurred while writing to the file.",
+					"I/O Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
+
 
 	public void closeWriter() {
 		try {
@@ -79,7 +95,8 @@ public class SaveMenuItem extends FileMenuItem {
 				writer.close();
 			}
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			JOptionPane.showMessageDialog(null, "An error occurred while closing the file.",
+					"I/O Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 }

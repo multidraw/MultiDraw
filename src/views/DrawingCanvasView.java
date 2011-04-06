@@ -258,5 +258,6 @@ public class DrawingCanvasView extends JLayeredPane {
 			shape.redraw(imageBufferGraphics);
 			shapes.add(0, shape);
 		}
+		repaint();
 	}
 }

@@ -3,9 +3,12 @@ package tools.shapes;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 /**
  * Defines the drawing behavior for drawing an oval.
  */
+@XStreamAlias("OvalShape")
 public class OvalShape extends TwoEndShape {
 
 	/*

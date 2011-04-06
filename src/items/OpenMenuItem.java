@@ -1,58 +1,122 @@
 package items;
 
 import java.awt.event.ActionEvent;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
+import tools.shapes.FreehandShape;
+import tools.shapes.LineShape;
+import tools.shapes.OvalShape;
+import tools.shapes.RectangleShape;
+import tools.shapes.TextShape;
+import tools.utils.XMLCanvasWrapper;
 import views.DrawingCanvasView;
+
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
 
 @SuppressWarnings("serial")
 public class OpenMenuItem extends FileMenuItem {
-	
+
+	XStream xstream;
+	BufferedReader reader;
+
 	public OpenMenuItem(DrawingCanvasView c){
 		super("Open", c);
+		xstream = new XStream(new DomDriver());
+		xstream.processAnnotations(TextShape.class);
+		xstream.processAnnotations(RectangleShape.class);
+		xstream.processAnnotations(OvalShape.class);
+		xstream.processAnnotations(LineShape.class);
+		xstream.processAnnotations(FreehandShape.class);
+		xstream.processAnnotations(XMLCanvasWrapper.class);
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		JFileChooser fc = new JFileChooser();
+		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		fc.addChoosableFileFilter(new FileFilter(){
-			
-			public final String multiExt = "mdw";
 
 			@Override
 			public boolean accept(File f) {
-				if ( getExtension(f) == multiExt )
+				if (f.isDirectory()) {
+					return true;
+				}
+
+				if ( "mdw".equals(getExtension(f)))
 					return true;
 				return false;
 			}
 
 			public String getDescription() {
-				return "MultiDraw Drawings (*.mdw)";
+				return "MultiDraw File (*.mdw)";
 			}
-			
+
 			/**
 			 * Returns the extension of a file.
 			 * @param f File to grab the extension
 			 * @return String the file extension
 			 */
-			private String getExtension(File f){
+			private String getExtension(File f) {
 				String ext = null, s = f.getName();
 				int i = s.lastIndexOf(".");
-				
+
 				if ( i > 0 && i < s.length() - 1 ){
 					ext = s.substring(i+1).toLowerCase();
 				}
 				return ext;
 			}
 		});
-		
+
 		int returnVal = fc.showOpenDialog(canvas);
-		
+
 		if ( returnVal == JFileChooser.APPROVE_OPTION ){
 			File file = fc.getSelectedFile();
-			// Open the file here
+			openReader(file);
+			readAndConvert();
+			closeReader();
+		}
+	}
+
+	public void openReader(File file){
+		try {
+			reader = new BufferedReader(new FileReader(file));
+		} catch (FileNotFoundException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public void readAndConvert() {
+		String line = "";
+		StringBuilder contents = new StringBuilder();
+		canvas.clearCanvas();
+
+		try {
+			while ((line = reader.readLine()) != null) {
+				contents.append(line + "\n");
+			}
+			
+			XMLCanvasWrapper wrapper = (XMLCanvasWrapper) xstream.fromXML(contents.toString());
+			canvas.setObjects(wrapper.getShapes());
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		canvas.refreshCanvas();
+	}
+
+	public void closeReader() {
+		try {
+			if (reader != null)
+				reader.close();
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		}
 	}
 

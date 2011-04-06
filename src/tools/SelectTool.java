@@ -80,9 +80,9 @@ public class SelectTool extends Tool {
 					canvas.getControlPanelView().setFillBoxState(
 							canvas.isFilledShape());
 				}
+				
 				canvas.setPenColor(selection.getColor());
-				canvas.getControlPanelView().setColorSelected(
-						selection.getColor());
+				canvas.getControlPanelView().setColorSelected(selection.getColor());
 			}
 
 			canvas.enableXORMode();

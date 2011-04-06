@@ -10,6 +10,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import javax.swing.JLayeredPane;
 
@@ -37,8 +38,8 @@ public class DrawingCanvasView extends JLayeredPane {
 	protected Tool currentTool;
 	protected int canvasHeight;
 	protected int canvasWidth;
-
-	protected ArrayList<CanvasShape> shapes = new ArrayList<CanvasShape>();
+	
+	protected List<CanvasShape> shapes = new ArrayList<CanvasShape>();
 	protected Integer currentSelectedObject = null;
 	protected Graphics2D imageBufferGraphics;
 	protected Image imageBuffer;
@@ -171,6 +172,7 @@ public class DrawingCanvasView extends JLayeredPane {
 		imageBufferGraphics.setColor(BACKGROUND);
 		imageBufferGraphics.fillRect(0, 0, canvasWidth, canvasHeight);
 		imageBufferGraphics.setColor(penColor);
+	
 		for (CanvasShape shape : shapes) {
 			if (shape.isSelected())
 				shape.highlightSelected(imageBufferGraphics);
@@ -207,7 +209,7 @@ public class DrawingCanvasView extends JLayeredPane {
 	 * 
 	 * @return list of objects on the canvas
 	 */
-	public ArrayList<CanvasShape> getObjects() {
+	public List<CanvasShape> getObjects() {
 		return shapes;
 	}
 
@@ -216,8 +218,8 @@ public class DrawingCanvasView extends JLayeredPane {
 	 * 
 	 * @param objects
 	 */
-	public void setObjects(ArrayList<CanvasShape> shapes) {
-		this.shapes = shapes;
+	public void setObjects(List<CanvasShape> list) {
+		this.shapes = list;
 	}
 
 	public void addObject(CanvasShape shape) {

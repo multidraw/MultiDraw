@@ -3,6 +3,9 @@ package tools.shapes;
 import java.awt.Graphics2D;
 import java.awt.Point;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+@XStreamAlias("TextShape")
 public class TextShape extends CanvasShape {
 	
 	private String text = "";

@@ -6,10 +6,19 @@ import java.util.Vector;
 
 import views.DrawingCanvasView;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
+
+@XStreamAlias("FreehandShape")
 public class FreehandShape extends CanvasShape{
 	
 	private int xMax, yMax;
-	private DrawingCanvasView canvas;
+	private int localXMax;
+	private int localYMax;
+	private int localXMin;
+	private int localYMin;
+	
+	@XStreamImplicit(itemFieldName="Point")
 	private Vector<Point> points;
 	
 	public FreehandShape(DrawingCanvasView canvas) {
@@ -17,7 +26,6 @@ public class FreehandShape extends CanvasShape{
 		yMax = 0;
 		borders.x = Integer.MAX_VALUE;
 		borders.y = Integer.MAX_VALUE;
-		this.canvas = canvas;
 		points = new Vector<Point>();
 	}
 	
@@ -27,10 +35,10 @@ public class FreehandShape extends CanvasShape{
 
 		g.drawLine(x0, y0, x1, y1);
 		
-		int localXMax = Math.max(x0, x1);
-		int localYMax = Math.max(y0, y1);
-		int localXMin = Math.min(x0, x1);
-		int localYMin = Math.min(y0, y1);
+		localXMax = Math.max(x0, x1);
+		localYMax = Math.max(y0, y1);
+		localXMin = Math.min(x0, x1);
+		localYMin = Math.min(y0, y1);
 		
 		xMax = (xMax < localXMax) ? localXMax : xMax;
 		yMax = (yMax < localYMax) ? localYMax : yMax;
@@ -39,8 +47,6 @@ public class FreehandShape extends CanvasShape{
 		borders.height = yMax - borders.y;
 		borders.width = xMax - borders.x;
 		borders.update();
-		
-		canvas.repaint(localXMin, localYMin, localXMax - localXMin + 1, localYMax - localYMin + 1);
 	}
 
 	public void addPoint(Point p) {
@@ -75,4 +81,35 @@ public class FreehandShape extends CanvasShape{
 	@Override
 	public void resizeOutline(Graphics2D g, String corner, int deltaX, int deltaY, Point startPosition) {}
 
+	public int getLocalXMax() {
+		return localXMax;
+	}
+
+	public void setLocalXMax(int localXMax) {
+		this.localXMax = localXMax;
+	}
+
+	public int getLocalYMax() {
+		return localYMax;
+	}
+
+	public void setLocalYMax(int localYMax) {
+		this.localYMax = localYMax;
+	}
+
+	public int getLocalXMin() {
+		return localXMin;
+	}
+
+	public void setLocalXMin(int localXMin) {
+		this.localXMin = localXMin;
+	}
+
+	public int getLocalYMin() {
+		return localYMin;
+	}
+
+	public void setLocalYMin(int localYMin) {
+		this.localYMin = localYMin;
+	}
 }

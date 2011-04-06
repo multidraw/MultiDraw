@@ -38,7 +38,7 @@ public abstract class CanvasShape {
 	public void highlightSelected(Graphics2D g2d) {
 		Color color = g2d.getColor();
 		g2d.setColor((isSelected()) ? Color.GRAY : Color.WHITE);
-
+		
 		drawPoint(borders.x, borders.y, g2d);
 		drawPoint(borders.x + borders.width, borders.y + borders.height, g2d);
 		drawPoint(borders.x + borders.width, borders.y, g2d );
@@ -88,5 +88,4 @@ public abstract class CanvasShape {
 	public void setResizable(boolean resizable) {
 		this.resizable = resizable;
 	}	
-	
 }

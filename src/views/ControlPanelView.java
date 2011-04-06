@@ -95,17 +95,15 @@ public class ControlPanelView extends JPanel {
 	
 	public void setColorSelected(Color color) {
 		String colorString;
-		if(color == Color.black) {
+		if(color.equals(Color.black)) {
 			colorString = "black";
-		} else if(color == Color.blue) {
+		} else if(color.equals(Color.blue)) {
 			colorString = "blue";
-		} else if(color == Color.red) {
+		} else if(color.equals(Color.red)) {
 			colorString = "red";
 		} else {
 			colorString = "green";
 		}
 		colorBox.setSelectedItem((Object) colorString);
 	}
-	
-	
 }

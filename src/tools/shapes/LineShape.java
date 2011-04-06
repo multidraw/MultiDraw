@@ -6,10 +6,13 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Line2D;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 /**
  * Defines a basic line class that runs from a starting point to and ending
  * point.
  */
+@XStreamAlias("LineShape")
 public class LineShape extends TwoEndShape {
 
 	/**

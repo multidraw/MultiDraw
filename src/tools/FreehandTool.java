@@ -28,6 +28,9 @@ public class FreehandTool extends Tool {
 
 	protected void drawLineSegment(Point p1, Point p2) {
 		shape.draw(canvas.getImageBufferGraphics(), p1.x, p1.y, p2.x, p2.y);
+		canvas.repaint(shape.getLocalXMin(), shape.getLocalYMin(), 
+				shape.getLocalXMax() - shape.getLocalXMin() + 1, 
+				shape.getLocalYMax() - shape.getLocalYMin() + 1);
 	}
 
 	/* 
@@ -38,7 +41,6 @@ public class FreehandTool extends Tool {
 		shape = new FreehandShape(canvas);
 		shape.setColor(canvas.getPenColor());
 		shape.addPoint(startingMousePosition);
-
 	}
 
 	/*

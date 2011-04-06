@@ -3,6 +3,9 @@ package tools.shapes;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+@XStreamAlias("RectangleShape")
 public class RectangleShape extends TwoEndShape {
 	
 	/* 

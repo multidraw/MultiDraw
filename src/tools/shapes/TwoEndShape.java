@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 /**
  * Defines the basic notion of a TwoEndShape.
  * 
@@ -12,6 +14,7 @@ import java.awt.Point;
  * TwoEndedShape is defined by both the draw and drawOutline methods which are
  * explained below.
  */
+@XStreamAlias("TwoEndShape")
 public abstract class TwoEndShape extends CanvasShape {
 	protected boolean filled;
 	protected boolean selected;

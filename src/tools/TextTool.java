@@ -25,6 +25,7 @@ public class TextTool extends Tool {
 	protected StringBuffer text;
 	protected Font font = new Font("Serif", Font.PLAIN, 24);
 	protected TextShape shape;
+	protected final String PERMITTED_CHARACTERS = "[\\w \\[\\]\\{\\}\\\\/\\^\\-\\=\\+\\|\\(\\)\\$\\?\\*!@#%&<>,\\.'\"`~:;]";
 
 	public TextTool(DrawingCanvasView c) {
 		if (c != null)
@@ -46,7 +47,8 @@ public class TextTool extends Tool {
 		Graphics2D iBGraphics = canvas.getImageBufferGraphics();
 		iBGraphics.setFont(font);
 		text = new StringBuffer();
-		shape.draw(iBGraphics, startingPosition.x - 3, startingPosition.y - 19, 0, 24);
+		shape.draw(iBGraphics, startingPosition.x - 3, startingPosition.y - 19,
+				0, 24);
 		shape.setColor(canvas.getPenColor());
 		canvas.addObject(shape);
 	}
@@ -55,16 +57,19 @@ public class TextTool extends Tool {
 	 * Adds a character to the string buffer
 	 */
 	public void keyTyped(KeyEvent e) {
-		char nextChar = e.getKeyChar();
-		Graphics2D iBGraphics = canvas.getImageBufferGraphics();
+		String nextChar = String.valueOf(e.getKeyChar());
 
-		text.append(nextChar);
-		
-		shape.updateString(text, e.isShiftDown());
+		if (nextChar.matches(PERMITTED_CHARACTERS)) {
+			Graphics2D iBGraphics = canvas.getImageBufferGraphics();
 
-		iBGraphics.drawString(text.toString(), startingPosition.x,
-				startingPosition.y);
-		
-		canvas.repaint();
+			text.append(nextChar);
+
+			shape.updateString(text, e.isShiftDown());
+
+			iBGraphics.drawString(text.toString(), startingPosition.x,
+					startingPosition.y);
+
+			canvas.repaint();
+		}
 	}
 }

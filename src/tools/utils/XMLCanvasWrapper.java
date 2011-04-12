@@ -3,9 +3,9 @@ package tools.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 import tools.shapes.CanvasShape;
+
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("CanvasShapes")
 public class XMLCanvasWrapper {

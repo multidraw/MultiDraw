@@ -38,7 +38,7 @@ public class DrawingCanvasView extends JLayeredPane {
 	protected Tool currentTool;
 	protected int canvasHeight;
 	protected int canvasWidth;
-	
+
 	protected List<CanvasShape> shapes = new ArrayList<CanvasShape>();
 	protected Integer currentSelectedObject = null;
 	protected Graphics2D imageBufferGraphics;
@@ -172,11 +172,11 @@ public class DrawingCanvasView extends JLayeredPane {
 		imageBufferGraphics.setColor(BACKGROUND);
 		imageBufferGraphics.fillRect(0, 0, canvasWidth, canvasHeight);
 		imageBufferGraphics.setColor(penColor);
-	
+
 		for (CanvasShape shape : shapes) {
 			if (shape.isSelected())
 				shape.highlightSelected(imageBufferGraphics);
-			
+
 			shape.redraw(imageBufferGraphics);
 		}
 		Collections.reverse(shapes);
@@ -184,7 +184,8 @@ public class DrawingCanvasView extends JLayeredPane {
 	}
 
 	public void removeSelection() {
-		if (shapes != null && shapes.size() != 0 && currentSelectedObject != null) {
+		if (shapes != null && shapes.size() != 0
+				&& currentSelectedObject != null) {
 			shapes.get(currentSelectedObject).setSelected(false);
 			shapes.get(currentSelectedObject).highlightSelected(
 					imageBufferGraphics);
@@ -192,13 +193,13 @@ public class DrawingCanvasView extends JLayeredPane {
 			refreshCanvas();
 		}
 	}
-	
+
 	public void enableXORMode() {
 		savedColor = imageBufferGraphics.getColor();
 		imageBufferGraphics.setXORMode(Color.LIGHT_GRAY);
 		imageBufferGraphics.setColor(BACKGROUND);
 	}
-	
+
 	public void enablePaintMode() {
 		imageBufferGraphics.setPaintMode();
 		imageBufferGraphics.setColor(savedColor);
@@ -223,18 +224,32 @@ public class DrawingCanvasView extends JLayeredPane {
 	}
 
 	public void addObject(CanvasShape shape) {
-		shapes.add(0, shape);
+		if (containsObject(shape)) {
+			updateObject(shapes.indexOf(shape), shape);
+		} else {
+			shapes.add(0, shape);
+
+		}
 	}
 
 	public void updateObject(int index, CanvasShape shape) {
 		shapes.set(index, shape);
 	}
-	
-	public void removeObject(CanvasShape shape) {
-		shapes.remove(shapes.indexOf(shape));
-		currentSelectedObject = null;
+
+	public boolean removeObject(CanvasShape shape) {
+		if (containsObject(shape)) {
+			shapes.remove(shapes.indexOf(shape));
+			currentSelectedObject = null;
+			return true;
+		} else {
+			return false;
+		}
 	}
-	
+
+	public boolean containsObject(CanvasShape shape) {
+		return (shapes.indexOf(shape) != -1);
+	}
+
 	public CanvasShape getObject(int index) {
 		return shapes.get(index);
 	}
@@ -256,7 +271,7 @@ public class DrawingCanvasView extends JLayeredPane {
 	}
 
 	public void drawObjects(ArrayList<CanvasShape> importedShapes) {
-		for ( CanvasShape shape : importedShapes ){
+		for (CanvasShape shape : importedShapes) {
 			shape.redraw(imageBufferGraphics);
 			shapes.add(0, shape);
 		}

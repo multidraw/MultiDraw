@@ -66,6 +66,8 @@ public class MultiDraw extends JApplet {
 	 * all of the MiniDraw components.
 	 */
 	public void init() {
+		StartupScreen startup = new StartupScreen(this);
+		startup.login();
 		getContentPane().setLayout(new BorderLayout());
 		canvas = createDrawingCanvas();
 		getContentPane().add(canvas, BorderLayout.CENTER);

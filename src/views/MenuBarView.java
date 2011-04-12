@@ -4,9 +4,8 @@ import javax.swing.Action;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 
-import controllers.FileMenuItemController;
-
 import tools.ToolList;
+import controllers.FileMenuItemController;
 
 /**
  * Provides a Menu-type view displaying the MiniDraw Tools supplied. Menus are

@@ -13,6 +13,8 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 
 import tools.EraserTool;
@@ -69,20 +71,32 @@ public class MultiDraw extends JApplet {
 		StartupScreen startup = new StartupScreen(this);
 		startup.login();
 		startup.chooseSession();
-		getContentPane().setLayout(new BorderLayout());
+		
+		setContentPane(new JTabbedPane());
+		
+		JPanel canvasPane = new JPanel();
+		canvasPane.setLayout(new BorderLayout());
 		canvas = createDrawingCanvas();
-		getContentPane().add(canvas, BorderLayout.CENTER);
+		canvasPane.add(canvas, BorderLayout.CENTER);
 		controlPanel = createControlPanelView();
 		canvas.setControlPanelView(controlPanel);
-		
-		
-		getContentPane().add(controlPanel, BorderLayout.SOUTH);
+				
+		canvasPane.add(controlPanel, BorderLayout.SOUTH);
 		toolList = createToolList();
 		toolBar = createToolBarView(toolList);
-		getContentPane().add(toolBar, BorderLayout.WEST);
+		canvasPane.add(toolBar, BorderLayout.WEST);
 		menuBar = createMenuBarView(toolList, new FileMenuItemController( new OpenMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK)),
 				new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)));
-		getContentPane().add(menuBar, BorderLayout.NORTH);
+		canvasPane.add(menuBar, BorderLayout.NORTH);
+		
+		JPanel sessionPane = new JPanel();
+		
+		JPanel toolDesignerPane = new JPanel();
+
+		getContentPane().add("Session",sessionPane);
+		getContentPane().add("Canvas",canvasPane);
+		getContentPane().add("Tool Designer",toolDesignerPane);
+
 	}
 
 	/**

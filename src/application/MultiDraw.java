@@ -68,6 +68,7 @@ public class MultiDraw extends JApplet {
 	public void init() {
 		StartupScreen startup = new StartupScreen(this);
 		startup.login();
+		startup.chooseSession();
 		getContentPane().setLayout(new BorderLayout());
 		canvas = createDrawingCanvas();
 		getContentPane().add(canvas, BorderLayout.CENTER);
@@ -207,6 +208,9 @@ public class MultiDraw extends JApplet {
 	/* Main method */
 	public static void main(String[] args) {
 		JFrame frame = new JFrame();
+		
+		
+		
 		frame.setTitle("MultiDraw");
 		frame.getContentPane().setLayout(new BorderLayout());
 		frame.getContentPane().add(new MultiDraw(false), BorderLayout.CENTER);

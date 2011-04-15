@@ -5,10 +5,15 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
+import java.io.Serializable;
 
 import utils.Borders;
 
-public abstract class CanvasShape {
+public abstract class CanvasShape implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	protected boolean selected;
 	protected Borders borders;
 	protected Shape shape;

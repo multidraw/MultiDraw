@@ -14,8 +14,10 @@ import java.util.List;
 
 import javax.swing.JLayeredPane;
 
+import rmi.client.ClientImpl;
 import tools.Tool;
 import tools.shapes.CanvasShape;
+import utils.ServerUtil;
 import controllers.DrawingCanvasController;
 
 /**
@@ -29,6 +31,7 @@ import controllers.DrawingCanvasController;
  */
 @SuppressWarnings("serial")
 public class DrawingCanvasView extends JLayeredPane {
+	protected ClientImpl clientImpl;
 	protected DrawingCanvasController canvasController;
 	protected ControlPanelView controlPanelView;
 	public final Color BACKGROUND = Color.white;
@@ -48,6 +51,13 @@ public class DrawingCanvasView extends JLayeredPane {
 	 * Creates a default DrawingCanvas with a white background
 	 */
 	public DrawingCanvasView() {
+		canvasController = createDrawingCanvasController();
+		addDrawingCanvasListener(canvasController);
+		setBackground(BACKGROUND);
+	}
+
+	public DrawingCanvasView(ClientImpl clientImpl) {
+		this.clientImpl = clientImpl;
 		canvasController = createDrawingCanvasController();
 		addDrawingCanvasListener(canvasController);
 		setBackground(BACKGROUND);
@@ -224,12 +234,26 @@ public class DrawingCanvasView extends JLayeredPane {
 	}
 
 	public void addObject(CanvasShape shape) {
+		addObject(shape, true);
+	}
+
+	public void addObject(CanvasShape shape, boolean isMine) {
 		if (containsObject(shape)) {
 			updateObject(shapes.indexOf(shape), shape);
 		} else {
 			shapes.add(0, shape);
 
 		}
+		try {
+			if (!isMine) {
+				ServerUtil.getServerInstance().updateCanvas(ServerUtil.getUserName(), ServerUtil.getSession(), shape,
+						false);
+			}
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
 	}
 
 	public void updateObject(int index, CanvasShape shape) {
@@ -237,9 +261,22 @@ public class DrawingCanvasView extends JLayeredPane {
 	}
 
 	public boolean removeObject(CanvasShape shape) {
+		return removeObject(shape, true);
+	}
+	
+	public boolean removeObject(CanvasShape shape, boolean isMine) {
 		if (containsObject(shape)) {
 			shapes.remove(shapes.indexOf(shape));
 			currentSelectedObject = null;
+			try {
+				if (!isMine) {
+					ServerUtil.getServerInstance().updateCanvas(ServerUtil.getUserName(), ServerUtil.getSession(), shape,
+							true);
+				}
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			return true;
 		} else {
 			return false;

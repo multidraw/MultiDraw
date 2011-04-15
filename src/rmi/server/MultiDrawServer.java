@@ -2,21 +2,23 @@ package rmi.server;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
+import rmi.server.ServerImpl.Session;
 import tools.shapes.CanvasShape;
-import views.DrawingCanvasView;
 
 public interface MultiDrawServer extends Remote {
 
 	/**
 	 * Client calls this when any shape is altered, added or removed
+	 * @param userName - name of drawer
 	 * @param session - the session key
 	 * @param newShape - the newly drawn shape
 	 * @param removed - if the object was removed or just moved/new
 	 * @return true if it was successfully updated, false otherwise
 	 * @throws RemoteException
 	 */
-	public boolean updateCanvas(String session, CanvasShape updatedShape, boolean removed) throws RemoteException;
+	public boolean updateCanvas(String userName, String session, CanvasShape updatedShape, boolean removed) throws RemoteException;
 	
 	
 	/**
@@ -36,7 +38,7 @@ public interface MultiDrawServer extends Remote {
 	 * @return the DrawingCanvasView associated with that session or a new drawing canvas view
 	 * @throws RemoteException
 	 */
-	public DrawingCanvasView connectToSession(String session, String userName) throws RemoteException;
+	public ArrayList<CanvasShape> connectToSession(String session, String userName) throws RemoteException;
 	
 	/**
 	 * Used to log a user into the system. 
@@ -46,4 +48,28 @@ public interface MultiDrawServer extends Remote {
 	 * @throws RemoteException
 	 */
 	public boolean login(String userName, String ipAddress) throws RemoteException;
+	
+	/**
+	 * logout a user;
+	 * @param userName - the username
+	 * @param session - the session they were in
+	 * @return if successful or not
+	 * @throws RemoteExcpetion
+	 */
+	public boolean logout(String userName, String session) throws RemoteException;
+	
+	/**
+	 * Used to get the session information (users in session and such)
+	 * @param session - the session key
+	 * @return the Session that corresponds to that sessionKey
+	 * @throws RemoteException
+	 */
+	public Session getSession(String session) throws RemoteException;
+	
+	/**
+	 * Get a list of the sessions available
+	 * @return - array of strings
+	 * @throws RemoteException
+	 */
+	public ArrayList<String> getSessions() throws RemoteException;
 }

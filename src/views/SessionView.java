@@ -14,7 +14,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import utils.ServerUtil;
-
 import controllers.StartUpController;
 
 @SuppressWarnings("serial")
@@ -49,13 +48,13 @@ public class SessionView extends JPanel{
 		try {
 			sessionList = new JList(ServerUtil.getServerInstance().getSessions().toArray());
 			if(sessionList.getModel().getSize() != 0) {
-				sessionList.setSelectedIndex(0);
-				userList = new JList(ServerUtil.getServerInstance().getSession((String)sessionList.getSelectedValue()).getActiveUsers().toArray());
+				
+				userList = new JList();
 			} else {
 				userList = new JList();
 			}
 		} catch(Exception e) {
-			
+			e.printStackTrace();
 		}
 		JLabel sessionLabel = new JLabel("Sessions");
 		JLabel userLabel = new JLabel("Users");

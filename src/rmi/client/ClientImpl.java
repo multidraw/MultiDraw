@@ -8,6 +8,7 @@ import java.rmi.server.UnicastRemoteObject;
 
 import rmi.server.MultiDrawServer;
 import tools.shapes.CanvasShape;
+import utils.ServerUtil;
 import application.MultiDraw;
 
 public class ClientImpl implements MultiDrawClient {
@@ -30,6 +31,8 @@ public class ClientImpl implements MultiDrawClient {
 		} else {
 			mD.canvas.addObject(changedShape, false);
 		}
+		mD.canvas.refreshCanvas();
+		System.out.println(ServerUtil.getUserName());
 		// TODO Auto-generated method stub
 
 	}

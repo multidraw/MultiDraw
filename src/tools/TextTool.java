@@ -68,7 +68,7 @@ public class TextTool extends Tool {
 
 			iBGraphics.drawString(text.toString(), startingPosition.x,
 					startingPosition.y);
-
+			canvas.updateObject(shape);
 			canvas.repaint();
 		}
 	}

@@ -30,6 +30,7 @@ public class StartUpController implements ActionListener, ListSelectionListener{
 		if(lView != null) {
 			try {
 				lView.loggingIn = !ServerUtil.getServerInstance().login(lView.login.getText(), InetAddress.getLocalHost().getHostAddress());
+				ServerUtil.setUserName(lView.login.getText());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				lView.loggingIn = true;
@@ -57,6 +58,7 @@ public class StartUpController implements ActionListener, ListSelectionListener{
 					sView.sessionSelected = true;
 				} catch(Exception e) {
 					sView.sessionSelected = false;
+					e.printStackTrace();
 				}
 			}
 		}

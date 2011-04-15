@@ -1,5 +1,6 @@
 package rmi.server;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -45,7 +46,6 @@ public class ServerImpl implements MultiDrawServer {
 	public boolean updateCanvas(String userName, String session, CanvasShape updatedShape,
 			boolean removed) throws RemoteException {
 		Session thisSession = sessions.get(session);
-		System.out.println(session);
 		if (!removed) {
 			thisSession.addObject(updatedShape);
 			pushUpdate(userName, session, updatedShape, false);
@@ -72,7 +72,7 @@ public class ServerImpl implements MultiDrawServer {
 			return sessions.get(userName).getShapes();
 		} else {
 			sessions.put(session, sessions.get(session).joinSession(userName));
-			return sessions.get(userName).getShapes();
+			return sessions.get(session).getShapes();
 		}
 	}
 
@@ -94,7 +94,6 @@ public class ServerImpl implements MultiDrawServer {
 			sessions.get(session).leaveSession(userName);
 			return true;
 		} catch(Exception e) {
-			e.printStackTrace();
 			return false;
 		}
 		
@@ -122,7 +121,6 @@ public class ServerImpl implements MultiDrawServer {
 				return;
 			}
 			String ipAddress = allUsers.get(user);
-			System.out.println(ipAddress);
 			try {
 				Registry remoteRegistry = LocateRegistry.getRegistry(ipAddress, 1100);
 				MultiDrawClient client = (MultiDrawClient) remoteRegistry.lookup("MultiDrawClient");
@@ -134,7 +132,11 @@ public class ServerImpl implements MultiDrawServer {
 		}
 	}
 
-	public class Session {
+	public class Session implements Serializable{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private ArrayList<CanvasShape> shapes;
 		private ArrayList<String> activeUsers = new ArrayList<String>();
 		private String drawer;

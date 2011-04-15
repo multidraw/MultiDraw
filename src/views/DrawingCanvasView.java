@@ -245,7 +245,7 @@ public class DrawingCanvasView extends JLayeredPane {
 
 		}
 		try {
-			if (!isMine) {
+			if (isMine) {
 				ServerUtil.getServerInstance().updateCanvas(ServerUtil.getUserName(), ServerUtil.getSession(), shape,
 						false);
 			}
@@ -256,8 +256,19 @@ public class DrawingCanvasView extends JLayeredPane {
 
 	}
 
+	public void updateObject(CanvasShape shape) {
+		shapes.set(shapes.indexOf(shape), shape);
+	}
+	
 	public void updateObject(int index, CanvasShape shape) {
 		shapes.set(index, shape);
+		try {
+				ServerUtil.getServerInstance().updateCanvas(ServerUtil.getUserName(), ServerUtil.getSession(), shape,
+						false);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 
 	public boolean removeObject(CanvasShape shape) {
@@ -269,7 +280,7 @@ public class DrawingCanvasView extends JLayeredPane {
 			shapes.remove(shapes.indexOf(shape));
 			currentSelectedObject = null;
 			try {
-				if (!isMine) {
+				if (isMine) {
 					ServerUtil.getServerInstance().updateCanvas(ServerUtil.getUserName(), ServerUtil.getSession(), shape,
 							true);
 				}

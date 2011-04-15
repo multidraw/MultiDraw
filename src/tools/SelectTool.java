@@ -138,7 +138,6 @@ public class SelectTool extends Tool {
 			selection.move(iBGraphics, deltaX, deltaY);
 			canvas.refreshCanvas();
 		}
-
 		activeSelection = false;
 	}
 

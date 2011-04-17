@@ -1,5 +1,6 @@
 package utils;
 
+import java.net.InetAddress;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public class ServerUtil {
 	public static MultiDrawServer getServerInstance() {
 		Registry registry;
 		try {
-			registry = LocateRegistry.getRegistry("192.168.56.1", 1099);
+			registry = LocateRegistry.getRegistry(InetAddress.getLocalHost().getHostAddress(), 1099);
 			return (MultiDrawServer) registry.lookup("MultiDrawServer");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

@@ -1,4 +1,4 @@
-package application;
+package views;
 
 import items.OpenMenuItem;
 import items.SaveMenuItem;
@@ -19,6 +19,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
+import application.MultiDraw;
+
 import tools.EraserTool;
 import tools.FreehandTool;
 import tools.SelectTool;
@@ -28,13 +30,10 @@ import tools.TwoEndShapeTool;
 import tools.shapes.LineShape;
 import tools.shapes.OvalShape;
 import tools.shapes.RectangleShape;
-import views.ControlPanelView;
-import views.DrawingCanvasView;
-import views.MenuBarView;
-import views.ToolBarView;
 import controllers.FileMenuItemController;
 import controllers.ToolController;
 
+@SuppressWarnings("serial")
 public class GuiView extends JTabbedPane{
 
 	protected String userName;

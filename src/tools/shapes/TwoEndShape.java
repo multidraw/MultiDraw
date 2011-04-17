@@ -14,6 +14,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * TwoEndedShape is defined by both the draw and drawOutline methods which are
  * explained below.
  */
+@SuppressWarnings("serial")
 @XStreamAlias("TwoEndShape")
 public abstract class TwoEndShape extends CanvasShape {
 	protected boolean filled;

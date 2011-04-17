@@ -5,6 +5,7 @@ import java.awt.geom.Rectangle2D;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+@SuppressWarnings("serial")
 @XStreamAlias("RectangleShape")
 public class RectangleShape extends TwoEndShape {
 	

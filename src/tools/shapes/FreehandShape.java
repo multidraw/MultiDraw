@@ -9,6 +9,7 @@ import views.DrawingCanvasView;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
+@SuppressWarnings("serial")
 @XStreamAlias("FreehandShape")
 public class FreehandShape extends CanvasShape{
 	

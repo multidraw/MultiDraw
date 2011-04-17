@@ -12,6 +12,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Defines a basic line class that runs from a starting point to and ending
  * point.
  */
+@SuppressWarnings("serial")
 @XStreamAlias("LineShape")
 public class LineShape extends TwoEndShape {
 

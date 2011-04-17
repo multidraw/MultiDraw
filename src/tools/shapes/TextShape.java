@@ -5,6 +5,7 @@ import java.awt.Point;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+@SuppressWarnings("serial")
 @XStreamAlias("TextShape")
 public class TextShape extends CanvasShape {
 	

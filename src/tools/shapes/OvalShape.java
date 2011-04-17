@@ -8,6 +8,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Defines the drawing behavior for drawing an oval.
  */
+@SuppressWarnings("serial")
 @XStreamAlias("OvalShape")
 public class OvalShape extends TwoEndShape {
 

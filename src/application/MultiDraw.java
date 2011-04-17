@@ -9,7 +9,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
 
-import rmi.client.ClientImpl;
 import tools.EraserTool;
 import tools.FreehandTool;
 import tools.SelectTool;
@@ -39,8 +38,6 @@ import controllers.ToolController;
 @SuppressWarnings("serial")
 public class MultiDraw extends JApplet {
 	
-	public ClientImpl clientImpl;
-	
 	public DrawingCanvasView canvas;
 	public ControlPanelView controlPanel;
 	public ToolBarView toolBar;
@@ -54,14 +51,6 @@ public class MultiDraw extends JApplet {
 	public JFrame frame;
 
 	public MultiDraw(boolean isApplet) {
-		this.isApplet = isApplet;
-		if (!isApplet) {
-			init();
-		}
-	}
-	
-	public MultiDraw(boolean isApplet, ClientImpl clientImpl) {
-		this.clientImpl = clientImpl;
 		this.isApplet = isApplet;
 		this.frame  = new JFrame();
 		if (!isApplet) {
@@ -121,7 +110,7 @@ public class MultiDraw extends JApplet {
 	 * Initialize a new DrawingCanvas
 	 */
 	protected DrawingCanvasView createDrawingCanvas() {
-		return new DrawingCanvasView(clientImpl);
+		return new DrawingCanvasView();
 	}
 
 	/**

@@ -14,7 +14,6 @@ import java.util.List;
 
 import javax.swing.JLayeredPane;
 
-import rmi.client.ClientImpl;
 import tools.Tool;
 import tools.shapes.CanvasShape;
 import utils.ServerUtil;
@@ -31,7 +30,6 @@ import controllers.DrawingCanvasController;
  */
 @SuppressWarnings("serial")
 public class DrawingCanvasView extends JLayeredPane {
-	protected ClientImpl clientImpl;
 	protected DrawingCanvasController canvasController;
 	protected ControlPanelView controlPanelView;
 	public final Color BACKGROUND = Color.white;
@@ -51,13 +49,6 @@ public class DrawingCanvasView extends JLayeredPane {
 	 * Creates a default DrawingCanvas with a white background
 	 */
 	public DrawingCanvasView() {
-		canvasController = createDrawingCanvasController();
-		addDrawingCanvasListener(canvasController);
-		setBackground(BACKGROUND);
-	}
-
-	public DrawingCanvasView(ClientImpl clientImpl) {
-		this.clientImpl = clientImpl;
 		canvasController = createDrawingCanvasController();
 		addDrawingCanvasListener(canvasController);
 		setBackground(BACKGROUND);

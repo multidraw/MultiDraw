@@ -18,7 +18,7 @@ public class ClientImpl implements MultiDrawClient {
 	
 	public void setServerInstance(MultiDrawServer serverInstance) {
 		this.serverInstance = serverInstance;
-		mD = new MultiDraw(false, this);
+		mD = new MultiDraw(false);
 	}
 	
 	public ClientImpl(){}
@@ -49,9 +49,6 @@ public class ClientImpl implements MultiDrawClient {
 					(MultiDrawClient) UnicastRemoteObject.exportObject(
 							client, 0));
 			System.out.println("Client ready");
-			
-			registry = LocateRegistry.getRegistry("192.168.56.1", 1099); //TODO get server address;
-			client.setServerInstance((MultiDrawServer) registry.lookup("MultiDrawServer"));
 
 			
 			System.out.println(InetAddress.getLocalHost());

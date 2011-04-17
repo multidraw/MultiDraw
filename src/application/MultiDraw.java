@@ -1,11 +1,6 @@
 package application;
 
-import items.OpenMenuItem;
-import items.SaveMenuItem;
-
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.URL;
@@ -13,9 +8,7 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
-import javax.swing.KeyStroke;
 
-import rmi.client.ClientImpl;
 import tools.EraserTool;
 import tools.FreehandTool;
 import tools.SelectTool;
@@ -28,6 +21,7 @@ import tools.shapes.RectangleShape;
 import utils.ServerUtil;
 import views.ControlPanelView;
 import views.DrawingCanvasView;
+import views.GuiView;
 import views.LoginView;
 import views.MenuBarView;
 import views.SessionView;
@@ -44,29 +38,19 @@ import controllers.ToolController;
 @SuppressWarnings("serial")
 public class MultiDraw extends JApplet {
 	
-	public ClientImpl clientImpl;
-	
 	public DrawingCanvasView canvas;
 	public ControlPanelView controlPanel;
 	public ToolBarView toolBar;
 	public MenuBarView menuBar;
 	public LoginView loginView;
 	public SessionView sessionView;
+	public GuiView	guiView;
 	
 	public ToolList toolList;
 	public boolean isApplet = false;
 	public JFrame frame;
 
-
 	public MultiDraw(boolean isApplet) {
-		this.isApplet = isApplet;
-		if (!isApplet) {
-			init();
-		}
-	}
-	
-	public MultiDraw(boolean isApplet, ClientImpl clientImpl) {
-		this.clientImpl = clientImpl;
 		this.isApplet = isApplet;
 		this.frame  = new JFrame();
 		if (!isApplet) {
@@ -113,24 +97,12 @@ public class MultiDraw extends JApplet {
 		getContentPane().removeAll();
 		getContentPane().invalidate();
 		getContentPane().validate();
-		getContentPane().setLayout(new BorderLayout());
-		canvas = createDrawingCanvas();
-		getContentPane().add(canvas, BorderLayout.CENTER);
-		controlPanel = createControlPanelView();
-		canvas.setControlPanelView(controlPanel);
-		
-		
-		getContentPane().add(controlPanel, BorderLayout.SOUTH);
-		toolList = createToolList();
-		toolBar = createToolBarView(toolList);
-		getContentPane().add(toolBar, BorderLayout.WEST);
-		menuBar = createMenuBarView(toolList, new FileMenuItemController( new OpenMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK)),
-				new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)));
-		getContentPane().add(menuBar, BorderLayout.NORTH);
-		frame.setTitle("MultiDraw");
+		guiView = new GuiView(isApplet);
+		getContentPane().add(guiView);
+		frame.getContentPane().setLayout(new BorderLayout());
+		frame.getContentPane().add(getContentPane(), BorderLayout.CENTER);
+		frame.addWindowListener(new AppCloser());
 		frame.pack();
-		frame.setSize(600, 450);
-		frame.setMinimumSize(new Dimension(500, 350));
 		frame.setVisible(true);
 	}
 
@@ -138,7 +110,7 @@ public class MultiDraw extends JApplet {
 	 * Initialize a new DrawingCanvas
 	 */
 	protected DrawingCanvasView createDrawingCanvas() {
-		return new DrawingCanvasView(clientImpl);
+		return new DrawingCanvasView();
 	}
 
 	/**

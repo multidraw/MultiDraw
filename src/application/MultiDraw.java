@@ -1,46 +1,12 @@
 package application;
 
-import items.OpenMenuItem;
-import items.SaveMenuItem;
-
 import java.awt.BorderLayout;
-import java.awt.ComponentOrientation;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.net.URL;
 
-import javax.swing.ImageIcon;
 import javax.swing.JApplet;
-import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollBar;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-
-import tools.EraserTool;
-import tools.FreehandTool;
-import tools.SelectTool;
-import tools.TextTool;
-import tools.ToolList;
-import tools.TwoEndShapeTool;
-import tools.shapes.LineShape;
-import tools.shapes.OvalShape;
-import tools.shapes.RectangleShape;
-import views.ControlPanelView;
-import views.DrawingCanvasView;
-import views.MenuBarView;
-import views.ToolBarView;
-import controllers.FileMenuItemController;
-import controllers.ToolController;
 
 /**
  * Represents the MiniDraw program and can be initialized as either an
@@ -78,7 +44,7 @@ public class MultiDraw extends JApplet {
 	 */
 	public void init() {
 		GuiView guiView = new GuiView(isApplet);
-		add(guiView);
+		getContentPane().add(guiView);
 	}
 
 	
@@ -96,7 +62,7 @@ public class MultiDraw extends JApplet {
 		frame.pack();
 		frame.setSize(600, 450);
 		frame.setLocation(100, 100);
-		frame.setMinimumSize(new Dimension(600, 450));
+		frame.setMinimumSize(new Dimension(350, 150));
 		frame.setVisible(true);
 	}
 

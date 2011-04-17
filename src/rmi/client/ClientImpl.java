@@ -21,15 +21,13 @@ public class ClientImpl implements MultiDrawClient {
 	public void updateCanvas(CanvasShape changedShape, boolean isRemoved)
 			throws RemoteException {
 		if(isRemoved) {
-			mD.canvas.removeObject(changedShape, false);
+			mD.guiView.getCanvas().removeObject(changedShape, false);
 		} else {
-			System.out.println(mD + " " + mD.canvas);
-			mD.canvas.addObject(changedShape, false);
+			System.out.println(mD + " " + mD.guiView.getCanvas());
+			mD.guiView.getCanvas().addObject(changedShape, false);
 		}
-		mD.canvas.refreshCanvas();
+		mD.guiView.getCanvas().refreshCanvas();
 		System.out.println(ServerUtil.getUserName());
-		// TODO Auto-generated method stub
-
 	}
 	
 	public static void main(String args[]) {

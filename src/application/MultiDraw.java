@@ -3,31 +3,15 @@ package application;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.net.URL;
 
-import javax.swing.ImageIcon;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
 
-import tools.EraserTool;
-import tools.FreehandTool;
-import tools.SelectTool;
-import tools.TextTool;
 import tools.ToolList;
-import tools.TwoEndShapeTool;
-import tools.shapes.LineShape;
-import tools.shapes.OvalShape;
-import tools.shapes.RectangleShape;
 import utils.ServerUtil;
-import views.ControlPanelView;
-import views.DrawingCanvasView;
 import views.GuiView;
 import views.LoginView;
-import views.MenuBarView;
 import views.SessionView;
-import views.ToolBarView;
-import controllers.FileMenuItemController;
-import controllers.ToolController;
 
 /**
  * Represents the MiniDraw program and can be initialized as either an
@@ -37,11 +21,6 @@ import controllers.ToolController;
  */
 @SuppressWarnings("serial")
 public class MultiDraw extends JApplet {
-	
-	public DrawingCanvasView canvas;
-	public ControlPanelView controlPanel;
-	public ToolBarView toolBar;
-	public MenuBarView menuBar;
 	public LoginView loginView;
 	public SessionView sessionView;
 	public GuiView	guiView;
@@ -104,126 +83,6 @@ public class MultiDraw extends JApplet {
 		frame.addWindowListener(new AppCloser());
 		frame.pack();
 		frame.setVisible(true);
-	}
-
-	/**
-	 * Initialize a new DrawingCanvas
-	 */
-	protected DrawingCanvasView createDrawingCanvas() {
-		return new DrawingCanvasView();
-	}
-
-	/**
-	 * Initialize a new ControlPanelView
-	 **/
-	protected ControlPanelView createControlPanelView()
-			throws NullPointerException {
-		if (canvas != null) {
-			return new ControlPanelView(canvas);
-		} else {
-			throw new NullPointerException("Canvas not initialized.");
-		}
-	}
-
-	/**
-	 * Initialize a new ToolBarView
-	 * 
-	 * @param toolList
-	 *            list of tools to display on the view; null list is accepted
-	 * @return newly initialized ToolBarView with indicated tools included
-	 **/
-	protected ToolBarView createToolBarView(ToolList toolList) {
-		return new ToolBarView(toolList);
-	}
-
-	/**
-	 * Initialize a new MenuBarView
-	 * 
-	 * @param toolList
-	 *            list of tools to display on the view; null list is accepted
-	 * @param items
-	 * 			  all the menu options you could ever want
-	 * @return newly initialized ToolBarView with indicated tools included
-	 **/
-	protected MenuBarView createMenuBarView(ToolList toolList, FileMenuItemController ... items) {
-		return new MenuBarView(toolList, items);
-	}
-
-	/**
-	 * Configure tool list used for ToolBar and MenuBar construction.
-	 * 
-	 * ToolList is initialized by adding several ToolControllers.
-	 * ToolControllers extend the abstract action class allowing easy display of
-	 * the tool via a menu and a tool bar button. More details are provided in
-	 * the ToolController documentation.
-	 **/
-	protected ToolList createToolList() {
-		ToolList actions = new ToolList();
-
-		actions.add(new ToolController("Line", getImageIcon("images/line.png"),
-				"Line drawing tool", canvas, new TwoEndShapeTool(canvas,
-						new LineShape())));
-
-		actions.add(new ToolController("Rectangle",
-				getImageIcon("images/rect.png"), "Rectangle drawing tool",
-				canvas, new TwoEndShapeTool(canvas, new RectangleShape())));
-
-		actions.add(new ToolController("Oval", getImageIcon("images/oval.png"),
-				"Oval drawing tool", canvas, new TwoEndShapeTool(canvas,
-						new OvalShape())));
-
-		 actions.add(
-		 new ToolController("Freehand",
-		 getImageIcon("images/freehand.png"),
-		 "freehand drawing tool",
-		 canvas,
-		 new FreehandTool(canvas)));
-
-		 actions.add(
-		 new ToolController("Text",
-		 getImageIcon("images/text.png"),
-		 "text drawing tool",
-		 canvas,
-		 new TextTool(canvas)));
-
-		 actions.add(
-		 new ToolController("Eraser",
-		 getImageIcon("images/eraser.png"),
-		 "Eraser drawing tool",
-		 canvas,
-		 new EraserTool(canvas)));
-
-		actions.add(new ToolController("Select",
-				getImageIcon("images/select.png"), "Selector Tool", canvas,
-				new SelectTool(canvas)));
-
-		return actions;
-	}
-
-	/**
-	 * Attempts to load an Image from the local disk.
-	 * 
-	 * Retrieving the current working directory varies whether the program was
-	 * executed as an Applet or an Application. Assumes that the images will be
-	 * located at the top directory of the binary files.
-	 * 
-	 * @param fileName
-	 *            file name of the image relative to the current working
-	 *            directory
-	 * @return new ImageIcon
-	 */
-	protected ImageIcon getImageIcon(String fileName) {
-		URL url;
-		if (isApplet) {
-			try {
-				url = MultiDraw.class.getResource(fileName);
-			} catch (Exception e) {
-				return null;
-			}
-			return new ImageIcon(url);
-		} else {
-			return new ImageIcon(fileName);
-		}
 	}
 	
 	public static class AppCloser extends WindowAdapter {

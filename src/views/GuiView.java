@@ -220,5 +220,8 @@ public class GuiView extends JTabbedPane{
 			return new ImageIcon(fileName);
 		}
 	}
-	
+
+	public DrawingCanvasView getCanvas() {
+		return canvas;
+	}
 }

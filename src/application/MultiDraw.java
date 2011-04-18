@@ -1,6 +1,5 @@
 package application;
 
-import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -9,6 +8,8 @@ import javax.swing.JFrame;
 
 import tools.ToolList;
 import utils.ServerUtil;
+import utils.State;
+import utils.StateMachine;
 import views.GuiView;
 import views.LoginView;
 import views.SessionView;
@@ -20,7 +21,7 @@ import views.SessionView;
  * associations.
  */
 @SuppressWarnings("serial")
-public class MultiDraw extends JApplet {
+public class MultiDraw extends JApplet implements State{
 	public LoginView loginView;
 	public SessionView sessionView;
 	public GuiView	guiView;
@@ -28,6 +29,8 @@ public class MultiDraw extends JApplet {
 	public ToolList toolList;
 	public boolean isApplet = false;
 	public JFrame frame;
+	
+	public StateMachine sm = new StateMachine();
 
 	public MultiDraw(boolean isApplet) {
 		this.isApplet = isApplet;
@@ -48,41 +51,14 @@ public class MultiDraw extends JApplet {
 	 * all of the MiniDraw components.
 	 */
 	public void init() {
+		LoginView lview = new LoginView(this);
+		SessionView sview = new SessionView(this);
 		
-		getContentPane().removeAll();
-		getContentPane().invalidate();
-		getContentPane().validate();
-		loginView = new LoginView();
-		getContentPane().add(loginView);
-		frame.getContentPane().setLayout(new BorderLayout());
-		frame.getContentPane().add(getContentPane(), BorderLayout.CENTER);
-		frame.addWindowListener(new AppCloser());
-		frame.pack();
-		frame.setVisible(true);
-		while(loginView.loggingIn);
+		sm.addStateTransition(this, lview);
+		sm.addStateTransition(lview, sview);
+		sm.addStateTransition(sview, new GuiView(this, isApplet));
 		
-		getContentPane().removeAll();
-		getContentPane().invalidate();
-		getContentPane().validate();
-		sessionView = new SessionView();
-		getContentPane().add(sessionView);
-		frame.getContentPane().setLayout(new BorderLayout());
-		frame.getContentPane().add(getContentPane(), BorderLayout.CENTER);
-		frame.addWindowListener(new AppCloser());
-		frame.pack();
-		frame.setVisible(true);
-		while(!sessionView.sessionSelected);
-		
-		getContentPane().removeAll();
-		getContentPane().invalidate();
-		getContentPane().validate();
-		guiView = new GuiView(isApplet);
-		getContentPane().add(guiView);
-		frame.getContentPane().setLayout(new BorderLayout());
-		frame.getContentPane().add(getContentPane(), BorderLayout.CENTER);
-		frame.addWindowListener(new AppCloser());
-		frame.pack();
-		frame.setVisible(true);
+		sm.transition(this);
 	}
 	
 	public static class AppCloser extends WindowAdapter {
@@ -95,4 +71,7 @@ public class MultiDraw extends JApplet {
 			System.exit(0);
 		}
 	}
+	
+	public void enter(){}
+	public void exit() {}
 }

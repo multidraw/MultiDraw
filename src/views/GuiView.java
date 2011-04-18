@@ -4,6 +4,7 @@ import items.OpenMenuItem;
 import items.SaveMenuItem;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.KeyEvent;
@@ -11,6 +12,7 @@ import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -20,6 +22,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import application.MultiDraw;
+import application.MultiDraw.AppCloser;
 
 import tools.EraserTool;
 import tools.FreehandTool;
@@ -30,11 +33,12 @@ import tools.TwoEndShapeTool;
 import tools.shapes.LineShape;
 import tools.shapes.OvalShape;
 import tools.shapes.RectangleShape;
+import utils.State;
 import controllers.FileMenuItemController;
 import controllers.ToolController;
 
 @SuppressWarnings("serial")
-public class GuiView extends JTabbedPane{
+public class GuiView extends JTabbedPane implements State{
 
 	protected String userName;
 	protected String sessionName;
@@ -45,10 +49,21 @@ public class GuiView extends JTabbedPane{
 	protected MenuBarView menuBar;
 	protected ToolList toolList;
 	protected boolean isApplet;
+	private MultiDraw md;
 	
-	
-	public GuiView(boolean isApplet) {		
+	public GuiView(MultiDraw m, boolean isApplet) {
+		md = m;
 		this.isApplet = isApplet;		
+	}
+	
+	public void enter(){
+		Container contentPane = md.getContentPane();
+		JFrame frame = md.frame;
+		
+		contentPane.removeAll();
+		contentPane.invalidate();
+		contentPane.validate();
+		
 		//Create Canvas Pane
 		JPanel canvasPane = new JPanel();
 		canvasPane.setLayout(new BorderLayout());
@@ -127,9 +142,17 @@ public class GuiView extends JTabbedPane{
 		add("Canvas",canvasPane);
 		add("Tool Designer",toolDesignerPane);
 
+		contentPane.add(this);
+		
+		frame.setTitle("MultiDraw");
+		frame.getContentPane().setLayout(new BorderLayout());
+		frame.getContentPane().add(contentPane, BorderLayout.CENTER);
+		frame.addWindowListener(new AppCloser());
+		frame.pack();
+		frame.setVisible(true);
 	}
 	
-
+	public void exit() {}
 
 	/**
 	 * Initialize a new ControlPanelView

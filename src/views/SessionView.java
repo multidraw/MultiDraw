@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -12,21 +13,26 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import application.MultiDraw;
 
 import utils.ServerUtil;
-import controllers.StartUpController;
 
 @SuppressWarnings("serial")
-public class SessionView extends JPanel{
+public class SessionView extends MultiDrawStateView implements ListSelectionListener{
 
 	public JList sessionList;
 	public JList userList;
-	public JButton joinSessionBtn;
-	public JButton createSessionBtn;
-	public boolean sessionSelected = false;
+	private JButton joinSessionBtn;
+	private JButton createSessionBtn;
 
-	public SessionView() {
-		StartUpController controller = new StartUpController(this);
+	public SessionView(MultiDraw m) {
+		super(m);
+	}
+	
+	protected void setup(){
 		FlowLayout fLayout = new FlowLayout(FlowLayout.CENTER, 40, 4); 
 		GridBagLayout gBag = new GridBagLayout();
 		GridBagConstraints gConstraints = new GridBagConstraints();
@@ -62,14 +68,14 @@ public class SessionView extends JPanel{
 		information.setBorder(new EmptyBorder(5, 15, 5, 15));
 		
 		createSessionBtn.setPreferredSize(new Dimension(150, 20));
-		createSessionBtn.addActionListener(controller);
+		createSessionBtn.addActionListener(this);
 		
 		joinSessionBtn.setEnabled(false);
 		joinSessionBtn.setPreferredSize(new Dimension(180, 20));
-		joinSessionBtn.addActionListener(controller);
+		joinSessionBtn.addActionListener(this);
 		
 		sessionList.setBorder(new LineBorder(Color.BLACK));
-		sessionList.addListSelectionListener(controller);
+		sessionList.addListSelectionListener(this);
 		
 		userList.setBorder(new LineBorder(Color.BLACK));
 		userList.setEnabled(false);
@@ -99,6 +105,33 @@ public class SessionView extends JPanel{
 		gConstraints.gridy = 3;
 
 		add(sessionsAndUsers, gConstraints);
+		
+		mdFrame.setTitle("Sessions");
+	}
 
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource().equals(createSessionBtn)) {
+			try {
+				ServerUtil.setShapes(ServerUtil.getServerInstance().connectToSession(null, ServerUtil.getUserName()));
+				ServerUtil.setSession(ServerUtil.getUserName());
+			} catch(Exception e1) {
+			}
+		}
+		if(e.getSource().equals(joinSessionBtn)) {
+			try {
+				ServerUtil.setShapes(ServerUtil.getServerInstance().connectToSession((String)sessionList.getSelectedValue(), ServerUtil.getUserName()));
+				ServerUtil.setSession((String)sessionList.getSelectedValue());
+			} catch(Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+		md.sm.transition(this);
+	}
+	
+	public void valueChanged(ListSelectionEvent e) {
+		joinSessionBtn.setEnabled(true);
+		try {
+			userList.setListData(ServerUtil.getServerInstance().getSession((String)sessionList.getSelectedValue()).getActiveUsers().toArray());
+		} catch(Exception e1) {	}
 	}
 }

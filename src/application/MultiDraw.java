@@ -8,7 +8,6 @@ import javax.swing.JFrame;
 
 import tools.ToolList;
 import utils.ServerUtil;
-import utils.State;
 import utils.StateMachine;
 import views.GuiView;
 import views.LoginView;
@@ -21,7 +20,7 @@ import views.SessionView;
  * associations.
  */
 @SuppressWarnings("serial")
-public class MultiDraw extends JApplet implements State{
+public class MultiDraw extends JApplet {
 	public LoginView loginView;
 	public SessionView sessionView;
 	public GuiView	guiView;
@@ -54,11 +53,10 @@ public class MultiDraw extends JApplet implements State{
 		LoginView lview = new LoginView(this);
 		SessionView sview = new SessionView(this);
 		
-		sm.addStateTransition(this, lview);
 		sm.addStateTransition(lview, sview);
 		sm.addStateTransition(sview, new GuiView(this, isApplet));
 		
-		sm.transition(this);
+		sm.startingState(lview);
 	}
 	
 	public static class AppCloser extends WindowAdapter {
@@ -71,7 +69,4 @@ public class MultiDraw extends JApplet implements State{
 			System.exit(0);
 		}
 	}
-	
-	public void enter(){}
-	public void exit() {}
 }

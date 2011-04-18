@@ -125,7 +125,7 @@ public class SessionView extends MultiDrawStateView implements ListSelectionList
 				e1.printStackTrace();
 			}
 		}
-		md.sm.transition(this);
+		md.sm.transition();
 	}
 	
 	public void valueChanged(ListSelectionEvent e) {

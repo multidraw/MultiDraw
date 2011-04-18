@@ -78,7 +78,7 @@ public class LoginView extends MultiDrawStateView {
 			e1.printStackTrace();
 		} finally { 
 			ServerUtil.setUserName(getUsername());
-			md.sm.transition(this);
+			md.sm.transition();
 		}
 	}
 }

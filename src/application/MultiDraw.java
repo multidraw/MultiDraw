@@ -52,11 +52,12 @@ public class MultiDraw extends JApplet {
 	public void init() {
 		LoginView lview = new LoginView(this);
 		SessionView sview = new SessionView(this);
+		GuiView gview = new GuiView(this, isApplet);
 		
-		sm.addStateTransition(lview, sview);
-		sm.addStateTransition(sview, new GuiView(this, isApplet));
+		sm.addStateTransition("Login", lview, sview);
+		sm.addStateTransition("In Session", sview, gview);
 		
-		sm.startingState(lview);
+		sm.start();
 	}
 	
 	public static class AppCloser extends WindowAdapter {
@@ -65,6 +66,8 @@ public class MultiDraw extends JApplet {
 				ServerUtil.getServerInstance().logout(ServerUtil.getUserName(), ServerUtil.getSession());
 			} catch(Exception err) {
 				err.printStackTrace();
+			} finally {
+				System.exit(0);
 			}
 		}
 	}

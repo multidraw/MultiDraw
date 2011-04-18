@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.InetAddress;
 
+import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -22,22 +23,20 @@ public class StartUpController implements ActionListener, ListSelectionListener{
 
 	public StartUpController(SessionView sessionView) {
 		this.sView = sessionView;
-		// TODO Auto-generated constructor stub
 	}
 
-	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		if(lView != null) {
 			try {
-				lView.loggingIn = !ServerUtil.getServerInstance().login(lView.login.getText(), InetAddress.getLocalHost().getHostAddress());
-				ServerUtil.setUserName(lView.login.getText());
+				lView.loggingIn = !ServerUtil.getServerInstance().login(lView.login.getText().trim(), InetAddress.getLocalHost().getHostAddress());
+				if ( lView.loggingIn ){
+					JOptionPane.showMessageDialog(lView, "Someone already has that username!", "Error", JOptionPane.ERROR_MESSAGE);
+				}
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				lView.loggingIn = true;
 				e.printStackTrace();
-			}
-			if(!lView.loggingIn) {
-				ServerUtil.setUserName(lView.login.getText());
+			} finally { 
+				ServerUtil.setUserName(lView.login.getText().trim());
 			}
 		}
 		

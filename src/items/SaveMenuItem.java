@@ -20,7 +20,6 @@ import utils.MdwFileFilter;
 import views.DrawingCanvasView;
 
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
 
 @SuppressWarnings("serial")
 public class SaveMenuItem extends FileMenuItem {
@@ -31,7 +30,7 @@ public class SaveMenuItem extends FileMenuItem {
 
 	public SaveMenuItem(DrawingCanvasView c){
 		super("Save", c);
-		xstream = new XStream(new DomDriver());
+		xstream = new XStream();
 		xstream.processAnnotations(TextShape.class);
 		xstream.processAnnotations(RectangleShape.class);
 		xstream.processAnnotations(OvalShape.class);

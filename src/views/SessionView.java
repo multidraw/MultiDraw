@@ -53,6 +53,7 @@ public class SessionView extends MultiDrawStateView implements ListSelectionList
 		
 		try {
 			sessionList = new JList(ServerUtil.getServerInstance().getSessions().toArray());
+			sessionList.setPreferredSize(new Dimension(50, 50));
 			if(sessionList.getModel().getSize() != 0) {
 				
 				userList = new JList();
@@ -62,6 +63,7 @@ public class SessionView extends MultiDrawStateView implements ListSelectionList
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+		userList.setPreferredSize(new Dimension(50, 50));
 		JLabel sessionLabel = new JLabel("Sessions");
 		JLabel userLabel = new JLabel("Users");
 

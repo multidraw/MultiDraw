@@ -20,7 +20,6 @@ public class ServerUtil {
 			registry = LocateRegistry.getRegistry(InetAddress.getLocalHost().getHostAddress(), 1099);
 			return (MultiDrawServer) registry.lookup("MultiDrawServer");
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		} //TODO get server address;

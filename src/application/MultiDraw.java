@@ -62,11 +62,10 @@ public class MultiDraw extends JApplet {
 	public static class AppCloser extends WindowAdapter {
 		public void windowClosing(WindowEvent e) {
 			try {
-			ServerUtil.getServerInstance().logout(ServerUtil.getUserName(), ServerUtil.getSession());
+				ServerUtil.getServerInstance().logout(ServerUtil.getUserName(), ServerUtil.getSession());
 			} catch(Exception err) {
 				err.printStackTrace();
 			}
-			System.exit(0);
 		}
 	}
 }

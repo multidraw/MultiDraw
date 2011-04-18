@@ -1,5 +1,6 @@
 package utils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class StateMachine {
@@ -39,6 +40,20 @@ public class StateMachine {
 	 */
 	public void transition(){
 		transition(currentState);
+	}
+	
+	/**
+	 * revertTransition()
+	 * Reverts the current state backwards.
+	 */
+	public void revertTransition(){
+		int key = new ArrayList<State>(states.values()).indexOf(currentState);
+		if ( key >= 0 ){
+			State prevState = (State)states.keySet().toArray()[key];
+			currentState.exit();
+			prevState.enter();
+			currentState = prevState;
+		}
 	}
 	
 	/**

@@ -11,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -51,19 +52,21 @@ public class SessionView extends MultiDrawStateView implements ListSelectionList
 		createSessionBtn = new JButton("Create New Session");
 		joinSessionBtn = new JButton("Join the selected session");
 		
+		JScrollPane sessionSP = null;
+		JScrollPane userSP = null;
+		
 		try {
 			sessionList = new JList(ServerUtil.getServerInstance().getSessions().toArray());
-			sessionList.setPreferredSize(new Dimension(50, 50));
-			if(sessionList.getModel().getSize() != 0) {
-				
-				userList = new JList();
-			} else {
-				userList = new JList();
-			}
+			userList = new JList();
+			
+			sessionSP = new JScrollPane(sessionList);
+			userSP = new JScrollPane(userList);
+			sessionSP.setPreferredSize(new Dimension(50, 50));
+			userSP.setPreferredSize(new Dimension(50, 50));
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		userList.setPreferredSize(new Dimension(50, 50));
+		
 		JLabel sessionLabel = new JLabel("Sessions");
 		JLabel userLabel = new JLabel("Users");
 
@@ -89,10 +92,10 @@ public class SessionView extends MultiDrawStateView implements ListSelectionList
 		gConstraints.gridy = 1;
 		
 		sessionsPanel.add(sessionLabel);
-		sessionsPanel.add(sessionList, gConstraints);
+		sessionsPanel.add(sessionSP, gConstraints);
 
 		usersPanel.add(userLabel);
-		usersPanel.add(userList, gConstraints);
+		usersPanel.add(userSP, gConstraints);
 		
 		sessionsAndUsers.add(sessionsPanel);
 		sessionsAndUsers.add(usersPanel);

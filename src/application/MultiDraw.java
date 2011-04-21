@@ -27,7 +27,6 @@ public class MultiDraw extends JApplet {
 	public JFrame frame;
 	
 	public MultiDrawState state;
-	public AppCloser windowCloser;
 	
 	public MultiDraw(boolean isApplet) {
 		this.isApplet = isApplet;
@@ -48,7 +47,8 @@ public class MultiDraw extends JApplet {
 	 * all of the MiniDraw components.
 	 */
 	public void init() {
-		windowCloser = new AppCloser(this);
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		frame.addWindowListener(new AppCloser(this));
 		showLoginWindow();
 	}
 	
@@ -66,7 +66,7 @@ public class MultiDraw extends JApplet {
 	
 	public void showGUIWindow(){
 		state = MultiDrawState.GUI_SCREEN;
-		guiView = new GuiView(this, isApplet);
+		guiView = new GuiView(isApplet);
 		guiView.show(getContentPane(), frame);
 	}
 	

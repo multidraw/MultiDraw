@@ -127,7 +127,6 @@ public class SessionView extends JPanel implements ActionListener, ListSelection
 		contentPane.add(this);
 		frame.getContentPane().setLayout(new BorderLayout());
 		frame.getContentPane().add(contentPane, BorderLayout.CENTER);
-		frame.addWindowListener(md.windowCloser);
 		frame.setTitle("Sessions");
 		frame.pack();
 		frame.setVisible(true);

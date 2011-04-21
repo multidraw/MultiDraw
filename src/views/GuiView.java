@@ -47,10 +47,8 @@ public class GuiView extends JTabbedPane{
 	protected MenuBarView menuBar;
 	protected ToolList toolList;
 	protected boolean isApplet;
-	private MultiDraw md;
 	
-	public GuiView(MultiDraw m, boolean isApplet) {
-		md = m;
+	public GuiView(boolean isApplet) {
 		this.isApplet = isApplet;		
 	}
 	
@@ -142,7 +140,6 @@ public class GuiView extends JTabbedPane{
 		frame.setTitle("MultiDraw");
 		frame.getContentPane().setLayout(new BorderLayout());
 		frame.getContentPane().add(contentPane, BorderLayout.CENTER);
-		frame.addWindowListener(md.windowCloser);
 		frame.pack();
 		frame.setVisible(true);
 	}

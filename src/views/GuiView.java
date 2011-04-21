@@ -22,7 +22,6 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import application.MultiDraw;
-import application.MultiDraw.AppCloser;
 
 import tools.EraserTool;
 import tools.FreehandTool;
@@ -33,12 +32,11 @@ import tools.TwoEndShapeTool;
 import tools.shapes.LineShape;
 import tools.shapes.OvalShape;
 import tools.shapes.RectangleShape;
-import utils.State;
 import controllers.FileMenuItemController;
 import controllers.ToolController;
 
 @SuppressWarnings("serial")
-public class GuiView extends JTabbedPane implements State{
+public class GuiView extends JTabbedPane{
 
 	protected String userName;
 	protected String sessionName;
@@ -56,10 +54,7 @@ public class GuiView extends JTabbedPane implements State{
 		this.isApplet = isApplet;		
 	}
 	
-	public void enter(){
-		Container contentPane = md.getContentPane();
-		JFrame frame = md.frame;
-		
+	public void show(Container contentPane, JFrame frame){
 		contentPane.removeAll();
 		contentPane.invalidate();
 		contentPane.validate();
@@ -147,13 +142,11 @@ public class GuiView extends JTabbedPane implements State{
 		frame.setTitle("MultiDraw");
 		frame.getContentPane().setLayout(new BorderLayout());
 		frame.getContentPane().add(contentPane, BorderLayout.CENTER);
-		frame.addWindowListener(new AppCloser());
+		frame.addWindowListener(md.windowCloser);
 		frame.pack();
 		frame.setVisible(true);
 	}
 	
-	public void exit() {}
-
 	/**
 	 * Initialize a new ControlPanelView
 	 **/

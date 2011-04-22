@@ -11,9 +11,10 @@ import application.MultiDraw;
 
 public class ClientImpl implements MultiDrawClient {
 	
-	public MultiDraw mD;
+	public transient MultiDraw mD;
 	
 	public ClientImpl(){
+		ServerUtil.setClient(this);
 		mD = new MultiDraw(false);
 	}
 

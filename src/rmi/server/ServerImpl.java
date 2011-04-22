@@ -45,7 +45,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 	}
 
 	@Override
-	public boolean updateCanvas(String userName, String session, CanvasShape updatedShape,
+	public synchronized boolean updateCanvas(String userName, String session, CanvasShape updatedShape,
 			boolean removed) throws RemoteException {
 		Session thisSession = sessions.get(session);
 		if (!removed) {
@@ -60,7 +60,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 	}
 
 	@Override
-	public boolean passOffControl(String session, String userName)
+	public synchronized boolean passOffControl(String session, String userName)
 			throws RemoteException {
 		// TODO Auto-generated method stub
 		return false;

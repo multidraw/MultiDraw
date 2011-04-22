@@ -1,13 +1,17 @@
 package views;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -22,18 +26,19 @@ import application.MultiDraw;
 import utils.ServerUtil;
 
 @SuppressWarnings("serial")
-public class SessionView extends MultiDrawStateView implements ListSelectionListener{
+public class SessionView extends JPanel implements ActionListener, ListSelectionListener{
 
 	public JList sessionList;
 	public JList userList;
 	private JButton joinSessionBtn;
 	private JButton createSessionBtn;
-
-	public SessionView(MultiDraw m) {
-		super(m);
+	private MultiDraw md;
+	
+	public SessionView(MultiDraw m){
+		md = m;
 	}
 	
-	protected void setup(){
+	private void setup(){
 		FlowLayout fLayout = new FlowLayout(FlowLayout.CENTER, 40, 4); 
 		GridBagLayout gBag = new GridBagLayout();
 		GridBagConstraints gConstraints = new GridBagConstraints();
@@ -110,10 +115,23 @@ public class SessionView extends MultiDrawStateView implements ListSelectionList
 		gConstraints.gridy = 3;
 
 		add(sessionsAndUsers, gConstraints);
-		
-		mdFrame.setTitle("Sessions");
 	}
 
+	public void show(Container contentPane, JFrame frame){
+		contentPane.removeAll();
+		contentPane.invalidate();
+		contentPane.validate();
+		
+		setup();
+		
+		contentPane.add(this);
+		frame.getContentPane().setLayout(new BorderLayout());
+		frame.getContentPane().add(contentPane, BorderLayout.CENTER);
+		frame.setTitle("Sessions");
+		frame.pack();
+		frame.setVisible(true);
+	}
+	
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(createSessionBtn)) {
 			try {
@@ -130,7 +148,7 @@ public class SessionView extends MultiDrawStateView implements ListSelectionList
 				e1.printStackTrace();
 			}
 		}
-		md.sm.transition();
+		md.showGUIWindow();
 	}
 	
 	public void valueChanged(ListSelectionEvent e) {

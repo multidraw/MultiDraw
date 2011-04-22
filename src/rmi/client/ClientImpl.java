@@ -37,7 +37,7 @@ public class ClientImpl implements MultiDrawClient {
 		try {
 			ClientImpl client = new ClientImpl();
 			
-			Registry registry = LocateRegistry.createRegistry(1101);
+			Registry registry = LocateRegistry.createRegistry(1102);
 			registry.bind("MultiDrawClient",
 					(MultiDrawClient) UnicastRemoteObject.exportObject(
 							client, 0));
@@ -46,7 +46,6 @@ public class ClientImpl implements MultiDrawClient {
 		} catch (Exception e) {
 			System.err.println("Client exception: " + e.toString());
 			e.printStackTrace();
-
 		}
 	}
 

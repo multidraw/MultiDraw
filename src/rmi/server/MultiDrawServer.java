@@ -4,6 +4,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
+import rmi.client.MultiDrawClient;
 import rmi.server.ServerImpl.Session;
 import tools.shapes.CanvasShape;
 
@@ -47,7 +48,7 @@ public interface MultiDrawServer extends Remote {
 	 * (e.g. userName is already in use)
 	 * @throws RemoteException
 	 */
-	public boolean login(String userName, String ipAddress) throws RemoteException;
+	public boolean login(MultiDrawClient client, String userName) throws RemoteException;
 	
 	/**
 	 * logout a user;

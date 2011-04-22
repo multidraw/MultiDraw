@@ -8,7 +8,6 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.InetAddress;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -88,7 +87,7 @@ public class LoginView extends JPanel implements ActionListener{
 	public void actionPerformed(ActionEvent e){
 		boolean loggedIn = false;
 		try { 
-			loggedIn = ServerUtil.getServerInstance().login(getUsername(), InetAddress.getLocalHost().getHostAddress());
+			loggedIn = ServerUtil.getServerInstance().login(ServerUtil.getClient(), getUsername());
 			if ( loggedIn ){
 				md.showSessionsWindow();
 			} else { 

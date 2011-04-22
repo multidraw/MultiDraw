@@ -7,7 +7,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -15,12 +15,16 @@ import java.util.Set;
 import rmi.client.MultiDrawClient;
 import tools.shapes.CanvasShape;
 
-public class ServerImpl implements MultiDrawServer {
+public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 
-	public HashMap<String, Session> sessions = new HashMap<String, Session>();
-	public HashMap<String, String> allUsers = new HashMap<String, String>();
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3899322995886823259L;
+	public Hashtable<String, Session> sessions = new Hashtable<String, Session>();
+	public Hashtable<String, MultiDrawClient> allUsers = new Hashtable<String, MultiDrawClient>();
 
-	public ServerImpl() {
+	public ServerImpl() throws RemoteException{
 
 	}
 
@@ -30,9 +34,7 @@ public class ServerImpl implements MultiDrawServer {
 		}*/
 		try {
 			Registry registry = LocateRegistry.createRegistry(1099);
-			registry.bind("MultiDrawServer",
-					(MultiDrawServer) UnicastRemoteObject.exportObject(
-							new ServerImpl(), 0));
+			registry.bind("MultiDrawServer", new ServerImpl());
 			System.out.println("Server ready");
 			System.out.println(InetAddress.getLocalHost());
 		} catch (Exception e) {
@@ -75,12 +77,12 @@ public class ServerImpl implements MultiDrawServer {
 	}
 
 	@Override
-	public boolean login(String userName, String ipAddress)
+	public boolean login(MultiDrawClient client, String userName)
 			throws RemoteException {
 		if (allUsers.containsKey(userName) || userName.equals("")) {
 			return false;
 		} else {
-			allUsers.put(userName, ipAddress);
+			allUsers.put(userName, client);
 			return true;
 		}
 	}
@@ -123,10 +125,8 @@ public class ServerImpl implements MultiDrawServer {
 			if(user.equalsIgnoreCase(userName)) {
 				return;
 			}
-			String ipAddress = allUsers.get(user);
-			try {
-				Registry remoteRegistry = LocateRegistry.getRegistry(ipAddress, 1100);
-				MultiDrawClient client = (MultiDrawClient) remoteRegistry.lookup("MultiDrawClient");
+			try{
+				MultiDrawClient client = allUsers.get(user);
 				client.updateCanvas(alteredShape, isRemoved);
 			} catch (Exception e) {
 				System.err.println("Update Push exception: " + e.toString());

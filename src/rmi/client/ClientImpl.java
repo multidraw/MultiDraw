@@ -47,7 +47,8 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 			ArrayList<String> sessions = (ArrayList<String>)update;
 			mD.sView.updateSessionList(sessions);
 		}
-		mD.guiView.getCanvas().refreshCanvas();
+		if ( mD.guiView != null )
+			mD.guiView.getCanvas().refreshCanvas();
 	}
 	
 	public static void main(String args[]) {

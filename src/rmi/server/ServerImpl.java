@@ -71,10 +71,10 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		if (session == null) {
 			sessions.put(userName, new Session(userName));
 			session = userName;
+			pushUpdate(userName, new ArrayList<String>(sessions.keySet()), HashMapCreator.create(new Object[]{}));
 		} else {
 			sessions.put(session, sessions.get(session).joinSession(userName));	
 		}
-		pushUpdate(userName, sessions.get(session).getActiveUsers(), HashMapCreator.create(new Object[]{"session", session}));
 		return sessions.get(session).getShapes();
 	}
 
@@ -109,7 +109,6 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 
 	@Override
 	public Session getSession(String session) throws RemoteException {
-		System.out.println(sessions.get("dhensche") + session);
 		return sessions.get(session);
 	}
 
@@ -145,11 +144,11 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		}
 		
 		String session = (String) options.remove("session");
-		ArrayList<String> users = ( session == null ) ? (ArrayList<String>)allUsers.keys() : sessions.get(session).getActiveUsers();
+		ArrayList<String> users = ( session == null ) ? new ArrayList<String>(allUsers.keySet()) : sessions.get(session).getActiveUsers();
 		
 		for( String user : users ) {
 			if(user.equalsIgnoreCase(userName)) {
-				return;
+				continue;
 			}
 			try{
 				MultiDrawClient client = allUsers.get(user);

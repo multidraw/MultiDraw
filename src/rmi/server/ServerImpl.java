@@ -93,7 +93,12 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 	public boolean logout(String userName, String session) throws RemoteException {
 		try {
 			allUsers.remove(userName);
-			sessions.get(session).leaveSession(userName);
+			Session currentSession = sessions.get(session);
+			currentSession.leaveSession(userName);
+			
+			if(currentSession.isEmpty())
+				sessions.remove(session);
+			
 			return true;
 		} catch(Exception e) {
 			return false;
@@ -132,11 +137,8 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	public class Session implements Serializable{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		private ArrayList<CanvasShape> shapes;
 		private ArrayList<String> activeUsers = new ArrayList<String>();
 		private String drawer;
@@ -154,6 +156,10 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		
 		public void leaveSession(String userName) {
 			activeUsers.remove(userName);
+		}
+		
+		public boolean isEmpty() {
+			return (activeUsers.size() == 0) ? true : false;
 		}
 
 		public ArrayList<CanvasShape> getShapes() {

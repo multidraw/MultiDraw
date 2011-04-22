@@ -39,13 +39,11 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 		}*/
 		try {
 			new ClientImpl();
-			
 			System.out.println("Client ready");
 
 		} catch (Exception e) {
 			System.err.println("Client exception: " + e.toString());
 			e.printStackTrace();
-
 		}
 	}
 

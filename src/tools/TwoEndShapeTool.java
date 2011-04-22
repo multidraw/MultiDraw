@@ -109,7 +109,7 @@ public class TwoEndShapeTool extends Tool {
 
 		canvas.repaint();
 		
-		canvas.addObject((CanvasShape) shape);
+		canvas.updateObject((CanvasShape) shape);
 		try {
 			shape = shape.getClass().newInstance();
 		} catch (InstantiationException e1) {

@@ -55,6 +55,6 @@ public class FreehandTool extends Tool {
 	}
 	
 	public void mouseReleased(MouseEvent e) {
-		canvas.addObject((tools.shapes.CanvasShape) shape);
+		canvas.updateObject((tools.shapes.CanvasShape) shape);
 	}
 }

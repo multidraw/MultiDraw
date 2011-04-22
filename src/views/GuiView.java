@@ -47,9 +47,11 @@ public class GuiView extends JTabbedPane{
 	protected MenuBarView menuBar;
 	protected ToolList toolList;
 	protected boolean isApplet;
+	protected MultiDraw md;
 	
-	public GuiView(boolean isApplet) {
-		this.isApplet = isApplet;		
+	public GuiView(boolean isApplet, MultiDraw md) {
+		this.isApplet = isApplet;	
+		this.md = md;
 	}
 	
 	public void show(Container contentPane, JFrame frame){
@@ -60,7 +62,7 @@ public class GuiView extends JTabbedPane{
 		//Create Canvas Pane
 		JPanel canvasPane = new JPanel();
 		canvasPane.setLayout(new BorderLayout());
-		canvas = new DrawingCanvasView();
+		canvas = new DrawingCanvasView(md.utilInstance);
 		canvasPane.add(canvas, BorderLayout.CENTER);
 		controlPanel = createControlPanelView();
 		canvas.setControlPanelView(controlPanel);

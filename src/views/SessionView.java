@@ -64,8 +64,8 @@ public class SessionView extends JPanel implements ActionListener, ListSelection
 			
 			sessionSP = new JScrollPane(sessionList);
 			userSP = new JScrollPane(userList);
-			sessionSP.setPreferredSize(new Dimension(50, 50));
-			userSP.setPreferredSize(new Dimension(50, 50));
+			sessionSP.setPreferredSize(new Dimension(100, 50));
+			userSP.setPreferredSize(new Dimension(100, 50));
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

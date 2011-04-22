@@ -21,6 +21,7 @@ import views.SessionView;
 @SuppressWarnings("serial")
 public class MultiDraw extends JApplet {
 	public GuiView guiView;
+	public SessionView sView;
 	
 	public ToolList toolList;
 	public boolean isApplet = false;
@@ -60,8 +61,8 @@ public class MultiDraw extends JApplet {
 	
 	public void showSessionsWindow(){
 		state = MultiDrawState.SESSIONS_SCREEN;
-		SessionView sview = new SessionView(this);
-		sview.show(getContentPane(), frame);
+		sView = new SessionView(this);
+		sView.show(getContentPane(), frame);
 	}
 	
 	public void showGUIWindow(){

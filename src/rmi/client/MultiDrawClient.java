@@ -3,8 +3,6 @@ package rmi.client;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import tools.shapes.CanvasShape;
-
 public interface MultiDrawClient extends Remote {
 
 	/**
@@ -12,5 +10,5 @@ public interface MultiDrawClient extends Remote {
 	 * @param changedShape - The changed shape.
 	 * @throws RemoteException
 	 */
-	public void updateCanvas(CanvasShape changedShape, boolean isRemoved) throws RemoteException;
+	public <T, V> void update(T changedShape, V opts) throws RemoteException;
 }

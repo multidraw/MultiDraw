@@ -9,6 +9,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -156,5 +157,9 @@ public class SessionView extends JPanel implements ActionListener, ListSelection
 		try {
 			userList.setListData(ServerUtil.getServerInstance().getSession((String)sessionList.getSelectedValue()).getActiveUsers().toArray());
 		} catch(Exception e1) {	}
+	}
+	
+	public void updateSessionList(ArrayList<String> sessions){
+		sessionList.setListData(sessions.toArray());
 	}
 }

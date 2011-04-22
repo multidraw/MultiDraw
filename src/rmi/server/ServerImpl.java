@@ -7,6 +7,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -50,10 +51,10 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		Session thisSession = sessions.get(session);
 		if (!removed) {
 			thisSession.addObject(updatedShape);
-			pushUpdate(userName, session, updatedShape, false);
+			pushUpdate(userName, updatedShape, HashMapCreator.create(new Object[]{"remove", false, "session", session}));
 		} else {
 			thisSession.removeObject(updatedShape);
-			pushUpdate(userName, session, updatedShape, true);
+			pushUpdate(userName, updatedShape, HashMapCreator.create(new Object[]{"remove", true, "session", session}));
 		}
 		sessions.put(session, thisSession);
 		return true;
@@ -71,11 +72,12 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 			throws RemoteException {
 		if (session == null) {
 			sessions.put(userName, new Session(userName));
-			return sessions.get(userName).getShapes();
+			session = userName;
 		} else {
-			sessions.put(session, sessions.get(session).joinSession(userName));
-			return sessions.get(session).getShapes();
+			sessions.put(session, sessions.get(session).joinSession(userName));	
 		}
+		pushUpdate(userName, sessions.get(session).getActiveUsers(), HashMapCreator.create(new Object[]{"session", session}));
+		return sessions.get(session).getShapes();
 	}
 
 	@Override
@@ -122,14 +124,36 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		return sessionKeys;
 	}
 	
-	private void pushUpdate(String userName, String session, CanvasShape alteredShape, boolean isRemoved) {
-		for(String user : sessions.get(session).getActiveUsers()) {
+	/**
+	 * Pushes a update to the clients.
+	 * @param <T> - Type of class for the Clients to receive
+	 * @param <V> - Values of the options array
+	 * @param userName - String current username of the client.
+	 * @param update - The updated object to send off
+	 * 					( CanvasShape, ArrayList<String> )
+	 * @param opts - Options for the push
+	 * 				("session" => sessionName, "removed" => true/false)
+	 */
+	@SuppressWarnings("unchecked")
+	private synchronized <T, V> void pushUpdate(String userName, T update, V opts) {
+		HashMap<String, Object> options = null;
+		try {
+			options = (HashMap<String, Object>)opts;  // Extract the options
+		} catch ( ClassCastException e ){
+			e.printStackTrace();
+			return;
+		}
+		
+		String session = (String) options.remove("session");
+		ArrayList<String> users = ( session == null ) ? (ArrayList<String>)allUsers.keys() : sessions.get(session).getActiveUsers();
+		
+		for( String user : users ) {
 			if(user.equalsIgnoreCase(userName)) {
 				return;
 			}
 			try{
 				MultiDrawClient client = allUsers.get(user);
-				client.updateCanvas(alteredShape, isRemoved);
+				client.update(update, options);
 			} catch (Exception e) {
 				System.err.println("Update Push exception: " + e.toString());
 				e.printStackTrace();
@@ -225,5 +249,18 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 			return shapes.get(index);
 		}
 
+	}
+	
+	private static class HashMapCreator{
+		public static HashMap<String, Object> create(Object [] args){
+			if ( args.length % 2 != 0 )
+				return null;
+			
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			for ( int i = 0; i < args.length; i++ ){
+				map.put((String)args[i], args[i+1]);
+			}
+			return map;
+		}
 	}
 }

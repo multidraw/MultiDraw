@@ -5,8 +5,8 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import rmi.client.MultiDrawClient;
-import rmi.server.ServerImpl.Session;
 import tools.shapes.CanvasShape;
+import utils.Session;
 
 public interface MultiDrawServer extends Remote {
 

@@ -1,6 +1,5 @@
 package rmi.server;
 
-import java.io.Serializable;
 import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -10,11 +9,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import rmi.client.MultiDrawClient;
 import tools.shapes.CanvasShape;
+import utils.Session;
 
 public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 
@@ -25,14 +24,15 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 	public Hashtable<String, Session> sessions = new Hashtable<String, Session>();
 	public Hashtable<String, MultiDrawClient> allUsers = new Hashtable<String, MultiDrawClient>();
 
-	public ServerImpl() throws RemoteException{
+	public ServerImpl() throws RemoteException {
 
 	}
 
 	public static void main(String args[]) {
-		/*if (System.getSecurityManager() == null) {
-			System.setSecurityManager(new SecurityManager());
-		}*/
+		/*
+		 * if (System.getSecurityManager() == null) {
+		 * System.setSecurityManager(new SecurityManager()); }
+		 */
 		try {
 			Registry registry = LocateRegistry.createRegistry(1099);
 			registry.bind("MultiDrawServer", new ServerImpl());
@@ -56,10 +56,8 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 			thisSession.removeObject(updatedShape);
 			pushUpdate(userName, updatedShape, HashMapCreator.create(new Object[]{"remove", true, "session", session}));
 		}
-		sessions.put(session, thisSession);
 		return true;
 	}
-
 	@Override
 	public synchronized boolean passOffControl(String session, String userName)
 			throws RemoteException {
@@ -68,8 +66,8 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 	}
 
 	@Override
-	public ArrayList<CanvasShape> connectToSession(String session, String userName)
-			throws RemoteException {
+	public ArrayList<CanvasShape> connectToSession(String session,
+			String userName) throws RemoteException {
 		if (session == null) {
 			sessions.put(userName, new Session(userName));
 			session = userName;
@@ -90,35 +88,37 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 			return true;
 		}
 	}
-	
+
 	@Override
-	public boolean logout(String userName, String session) throws RemoteException {
+	public boolean logout(String userName, String session)
+			throws RemoteException {
 		try {
 			allUsers.remove(userName);
 			Session currentSession = sessions.get(session);
 			currentSession.leaveSession(userName);
-			
-			if(currentSession.isEmpty())
+
+			if (currentSession.isEmpty())
 				sessions.remove(session);
-			
+
 			return true;
-		} catch(Exception e) {
+		} catch (Exception e) {
 			return false;
 		}
-		
+
 	}
 
 	@Override
 	public Session getSession(String session) throws RemoteException {
+		System.out.println(sessions.get("dhensche") + session);
 		return sessions.get(session);
 	}
-	
+
 	@Override
 	public ArrayList<String> getSessions() throws RemoteException {
 		Set<String> keys = sessions.keySet();
 		Iterator<String> keyIt = keys.iterator();
 		ArrayList<String> sessionKeys = new ArrayList<String>();
-		while(keyIt.hasNext()) {
+		while (keyIt.hasNext()) {
 			sessionKeys.add(keyIt.next());
 		}
 		return sessionKeys;
@@ -159,96 +159,6 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	@SuppressWarnings("serial")
-	public class Session implements Serializable{
-		private ArrayList<CanvasShape> shapes;
-		private ArrayList<String> activeUsers = new ArrayList<String>();
-		private String drawer;
-
-		public Session(String userName) {
-			shapes = new ArrayList<CanvasShape>();
-			activeUsers.add(userName);
-			drawer = userName;
-		}
-
-		public Session joinSession(String userName) {
-			activeUsers.add(userName);
-			return this;
-		}
-		
-		public void leaveSession(String userName) {
-			activeUsers.remove(userName);
-		}
-		
-		public boolean isEmpty() {
-			return (activeUsers.size() == 0) ? true : false;
-		}
-
-		public ArrayList<CanvasShape> getShapes() {
-			return shapes;
-		}
-
-		public void setShapes(ArrayList<CanvasShape> shapes) {
-			this.shapes = shapes;
-		}
-
-		public ArrayList<String> getActiveUsers() {
-			return activeUsers;
-		}
-
-		public String getDrawer() {
-			return drawer;
-		}
-
-		public void setDrawer(String drawer) {
-			this.drawer = drawer;
-		}
-		
-		public List<CanvasShape> getObjects() {
-			return shapes;
-		}
-
-		/**
-		 * Setter for objects
-		 * 
-		 * @param objects
-		 */
-		public void setObjects(ArrayList<CanvasShape> list) {
-			this.shapes = list;
-		}
-
-		public void addObject(CanvasShape shape) {
-			if (containsObject(shape)) {
-				updateObject(shapes.indexOf(shape), shape);
-			} else {
-				shapes.add(0, shape);
-
-			}
-		}
-
-		public void updateObject(int index, CanvasShape shape) {
-			shapes.set(index, shape);
-		}
-
-		public boolean removeObject(CanvasShape shape) {
-			if (containsObject(shape)) {
-				shapes.remove(shapes.indexOf(shape));
-				return true;
-			} else {
-				return false;
-			}
-		}
-		
-		public boolean containsObject(CanvasShape shape) {
-			return (shapes.indexOf(shape) != -1);
-		}
-
-		public CanvasShape getObject(int index) {
-			return shapes.get(index);
-		}
-
 	}
 	
 	private static class HashMapCreator{

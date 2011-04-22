@@ -24,8 +24,6 @@ import javax.swing.event.ListSelectionListener;
 
 import application.MultiDraw;
 
-import utils.ServerUtil;
-
 @SuppressWarnings("serial")
 public class SessionView extends JPanel implements ActionListener, ListSelectionListener{
 
@@ -62,7 +60,7 @@ public class SessionView extends JPanel implements ActionListener, ListSelection
 		JScrollPane userSP = null;
 		
 		try {
-			sessionList = new JList(ServerUtil.getServerInstance().getSessions().toArray());
+			sessionList = new JList(md.utilInstance.getServerInstance().getSessions().toArray());
 			userList = new JList();
 			
 			sessionSP = new JScrollPane(sessionList);
@@ -136,15 +134,15 @@ public class SessionView extends JPanel implements ActionListener, ListSelection
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(createSessionBtn)) {
 			try {
-				ServerUtil.setShapes(ServerUtil.getServerInstance().connectToSession(null, ServerUtil.getUserName()));
-				ServerUtil.setSession(ServerUtil.getUserName());
+				md.utilInstance.setShapes(md.utilInstance.getServerInstance().connectToSession(null, md.utilInstance.getUserName()));
+				md.utilInstance.setSession(md.utilInstance.getUserName());
 			} catch(Exception e1) {
 			}
 		}
 		if(e.getSource().equals(joinSessionBtn)) {
 			try {
-				ServerUtil.setShapes(ServerUtil.getServerInstance().connectToSession((String)sessionList.getSelectedValue(), ServerUtil.getUserName()));
-				ServerUtil.setSession((String)sessionList.getSelectedValue());
+				md.utilInstance.setShapes(md.utilInstance.getServerInstance().connectToSession((String)sessionList.getSelectedValue(), md.utilInstance.getUserName()));
+				md.utilInstance.setSession((String)sessionList.getSelectedValue());
 			} catch(Exception e1) {
 				e1.printStackTrace();
 			}
@@ -155,7 +153,7 @@ public class SessionView extends JPanel implements ActionListener, ListSelection
 	public void valueChanged(ListSelectionEvent e) {
 		joinSessionBtn.setEnabled(true);
 		try {
-			userList.setListData(ServerUtil.getServerInstance().getSession((String)sessionList.getSelectedValue()).getActiveUsers().toArray());
+			userList.setListData(md.utilInstance.getServerInstance().getSession((String)sessionList.getSelectedValue()).getActiveUsers().toArray());
 		} catch(Exception e1) {	}
 	}
 	

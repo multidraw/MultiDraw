@@ -50,7 +50,7 @@ public class ControlPanelController	implements ActionListener, ItemListener {
 			CanvasShape shape = canvas.getObject(canvas.getCurrentSelectedObject());
 			if(shape instanceof TwoEndShape) {
 				((TwoEndShape) shape).setFilled(canvas.isFilledShape());
-				canvas.updateObject(canvas.getCurrentSelectedObject(), shape);
+				canvas.updateObject(shape);
 				canvas.refreshCanvas();
 			}
 		}
@@ -65,7 +65,7 @@ public class ControlPanelController	implements ActionListener, ItemListener {
 		if(canvas.getCurrentSelectedObject() != null) {
 			CanvasShape shape = canvas.getObject(canvas.getCurrentSelectedObject());
 			shape.setColor(canvas.getPenColor());
-			canvas.updateObject(canvas.getCurrentSelectedObject(), shape);
+			canvas.updateObject(shape);
 			canvas.refreshCanvas();
 		}
 	}

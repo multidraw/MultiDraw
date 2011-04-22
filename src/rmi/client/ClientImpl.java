@@ -18,8 +18,7 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 	public transient MultiDraw mD;
 	
 	public ClientImpl() throws RemoteException{
-		ServerUtil.setClient(this);
-		mD = new MultiDraw(false);
+		mD = new MultiDraw(false, new ServerUtil(this));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -33,7 +32,7 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 			e.printStackTrace();
 			return;
 		}
-		
+	
 		if ( update instanceof CanvasShape ){
 			CanvasShape newShape = (CanvasShape)update;
 			boolean isRemoved = ( options.get("removed") == null ) ? false : (Boolean) options.get("removed");
@@ -41,14 +40,14 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 				mD.guiView.getCanvas().removeObject(newShape, false);
 			} else {
 				System.out.println(mD + " " + mD.guiView.getCanvas());
-				mD.guiView.getCanvas().addObject(newShape, false);
+				mD.guiView.getCanvas().updateObject(newShape, false);
 			}
 			mD.guiView.getCanvas().refreshCanvas();
 		} else if ( update instanceof ArrayList ){
 			ArrayList<String> sessions = (ArrayList<String>)update;
 			mD.sView.updateSessionList(sessions);
 		}
-		System.out.println(ServerUtil.getUserName());
+		mD.guiView.getCanvas().refreshCanvas();
 	}
 	
 	public static void main(String args[]) {
@@ -57,7 +56,6 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 		}*/
 		try {
 			new ClientImpl();
-			System.out.println("Client ready");
 
 		} catch (Exception e) {
 			System.err.println("Client exception: " + e.toString());

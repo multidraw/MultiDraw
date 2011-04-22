@@ -28,8 +28,10 @@ public class MultiDraw extends JApplet {
 	public JFrame frame;
 	
 	public MultiDrawState state;
+	public ServerUtil utilInstance;
 	
-	public MultiDraw(boolean isApplet) {
+	public MultiDraw(boolean isApplet, ServerUtil serv) {
+		this.utilInstance = serv;
 		this.isApplet = isApplet;
 		this.frame  = new JFrame();
 		if (!isApplet) {
@@ -37,9 +39,9 @@ public class MultiDraw extends JApplet {
 		}
 	}
 
-	public MultiDraw() {
+	public MultiDraw(ServerUtil serv) {
 		/* invoked as Applet */
-		this(true);
+		this(true, serv);
 	}
 
 	/**
@@ -67,7 +69,7 @@ public class MultiDraw extends JApplet {
 	
 	public void showGUIWindow(){
 		state = MultiDrawState.GUI_SCREEN;
-		guiView = new GuiView(isApplet);
+		guiView = new GuiView(isApplet, this);
 		guiView.show(getContentPane(), frame);
 	}
 	
@@ -77,7 +79,7 @@ public class MultiDraw extends JApplet {
 		GUI_SCREEN;
 	}
 	
-	public static class AppCloser extends WindowAdapter {
+	public class AppCloser extends WindowAdapter {
 		private MultiDraw md;
 	
 		public AppCloser(MultiDraw m){
@@ -86,7 +88,7 @@ public class MultiDraw extends JApplet {
 		
 		public void windowClosing(WindowEvent e) {
 			try {
-				ServerUtil.getServerInstance().logout(ServerUtil.getUserName(), ServerUtil.getSession());
+				utilInstance.getServerInstance().logout(utilInstance.getUserName(), utilInstance.getSession());
 				switch ( md.state ){
 				case AUTH_SCREEN:
 					System.exit(0);

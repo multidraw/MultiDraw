@@ -15,12 +15,16 @@ import java.util.Set;
 import rmi.client.MultiDrawClient;
 import tools.shapes.CanvasShape;
 
-public class ServerImpl implements MultiDrawServer {
+public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3899322995886823259L;
 	public Hashtable<String, Session> sessions = new Hashtable<String, Session>();
 	public Hashtable<String, MultiDrawClient> allUsers = new Hashtable<String, MultiDrawClient>();
 
-	public ServerImpl() {
+	public ServerImpl() throws RemoteException{
 
 	}
 
@@ -30,9 +34,7 @@ public class ServerImpl implements MultiDrawServer {
 		}*/
 		try {
 			Registry registry = LocateRegistry.createRegistry(1099);
-			registry.bind("MultiDrawServer",
-					(MultiDrawServer) UnicastRemoteObject.exportObject(
-							new ServerImpl(), 0));
+			registry.bind("MultiDrawServer", new ServerImpl());
 			System.out.println("Server ready");
 			System.out.println(InetAddress.getLocalHost());
 		} catch (Exception e) {

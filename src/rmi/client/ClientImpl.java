@@ -1,19 +1,21 @@
 package rmi.client;
 
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 import tools.shapes.CanvasShape;
 import utils.ServerUtil;
 import application.MultiDraw;
 
-public class ClientImpl implements MultiDrawClient {
+public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3431518669864255149L;
 	public transient MultiDraw mD;
 	
-	public ClientImpl(){
+	public ClientImpl() throws RemoteException{
 		ServerUtil.setClient(this);
 		mD = new MultiDraw(false);
 	}
@@ -36,12 +38,8 @@ public class ClientImpl implements MultiDrawClient {
 			System.setSecurityManager(new SecurityManager());
 		}*/
 		try {
-			ClientImpl client = new ClientImpl();
+			new ClientImpl();
 			
-			Registry registry = LocateRegistry.createRegistry(1101);
-			registry.bind("MultiDrawClient",
-					(MultiDrawClient) UnicastRemoteObject.exportObject(
-							client, 0));
 			System.out.println("Client ready");
 
 		} catch (Exception e) {

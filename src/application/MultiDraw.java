@@ -6,6 +6,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
 
+import rmi.server.MultiDrawServer;
 import tools.ToolList;
 import utils.ServerUtil;
 import views.GuiView;
@@ -71,6 +72,10 @@ public class MultiDraw extends JApplet {
 		state = MultiDrawState.GUI_SCREEN;
 		guiView = new GuiView(isApplet, this);
 		guiView.show(getContentPane(), frame);
+	}
+	
+	public MultiDrawServer getServerInstance() {
+		return utilInstance.getServerInstance();
 	}
 	
 	private enum MultiDrawState {

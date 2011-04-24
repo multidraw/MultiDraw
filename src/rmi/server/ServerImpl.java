@@ -11,15 +11,12 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 
+import rmi.Session;
 import rmi.client.MultiDrawClient;
 import tools.shapes.CanvasShape;
-import utils.Session;
 
 public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 3899322995886823259L;
 	public Hashtable<String, Session> sessions = new Hashtable<String, Session>();
 	public Hashtable<String, MultiDrawClient> allUsers = new Hashtable<String, MultiDrawClient>();
@@ -58,11 +55,19 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		}
 		return true;
 	}
+	
 	@Override
-	public synchronized boolean passOffControl(String session, String userName)
-			throws RemoteException {
-		// TODO Auto-generated method stub
+	public synchronized boolean passOffControl(String session, String receiver) throws RemoteException {
+		sessions.get(session).setDrawer(receiver);
+		
+		
+		
 		return false;
+	}
+	
+	@Override
+	public String getUserWithControl(String session) {
+		return sessions.get(session).getDrawer();
 	}
 
 	@Override
@@ -104,7 +109,6 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		} catch (Exception e) {
 			return false;
 		}
-
 	}
 
 	@Override

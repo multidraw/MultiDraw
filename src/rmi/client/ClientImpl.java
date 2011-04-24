@@ -10,10 +10,7 @@ import utils.ServerUtil;
 import application.MultiDraw;
 
 public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
-	
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -3431518669864255149L;
 	public transient MultiDraw mD;
 	

@@ -36,11 +36,11 @@ public class MenuBarView extends JMenuBar {
 	public MenuBarView(ToolList actions, FileMenuItemController ... items) {
 		JMenu toolMenu = new JMenu("Tool Menu");
 		JMenu fileMenu = new JMenu("File");
-		
+
 		for ( FileMenuItemController item : items ){
 			fileMenu.add(item);
 		}
-		
+
 		for(Object tool : actions.getToolList()) {
 			Action a = (Action) tool;
 			if (a.isEnabled())
@@ -48,5 +48,15 @@ public class MenuBarView extends JMenuBar {
 		}
 		add(fileMenu);
 		add(toolMenu);
+	}
+
+	public MenuBarView(FileMenuItemController ... items) {
+		JMenu fileMenu = new JMenu("File");
+
+		for ( FileMenuItemController item : items ){
+			fileMenu.add(item);
+		}
+
+		add(fileMenu);
 	}
 }

@@ -4,9 +4,9 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
+import rmi.Session;
 import rmi.client.MultiDrawClient;
 import tools.shapes.CanvasShape;
-import utils.Session;
 
 public interface MultiDrawServer extends Remote {
 
@@ -31,6 +31,14 @@ public interface MultiDrawServer extends Remote {
 	 * @throws RemoteException
 	 */
 	public boolean passOffControl(String session, String userName) throws RemoteException;
+	
+	/**
+	 * Client calls this if they need to check who has control.
+	 * @param session - the session key
+	 * @return username String of the user with drawing control.
+	 * @throws RemoteException
+	 */
+	public String getUserWithControl(String session) throws RemoteException;
 	
 	/**
 	 * Client calls this if trying to connect to a session or create a new session

@@ -29,7 +29,7 @@ public class ServerUtil {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
-		} // TODO get server address;
+		}
 	}
 
 	public void setClient(MultiDrawClient c) {
@@ -63,5 +63,4 @@ public class ServerUtil {
 	public void setShapes(ArrayList<CanvasShape> shapes) {
 		this.shapes = shapes;
 	}
-
 }

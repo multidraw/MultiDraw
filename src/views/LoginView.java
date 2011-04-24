@@ -1,36 +1,37 @@
 package views;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
-import java.net.InetAddress;
+import java.awt.event.ActionListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
-import utils.ServerUtil;
-
-
 import application.MultiDraw;
 
 @SuppressWarnings("serial")
-public class LoginView extends MultiDrawStateView {
+public class LoginView extends JPanel implements ActionListener{
 	private JTextField login;
-
+	private MultiDraw md;
+	
 	public LoginView(MultiDraw m) {
-		super(m);
+		md = m;
 		login = new JTextField();
 	}
 	
-	protected void setup(){
+	private void setup(){
 		JPanel loginPage = new JPanel(new GridLayout(3, 1, 5, 2));
 		JPanel loginPane = new JPanel(new FlowLayout());
 		JLabel info = new JLabel("Please enter a username to use MultiDraw");
@@ -58,9 +59,23 @@ public class LoginView extends MultiDrawStateView {
 		});
 		
 		add(loginPage);
-		mdFrame.setTitle("Login");
 		repaint();
 		revalidate();
+	}
+	
+	public void show(Container contentPane, JFrame frame){
+		contentPane.removeAll();
+		contentPane.invalidate();
+		contentPane.validate();
+		
+		setup();
+		
+		contentPane.add(this);
+		frame.getContentPane().setLayout(new BorderLayout());
+		frame.getContentPane().add(contentPane, BorderLayout.CENTER);
+		frame.setTitle("Login");
+		frame.pack();
+		frame.setVisible(true);
 	}
 	
 	public String getUsername(){
@@ -70,15 +85,16 @@ public class LoginView extends MultiDrawStateView {
 	public void actionPerformed(ActionEvent e){
 		boolean loggedIn = false;
 		try { 
-			loggedIn = ServerUtil.getServerInstance().login(getUsername(), InetAddress.getLocalHost().getHostAddress());
-			if ( !loggedIn ){
-				JOptionPane.showMessageDialog(md, "Username is unavailable.", "Bad Username", JOptionPane.ERROR_MESSAGE);
+			loggedIn = md.utilInstance.getServerInstance().login(md.utilInstance.getClient(), getUsername());
+			if ( loggedIn ){
+				md.showSessionsWindow();
+			} else { 
+				JOptionPane.showMessageDialog(this, "Username is unavailable.", "Bad Username", JOptionPane.ERROR_MESSAGE);
 			}
 		} catch (Exception e1) {
 			e1.printStackTrace();
-		} finally { 
-			ServerUtil.setUserName(getUsername());
-			md.sm.transition();
+		} finally {
+			md.utilInstance.setUserName(getUsername());
 		}
 	}
 }

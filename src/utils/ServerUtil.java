@@ -5,51 +5,62 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 
+import rmi.client.MultiDrawClient;
 import rmi.server.MultiDrawServer;
 import tools.shapes.CanvasShape;
 
 public class ServerUtil {
+
+	private String session;
+	private String userName;
+	private ArrayList<CanvasShape> shapes;
+	private MultiDrawClient client;
 	
-	private static String session;
-	private static String userName;
-	private static ArrayList<CanvasShape> shapes;
-	
-	public static MultiDrawServer getServerInstance() {
+	public ServerUtil(MultiDrawClient c){
+		client = c;
+	}
+
+	public MultiDrawServer getServerInstance() {
 		Registry registry;
 		try {
-			registry = LocateRegistry.getRegistry(InetAddress.getLocalHost().getHostAddress(), 1099);
+			registry = LocateRegistry.getRegistry(InetAddress.getLocalHost()
+					.getHostAddress(), 1099);
 			return (MultiDrawServer) registry.lookup("MultiDrawServer");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
-		} //TODO get server address;
+		}
 	}
 
-	public static String getSession() {
+	public void setClient(MultiDrawClient c) {
+		client = c;
+	}
+
+	public MultiDrawClient getClient() {
+		return client;
+	}
+
+	public String getSession() {
 		return session;
 	}
 
-	public static void setSession(String sessionIN) {
+	public void setSession(String sessionIN) {
 		session = sessionIN;
 	}
 
-	public static String getUserName() {
+	public String getUserName() {
 		return userName;
 	}
 
-	public static void setUserName(String userNameIN) {
+	public void setUserName(String userNameIN) {
 		userName = userNameIN;
 	}
 
-	public static ArrayList<CanvasShape> getShapes() {
+	public ArrayList<CanvasShape> getShapes() {
 		return shapes;
 	}
 
-	public static void setShapes(ArrayList<CanvasShape> shapes) {
-		ServerUtil.shapes = shapes;
+	public void setShapes(ArrayList<CanvasShape> shapes) {
+		this.shapes = shapes;
 	}
-	
-	
-	
-	
 }

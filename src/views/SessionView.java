@@ -1,13 +1,18 @@
 package views;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -19,21 +24,20 @@ import javax.swing.event.ListSelectionListener;
 
 import application.MultiDraw;
 
-import utils.ServerUtil;
-
 @SuppressWarnings("serial")
-public class SessionView extends MultiDrawStateView implements ListSelectionListener{
+public class SessionView extends JPanel implements ActionListener, ListSelectionListener{
 
 	public JList sessionList;
 	public JList userList;
 	private JButton joinSessionBtn;
 	private JButton createSessionBtn;
-
-	public SessionView(MultiDraw m) {
-		super(m);
+	private MultiDraw md;
+	
+	public SessionView(MultiDraw m){
+		md = m;
 	}
 	
-	protected void setup(){
+	private void setup(){
 		FlowLayout fLayout = new FlowLayout(FlowLayout.CENTER, 40, 4); 
 		GridBagLayout gBag = new GridBagLayout();
 		GridBagConstraints gConstraints = new GridBagConstraints();
@@ -56,13 +60,13 @@ public class SessionView extends MultiDrawStateView implements ListSelectionList
 		JScrollPane userSP = null;
 		
 		try {
-			sessionList = new JList(ServerUtil.getServerInstance().getSessions().toArray());
+			sessionList = new JList(md.utilInstance.getServerInstance().getSessions().toArray());
 			userList = new JList();
 			
 			sessionSP = new JScrollPane(sessionList);
 			userSP = new JScrollPane(userList);
-			sessionSP.setPreferredSize(new Dimension(50, 50));
-			userSP.setPreferredSize(new Dimension(50, 50));
+			sessionSP.setPreferredSize(new Dimension(100, 50));
+			userSP.setPreferredSize(new Dimension(100, 50));
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -110,33 +114,50 @@ public class SessionView extends MultiDrawStateView implements ListSelectionList
 		gConstraints.gridy = 3;
 
 		add(sessionsAndUsers, gConstraints);
-		
-		mdFrame.setTitle("Sessions");
 	}
 
+	public void show(Container contentPane, JFrame frame){
+		contentPane.removeAll();
+		contentPane.invalidate();
+		contentPane.validate();
+		
+		setup();
+		
+		contentPane.add(this);
+		frame.getContentPane().setLayout(new BorderLayout());
+		frame.getContentPane().add(contentPane, BorderLayout.CENTER);
+		frame.setTitle("Sessions");
+		frame.pack();
+		frame.setVisible(true);
+	}
+	
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(createSessionBtn)) {
 			try {
-				ServerUtil.setShapes(ServerUtil.getServerInstance().connectToSession(null, ServerUtil.getUserName()));
-				ServerUtil.setSession(ServerUtil.getUserName());
+				md.utilInstance.setShapes(md.utilInstance.getServerInstance().connectToSession(null, md.utilInstance.getUserName()));
+				md.utilInstance.setSession(md.utilInstance.getUserName());
 			} catch(Exception e1) {
 			}
 		}
 		if(e.getSource().equals(joinSessionBtn)) {
 			try {
-				ServerUtil.setShapes(ServerUtil.getServerInstance().connectToSession((String)sessionList.getSelectedValue(), ServerUtil.getUserName()));
-				ServerUtil.setSession((String)sessionList.getSelectedValue());
+				md.utilInstance.setShapes(md.utilInstance.getServerInstance().connectToSession((String)sessionList.getSelectedValue(), md.utilInstance.getUserName()));
+				md.utilInstance.setSession((String)sessionList.getSelectedValue());
 			} catch(Exception e1) {
 				e1.printStackTrace();
 			}
 		}
-		md.sm.transition();
+		md.showGUIWindow();
 	}
 	
 	public void valueChanged(ListSelectionEvent e) {
 		joinSessionBtn.setEnabled(true);
 		try {
-			userList.setListData(ServerUtil.getServerInstance().getSession((String)sessionList.getSelectedValue()).getActiveUsers().toArray());
+			userList.setListData(md.utilInstance.getServerInstance().getSession((String)sessionList.getSelectedValue()).getActiveUsers().toArray());
 		} catch(Exception e1) {	}
+	}
+	
+	public void updateSessionList(ArrayList<String> sessions){
+		sessionList.setListData(sessions.toArray());
 	}
 }

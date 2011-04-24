@@ -7,23 +7,26 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.net.URL;
+import java.rmi.RemoteException;
 
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
-import application.MultiDraw;
-import application.MultiDraw.AppCloser;
-
+import rmi.Session;
 import tools.EraserTool;
 import tools.FreehandTool;
 import tools.SelectTool;
@@ -33,33 +36,30 @@ import tools.TwoEndShapeTool;
 import tools.shapes.LineShape;
 import tools.shapes.OvalShape;
 import tools.shapes.RectangleShape;
-import utils.State;
+import application.MultiDraw;
 import controllers.FileMenuItemController;
 import controllers.ToolController;
 
 @SuppressWarnings("serial")
-public class GuiView extends JTabbedPane implements State{
-
-	protected String userName;
-	protected String sessionName;
-		
+public class GuiView extends JTabbedPane implements ActionListener {
 	protected DrawingCanvasView canvas;
 	protected ControlPanelView controlPanel;
 	protected ToolBarView toolBar;
 	protected MenuBarView menuBar;
 	protected ToolList toolList;
 	protected boolean isApplet;
-	private MultiDraw md;
+	private JTextField hostName;
+	private JList sessionMembers;
+	private DefaultListModel listModel;
+	private JButton changeDrawer;
+	protected MultiDraw md;
 	
-	public GuiView(MultiDraw m, boolean isApplet) {
-		md = m;
-		this.isApplet = isApplet;		
+	public GuiView(boolean isApplet, MultiDraw md) {
+		this.isApplet = isApplet;	
+		this.md = md;
 	}
 	
-	public void enter(){
-		Container contentPane = md.getContentPane();
-		JFrame frame = md.frame;
-		
+	public void show(Container contentPane, JFrame frame){
 		contentPane.removeAll();
 		contentPane.invalidate();
 		contentPane.validate();
@@ -67,7 +67,7 @@ public class GuiView extends JTabbedPane implements State{
 		//Create Canvas Pane
 		JPanel canvasPane = new JPanel();
 		canvasPane.setLayout(new BorderLayout());
-		canvas = new DrawingCanvasView();
+		canvas = new DrawingCanvasView(md.utilInstance);
 		canvasPane.add(canvas, BorderLayout.CENTER);
 		controlPanel = createControlPanelView();
 		canvas.setControlPanelView(controlPanel);
@@ -93,8 +93,8 @@ public class GuiView extends JTabbedPane implements State{
 		c.gridx = 0;
 		c.gridwidth = 6;
 		sessionPane.add(sessionMenuBar, c);
-
-		JLabel sessionHost = new JLabel("Current Drawing Host: ");
+		
+		JLabel sessionHost = new JLabel("Current Session: ");
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.weighty = 0.5;
 		c.gridy = 1;
@@ -103,8 +103,7 @@ public class GuiView extends JTabbedPane implements State{
 		c.gridwidth = 1;
 		sessionPane.add(sessionHost, c);
 		
-		
-		JTextField hostName = new JTextField();
+		hostName = new JTextField(md.utilInstance.getSession());
 		hostName.setEditable(false);
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.weighty = 0.5;
@@ -114,8 +113,9 @@ public class GuiView extends JTabbedPane implements State{
 		c.gridwidth = 1;
 		sessionPane.add(hostName, c);
 
-		JList sessionMembers = new JList();
+		sessionMembers = new JList();
 		JScrollPane sp = new JScrollPane(sessionMembers);
+		fillSessionMemberList();
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.weighty = 0.5;
 		c.weightx = 0.95;
@@ -125,7 +125,7 @@ public class GuiView extends JTabbedPane implements State{
 		c.ipady = 250;
 		sessionPane.add(sp, c);
 		
-		JButton changeDrawer = new JButton("Change Editor");
+		changeDrawer = new JButton("Pass Control");
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.weighty = 0.5;
 		c.weightx = 0.0;
@@ -134,10 +134,11 @@ public class GuiView extends JTabbedPane implements State{
 		c.gridwidth = 1;
 		c.ipady = 0;
 		sessionPane.add(changeDrawer, c);
-		//End Create Session Pane
 		
+		changeDrawer.addActionListener(this);
+		//End Create Session Pane
+	
 		JPanel toolDesignerPane = new JPanel();
-
 		add("Session",sessionPane);
 		add("Canvas",canvasPane);
 		add("Tool Designer",toolDesignerPane);
@@ -147,13 +148,46 @@ public class GuiView extends JTabbedPane implements State{
 		frame.setTitle("MultiDraw");
 		frame.getContentPane().setLayout(new BorderLayout());
 		frame.getContentPane().add(contentPane, BorderLayout.CENTER);
-		frame.addWindowListener(new AppCloser());
 		frame.pack();
 		frame.setVisible(true);
 	}
 	
-	public void exit() {}
-
+	public void fillSessionMemberList() {
+		listModel = new DefaultListModel();
+		try {
+			Session session = md.getServerInstance().getSession(md.utilInstance.getSession());
+			for(String member : session.getActiveUsers()) {
+				if(md.utilInstance.getUserName().equals(member))
+					member += " ( You )";
+				if(md.getServerInstance().getUserWithControl(
+						md.utilInstance.getSession()).equals(member));
+					member += " << Drawing Control";
+				listModel.addElement(member);
+			}
+			
+			sessionMembers.setModel(listModel);
+			sessionMembers.setSelectedIndex(0);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void actionPerformed(ActionEvent e){
+		String passToUser = (String)sessionMembers.getSelectedValue();
+		try { 
+			if (listModel.getSize() > 1 && !md.utilInstance.equals(passToUser)) {
+				md.getServerInstance().passOffControl(md.utilInstance.getSession(), passToUser);
+			}
+			else 
+				JOptionPane.showMessageDialog(this, "You are attempting to assign control to yourself", 
+						"Can't Pass Control", JOptionPane.WARNING_MESSAGE);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		} finally {
+			
+		}
+	}
+	
 	/**
 	 * Initialize a new ControlPanelView
 	 **/

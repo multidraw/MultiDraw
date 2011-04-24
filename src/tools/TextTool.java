@@ -50,7 +50,7 @@ public class TextTool extends Tool {
 		shape.draw(iBGraphics, startingPosition.x - 3, startingPosition.y - 19,
 				0, 24);
 		shape.setColor(canvas.getPenColor());
-		canvas.addObject(shape);
+		canvas.updateObject(shape);
 	}
 
 	/*

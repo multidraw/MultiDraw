@@ -1,33 +1,51 @@
 package rmi.client;
 
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import tools.shapes.CanvasShape;
 import utils.ServerUtil;
 import application.MultiDraw;
 
-public class ClientImpl implements MultiDrawClient {
+public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
+
+	private static final long serialVersionUID = -3431518669864255149L;
+	public transient MultiDraw mD;
 	
-	public MultiDraw mD;
-	
-	public ClientImpl(){
-		mD = new MultiDraw(false);
+	public ClientImpl() throws RemoteException{
+		mD = new MultiDraw(false, new ServerUtil(this));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public void updateCanvas(CanvasShape changedShape, boolean isRemoved)
+	public <T, V> void update(T update, V opts)
 			throws RemoteException {
-		if(isRemoved) {
-			mD.guiView.getCanvas().removeObject(changedShape, false);
-		} else {
-			System.out.println(mD + " " + mD.guiView.getCanvas());
-			mD.guiView.getCanvas().addObject(changedShape, false);
+		HashMap<String, Object> options = null;
+		try {
+			options = (HashMap<String, Object>)opts;  // Extract the options
+		} catch ( ClassCastException e ){
+			e.printStackTrace();
+			return;
 		}
-		mD.guiView.getCanvas().refreshCanvas();
-		System.out.println(ServerUtil.getUserName());
+	
+		if ( update instanceof CanvasShape ){
+			CanvasShape newShape = (CanvasShape)update;
+			boolean isRemoved = ( options.get("removed") == null ) ? false : (Boolean) options.get("removed");
+			if ( isRemoved ) {
+				mD.guiView.getCanvas().removeObject(newShape, false);
+			} else {
+				System.out.println(mD + " " + mD.guiView.getCanvas());
+				mD.guiView.getCanvas().updateObject(newShape, false);
+			}
+			mD.guiView.getCanvas().refreshCanvas();
+		} else if ( update instanceof ArrayList ){
+			ArrayList<String> sessions = (ArrayList<String>)update;
+			mD.sView.updateSessionList(sessions);
+		}
+		if ( mD.guiView != null )
+			mD.guiView.getCanvas().refreshCanvas();
 	}
 	
 	public static void main(String args[]) {
@@ -35,18 +53,11 @@ public class ClientImpl implements MultiDrawClient {
 			System.setSecurityManager(new SecurityManager());
 		}*/
 		try {
-			ClientImpl client = new ClientImpl();
-			
-			Registry registry = LocateRegistry.createRegistry(1101);
-			registry.bind("MultiDrawClient",
-					(MultiDrawClient) UnicastRemoteObject.exportObject(
-							client, 0));
-			System.out.println("Client ready");
+			new ClientImpl();
 
 		} catch (Exception e) {
 			System.err.println("Client exception: " + e.toString());
 			e.printStackTrace();
-
 		}
 	}
 

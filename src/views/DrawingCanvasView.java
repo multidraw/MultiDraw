@@ -44,14 +44,16 @@ public class DrawingCanvasView extends JLayeredPane {
 	protected Integer currentSelectedObject = null;
 	protected Graphics2D imageBufferGraphics;
 	protected Image imageBuffer;
+	protected ServerUtil utilInstance;
 
 	/**
 	 * Creates a default DrawingCanvas with a white background
 	 */
-	public DrawingCanvasView() {
+	public DrawingCanvasView(ServerUtil utilInstance) {
 		canvasController = createDrawingCanvasController();
 		addDrawingCanvasListener(canvasController);
 		setBackground(BACKGROUND);
+		this.utilInstance = utilInstance;
 	}
 
 	protected DrawingCanvasController createDrawingCanvasController() {
@@ -224,7 +226,7 @@ public class DrawingCanvasView extends JLayeredPane {
 		this.shapes = list;
 	}
 
-	public void addObject(CanvasShape shape) {
+/*	public void addObject(CanvasShape shape) {
 		addObject(shape, true);
 	}
 
@@ -236,7 +238,7 @@ public class DrawingCanvasView extends JLayeredPane {
 
 		}
 		try {
-			if (isMine) {
+			if (isMine && ServerUtil.getServerInstance().getSession(ServerUtil.getUserName()).getDrawer().equals(ServerUtil.getUserName())) {
 				ServerUtil.getServerInstance().updateCanvas(ServerUtil.getUserName(), ServerUtil.getSession(), shape,
 						false);
 			}
@@ -245,17 +247,24 @@ public class DrawingCanvasView extends JLayeredPane {
 			e1.printStackTrace();
 		}
 
-	}
-
-	public void updateObject(CanvasShape shape) {
-		shapes.set(shapes.indexOf(shape), shape);
-	}
+	}*/
 	
-	public void updateObject(int index, CanvasShape shape) {
-		shapes.set(index, shape);
+	public void updateObject(CanvasShape shape) {
+		updateObject(shape, true);
+	}
+	public void updateObject(CanvasShape shape, boolean isMine) {
+		if (containsObject(shape)) {
+			shapes.set(shapes.indexOf(shape), shape);
+		} else {
+			shapes.add(0, shape);
+
+		}
 		try {
-				ServerUtil.getServerInstance().updateCanvas(ServerUtil.getUserName(), ServerUtil.getSession(), shape,
+			System.out.println(utilInstance.getServerInstance().getSession(utilInstance.getSession()));
+			if (isMine && utilInstance.getServerInstance().getSession(utilInstance.getSession()).getDrawer().equals(utilInstance.getUserName())) {
+				utilInstance.getServerInstance().updateCanvas(utilInstance.getUserName(), utilInstance.getSession(), shape,
 						false);
+			}
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -272,7 +281,7 @@ public class DrawingCanvasView extends JLayeredPane {
 			currentSelectedObject = null;
 			try {
 				if (isMine) {
-					ServerUtil.getServerInstance().updateCanvas(ServerUtil.getUserName(), ServerUtil.getSession(), shape,
+					utilInstance.getServerInstance().updateCanvas(utilInstance.getUserName(), utilInstance.getSession(), shape,
 							true);
 				}
 			} catch (Exception e1) {

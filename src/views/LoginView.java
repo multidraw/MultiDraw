@@ -19,8 +19,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
-import utils.ServerUtil;
-
 import application.MultiDraw;
 
 @SuppressWarnings("serial")
@@ -87,7 +85,7 @@ public class LoginView extends JPanel implements ActionListener{
 	public void actionPerformed(ActionEvent e){
 		boolean loggedIn = false;
 		try { 
-			loggedIn = ServerUtil.getServerInstance().login(ServerUtil.getClient(), getUsername());
+			loggedIn = md.utilInstance.getServerInstance().login(md.utilInstance.getClient(), getUsername());
 			if ( loggedIn ){
 				md.showSessionsWindow();
 			} else { 
@@ -96,7 +94,7 @@ public class LoginView extends JPanel implements ActionListener{
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		} finally {
-			ServerUtil.setUserName(getUsername());
+			md.utilInstance.setUserName(getUsername());
 		}
 	}
 }

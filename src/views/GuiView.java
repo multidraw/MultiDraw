@@ -36,7 +36,6 @@ import tools.TwoEndShapeTool;
 import tools.shapes.LineShape;
 import tools.shapes.OvalShape;
 import tools.shapes.RectangleShape;
-import utils.ServerUtil;
 import application.MultiDraw;
 import controllers.FileMenuItemController;
 import controllers.ToolController;
@@ -53,9 +52,11 @@ public class GuiView extends JTabbedPane implements ActionListener {
 	private JList sessionMembers;
 	private DefaultListModel listModel;
 	private JButton changeDrawer;
+	protected MultiDraw md;
 	
-	public GuiView(boolean isApplet) {
-		this.isApplet = isApplet;		
+	public GuiView(boolean isApplet, MultiDraw md) {
+		this.isApplet = isApplet;	
+		this.md = md;
 	}
 	
 	public void show(Container contentPane, JFrame frame){
@@ -66,7 +67,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		//Create Canvas Pane
 		JPanel canvasPane = new JPanel();
 		canvasPane.setLayout(new BorderLayout());
-		canvas = new DrawingCanvasView();
+		canvas = new DrawingCanvasView(md.utilInstance);
 		canvasPane.add(canvas, BorderLayout.CENTER);
 		controlPanel = createControlPanelView();
 		canvas.setControlPanelView(controlPanel);
@@ -102,7 +103,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		c.gridwidth = 1;
 		sessionPane.add(sessionHost, c);
 		
-		hostName = new JTextField(ServerUtil.getSession());
+		hostName = new JTextField(md.utilInstance.getSession());
 		hostName.setEditable(false);
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.weighty = 0.5;
@@ -154,12 +155,12 @@ public class GuiView extends JTabbedPane implements ActionListener {
 	public void fillSessionMemberList() {
 		listModel = new DefaultListModel();
 		try {
-			Session session = ServerUtil.getServerInstance().getSession(ServerUtil.getSession());
+			Session session = md.getServerInstance().getSession(md.utilInstance.getSession());
 			for(String member : session.getActiveUsers()) {
-				if(ServerUtil.getUserName().equals(member))
+				if(md.utilInstance.getUserName().equals(member))
 					member += " ( You )";
-				if(ServerUtil.getServerInstance().getUserWithControl(
-						ServerUtil.getSession()).equals(member));
+				if(md.getServerInstance().getUserWithControl(
+						md.utilInstance.getSession()).equals(member));
 					member += " << Drawing Control";
 				listModel.addElement(member);
 			}
@@ -174,8 +175,8 @@ public class GuiView extends JTabbedPane implements ActionListener {
 	public void actionPerformed(ActionEvent e){
 		String passToUser = (String)sessionMembers.getSelectedValue();
 		try { 
-			if (listModel.getSize() > 1 && !ServerUtil.getUserName().equals(passToUser)) {
-				ServerUtil.getServerInstance().passOffControl(ServerUtil.getSession(), passToUser);
+			if (listModel.getSize() > 1 && !md.utilInstance.equals(passToUser)) {
+				md.getServerInstance().passOffControl(md.utilInstance.getSession(), passToUser);
 			}
 			else 
 				JOptionPane.showMessageDialog(this, "You are attempting to assign control to yourself", 

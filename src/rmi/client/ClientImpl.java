@@ -2,6 +2,8 @@ package rmi.client;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import tools.shapes.CanvasShape;
 import utils.ServerUtil;
@@ -13,21 +15,37 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 	public transient MultiDraw mD;
 	
 	public ClientImpl() throws RemoteException{
-		ServerUtil.setClient(this);
-		mD = new MultiDraw(false);
+		mD = new MultiDraw(false, new ServerUtil(this));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public void updateCanvas(CanvasShape changedShape, boolean isRemoved)
+	public <T, V> void update(T update, V opts)
 			throws RemoteException {
-		if(isRemoved) {
-			mD.guiView.getCanvas().removeObject(changedShape, false);
-		} else {
-			System.out.println(mD + " " + mD.guiView.getCanvas());
-			mD.guiView.getCanvas().addObject(changedShape, false);
+		HashMap<String, Object> options = null;
+		try {
+			options = (HashMap<String, Object>)opts;  // Extract the options
+		} catch ( ClassCastException e ){
+			e.printStackTrace();
+			return;
 		}
-		mD.guiView.getCanvas().refreshCanvas();
-		System.out.println(ServerUtil.getUserName());
+	
+		if ( update instanceof CanvasShape ){
+			CanvasShape newShape = (CanvasShape)update;
+			boolean isRemoved = ( options.get("removed") == null ) ? false : (Boolean) options.get("removed");
+			if ( isRemoved ) {
+				mD.guiView.getCanvas().removeObject(newShape, false);
+			} else {
+				System.out.println(mD + " " + mD.guiView.getCanvas());
+				mD.guiView.getCanvas().updateObject(newShape, false);
+			}
+			mD.guiView.getCanvas().refreshCanvas();
+		} else if ( update instanceof ArrayList ){
+			ArrayList<String> sessions = (ArrayList<String>)update;
+			mD.sView.updateSessionList(sessions);
+		}
+		if ( mD.guiView != null )
+			mD.guiView.getCanvas().refreshCanvas();
 	}
 	
 	public static void main(String args[]) {
@@ -36,7 +54,6 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 		}*/
 		try {
 			new ClientImpl();
-			System.out.println("Client ready");
 
 		} catch (Exception e) {
 			System.err.println("Client exception: " + e.toString());

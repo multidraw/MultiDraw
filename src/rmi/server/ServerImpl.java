@@ -133,7 +133,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 
 			clientCallback.doCallback(new Callback() {
 				public void executeCallback(Notifier n, Object arg) {
-					pushUpdate(null, new ArrayList<String>(sessions.keySet()), HashMapCreator.create(new Object[]{"session", newSession}));
+					pushUpdate(userName, new ArrayList<String>(sessions.keySet()), HashMapCreator.create(new Object[]{"session", newSession}));
 					n.resetCallbackTime();
 				}
 			});
@@ -144,7 +144,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 
 			clientCallback.doCallback(new Callback() {
 				public void executeCallback(Notifier n, Object arg) {
-					pushUpdate(null, sesh.getActiveUsers(), HashMapCreator.create(new Object[]{"session", sesh, "joinSession", session}));
+					pushUpdate(userName, sesh.getActiveUsers(), HashMapCreator.create(new Object[]{"session", sesh, "joinSession", session}));
 					n.resetCallbackTime();
 				}
 			});

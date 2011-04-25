@@ -75,7 +75,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		JPanel canvasPane = new JPanel();
 		canvasPane.setLayout(new BorderLayout());
 
-		if(currentCanvas.equals(null)){
+		if(currentCanvas == null){
 			canvas = new DrawingCanvasView(md.utilInstance);
 		}
 		else{
@@ -83,7 +83,8 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		}
 		canvasPane.add(canvas, BorderLayout.CENTER);
 
-		if(md.utilInstance.getUserName().equals(md.utilInstance.getSession().getDrawer())){		
+		if(md.utilInstance.getUserName().equals(md.utilInstance.getSession().getDrawer())){	
+			controlPanel = createControlPanelView();
 			canvasPane.add(controlPanel, BorderLayout.SOUTH);
 			toolList = createToolList();
 			toolBar = new ToolBarView(toolList);

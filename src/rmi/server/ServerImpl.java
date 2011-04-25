@@ -11,8 +11,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Set;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -50,11 +48,11 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 
 		clientListModel = new DefaultListModel();
 		JList clientList = new JList(clientListModel);
-		clientList.setMaximumSize(new Dimension(300, 400 ));
+		clientList.setMaximumSize(new Dimension(300, 400));
 
 		serverFrame.add(header);
 		serverFrame.add(new JScrollPane(clientList));
-
+		
 		serverFrame.addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent e){
 				clientCallback.stop();
@@ -84,8 +82,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 
 		}
 	}
-
-	@Override
+	
 	public synchronized boolean updateCanvas(final String userName, final String session, final CanvasShape updatedShape,
 			boolean removed) throws RemoteException {
 		Session thisSession = sessions.get(session);
@@ -94,7 +91,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 
 			clientCallback.doCallback(new Callback() {
 				public void executeCallback(Notifier n, Object arg) {
-					pushUpdate(userName, updatedShape, HashMapCreator.create(new Object[]{"remove", false, "session", session}));	
+					pushUpdate(userName, updatedShape, HashMapCreator.create(new Object[]{"remove", false, "sessionid", session}));	
 					n.resetCallbackTime();
 				}
 			});
@@ -103,7 +100,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 
 			clientCallback.doCallback(new Callback() {
 				public void executeCallback(Notifier n, Object arg) {
-					pushUpdate(userName, updatedShape, HashMapCreator.create(new Object[]{"remove", true, "session", session}));	
+					pushUpdate(userName, updatedShape, HashMapCreator.create(new Object[]{"remove", true, "sessionid", session}));	
 					n.resetCallbackTime();
 				}
 			});
@@ -113,12 +110,12 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 
 	@Override
 	public synchronized boolean passOffControl(final String session, final String passer, final String receiver) throws RemoteException {
-		Session currentSession = sessions.get(session);
+		final Session currentSession = sessions.get(session);
 		currentSession.setDrawer(receiver);
 
 		clientCallback.doCallback(new Callback() {
 			public void executeCallback(Notifier n, Object arg) {
-				pushUpdate(null, null, HashMapCreator.create(new Object[]{"session", session, "refresh", "session", "oldDrawer", passer, "newDrawer", receiver}));
+				pushUpdate(null, null, HashMapCreator.create(new Object[]{"session", currentSession, "sessionid", session, "refresh", "session", "oldDrawer", passer, "newDrawer", receiver}));
 				n.resetCallbackTime();
 			}
 		});
@@ -126,22 +123,17 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		return false;
 	}
 
-	@Override
-	public String getUserWithControl(String session) {
-		return sessions.get(session).getDrawer();
-	}
-
-	@Override
 	public ArrayList<CanvasShape> connectToSession(final String session,
 			final String userName) throws RemoteException {
 		String updatedSession = null;
 		if (session == null) {
-			sessions.put(userName, new Session(userName));
+			final Session newSession = new Session(userName);
+			sessions.put(userName, newSession);
 			updatedSession = userName;
 
 			clientCallback.doCallback(new Callback() {
 				public void executeCallback(Notifier n, Object arg) {
-					pushUpdate(userName, new ArrayList<String>(sessions.keySet()), null);
+					pushUpdate(userName, new ArrayList<String>(sessions.keySet()), HashMapCreator.create(new Object[]{"session", newSession}));
 					n.resetCallbackTime();
 				}
 			});
@@ -152,7 +144,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 
 			clientCallback.doCallback(new Callback() {
 				public void executeCallback(Notifier n, Object arg) {
-					pushUpdate(userName, sesh.getActiveUsers(), HashMapCreator.create(new Object[]{"joinSession", session}));
+					pushUpdate(userName, sesh.getActiveUsers(), HashMapCreator.create(new Object[]{"session", sesh, "joinSession", session}));
 					n.resetCallbackTime();
 				}
 			});
@@ -172,13 +164,12 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		}
 	}
 
-	@Override
 	public boolean logout(final String userName, String session)
 	throws RemoteException {
 		try {
 			allUsers.remove(userName);
 			clientListModel.removeElement(userName);
-			Session currentSession = sessions.get(session);
+			final Session currentSession = sessions.get(session);
 			currentSession.leaveSession(userName);
 
 			if (currentSession.isEmpty())
@@ -186,7 +177,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 
 			clientCallback.doCallback(new Callback() {
 				public void executeCallback(Notifier n, Object arg) {
-					pushUpdate(userName, new ArrayList<String>(sessions.keySet()), null);
+					pushUpdate(userName, new ArrayList<String>(sessions.keySet()), HashMapCreator.create(new Object[]{"session", currentSession}));
 					n.resetCallbackTime();
 				}
 			});
@@ -197,20 +188,12 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		}
 	}
 
-	@Override
 	public Session getSession(String session) throws RemoteException {
 		return sessions.get(session);
 	}
 
-	@Override
 	public ArrayList<String> getSessions() throws RemoteException {
-		Set<String> keys = sessions.keySet();
-		Iterator<String> keyIt = keys.iterator();
-		ArrayList<String> sessionKeys = new ArrayList<String>();
-		while (keyIt.hasNext()) {
-			sessionKeys.add(keyIt.next());
-		}
-		return sessionKeys;
+		return new ArrayList<String>(sessions.keySet());
 	}
 
 	/**
@@ -220,21 +203,23 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 	 * @param update - The updated object to send off <br>
 	 * 					( CanvasShape, ArrayList<String> )
 	 * @param options - Options for the push <br>
-	 * 				("session" => sessionName, "removed" => true/false, "joinSession" => sessionName)
+	 * 				{"sessionid" => sessionName, "removed" => true/false, "joinSession" => sessionName}<br>
+	 * 				{"refresh" => "session", "oldDrawer"/"newDrawer" => userName, "session" => Session}
 	 */
 	private synchronized <T> void pushUpdate(String userName, T update, HashMap<String, Object> options) {
-		String session = null;
+		String sessionid = null;
 
 		if ( options != null ){
-			session = (String) options.remove("session");
+			sessionid = (String) options.remove("sessionid");
 		}
 
-		ArrayList<String> users = ( session == null ) ? new ArrayList<String>(allUsers.keySet()) : sessions.get(session).getActiveUsers();
+		ArrayList<String> users = ( sessionid == null ) ? new ArrayList<String>(allUsers.keySet()) : sessions.get(sessionid).getActiveUsers();
 
 		for( String user : users ) {
 			if(user.equalsIgnoreCase(userName)) {
 				continue;
 			}
+			System.out.println("Pushing update:" + update + "with opts: "  + options);
 			try{
 				MultiDrawClient client = allUsers.get(user);
 				client.update(update, options);

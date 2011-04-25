@@ -12,7 +12,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.net.URL;
-import java.rmi.RemoteException;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -85,29 +84,21 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		}
 		canvasPane.add(canvas, BorderLayout.CENTER);
 
-		try {
-			if(md.utilInstance.getUserName().equals( 
-					md.utilInstance.getServerInstance().getUserWithControl(md.utilInstance.getSession()))){		
-
-				controlPanel = createControlPanelView();
-				canvas.setControlPanelView(controlPanel);
-				canvasPane.add(controlPanel, BorderLayout.SOUTH);
-				toolList = createToolList();
-				toolBar = new ToolBarView(toolList);
-				canvasPane.add(toolBar, BorderLayout.WEST);
-				menuBar = new MenuBarView(toolList, new FileMenuItemController( new OpenMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK)),
-						new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)));
-				canvasPane.add(menuBar, BorderLayout.NORTH);
-			}
-			else{
-				menuBar = new MenuBarView(new FileMenuItemController( new OpenMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK)),
-						new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)));
-				canvasPane.add(menuBar, BorderLayout.NORTH);
-			}
-		} catch (RemoteException e) {
-			e.printStackTrace();
+		if(md.utilInstance.getUserName().equals(md.utilInstance.getSession().getDrawer())){	
+			controlPanel = createControlPanelView();
+			canvasPane.add(controlPanel, BorderLayout.SOUTH);
+			toolList = createToolList();
+			toolBar = new ToolBarView(toolList);
+			canvasPane.add(toolBar, BorderLayout.WEST);
+			menuBar = new MenuBarView(toolList, new FileMenuItemController( new OpenMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK)),
+					new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)));
+			canvasPane.add(menuBar, BorderLayout.NORTH);
 		}
-		//End Create Canvas Pane
+		else{
+			menuBar = new MenuBarView(new FileMenuItemController( new OpenMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK)),
+					new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)));
+			canvasPane.add(menuBar, BorderLayout.NORTH);
+		}
 
 		//Create Session Pane
 		JPanel sessionPane = new JPanel();
@@ -131,7 +122,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		c.gridwidth = 1;
 		sessionPane.add(sessionHost, c);
 
-		hostName = new JTextField(md.utilInstance.getSession());
+		hostName = new JTextField(md.utilInstance.getSession().name);
 		hostName.setEditable(false);
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.weighty = 0.5;
@@ -153,62 +144,55 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		c.ipady = 250;
 		sessionPane.add(sp, c);
 
-		try {
-			if(md.utilInstance.getUserName().equals( 
-					md.utilInstance.getServerInstance().getUserWithControl(md.utilInstance.getSession()))){		
+		if( md.utilInstance.getUserName().equals(md.utilInstance.getSession().getDrawer()) ){
 
-				changeDrawer = new JButton("Pass Control");
-				c.fill = GridBagConstraints.HORIZONTAL;
-				c.weighty = 0.5;
-				c.weightx = 0.0;
-				c.gridy = 3;
-				c.gridx = 0;
-				c.gridwidth = 1;
-				c.ipady = 0;
-				sessionPane.add(changeDrawer, c);
-				changeDrawer.addActionListener(this);
-			}
-		} catch (RemoteException e) {
-			e.printStackTrace();
+			changeDrawer = new JButton("Pass Control");
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.weighty = 0.5;
+			c.weightx = 0.0;
+			c.gridy = 3;
+			c.gridx = 0;
+			c.gridwidth = 1;
+			c.ipady = 0;
+			sessionPane.add(changeDrawer, c);
+			changeDrawer.addActionListener(this);
+
+
+			JPanel toolDesignerPane = new JPanel();
+
+			add("Session",sessionPane);
+			add("Canvas",canvasPane);
+			add("Tool Designer",toolDesignerPane);
+
+			contentPane.add(this);
+
+			frame.setTitle("MultiDraw");
+			frame.getContentPane().setLayout(new BorderLayout());
+			frame.getContentPane().add(contentPane, BorderLayout.CENTER);
+			frame.setMinimumSize(new Dimension(300,200));
+			frame.pack();
+			frame.setVisible(true);
 		}
-		//End Create Session Pane
-
-		JPanel toolDesignerPane = new JPanel();
-
-		add("Session",sessionPane);
-		add("Canvas",canvasPane);
-		add("Tool Designer",toolDesignerPane);
-
-		contentPane.add(this);
-
-		frame.setTitle("MultiDraw");
-		frame.getContentPane().setLayout(new BorderLayout());
-		frame.getContentPane().add(contentPane, BorderLayout.CENTER);
-		frame.setMinimumSize(new Dimension(300,200));
-		frame.pack();
-		frame.setVisible(true);
 
 	}
-	
+
 	/**
 	 * Fills the JList in the sessionView.
 	 */
 	public void fillSessionMemberList() {
 		listModel = new DefaultListModel();
-		try {
-			Session session = md.getServerInstance().getSession(md.utilInstance.getSession());
-		
-			for(String member : session.getActiveUsers()) {
-				String user = md.utilInstance.getUserName();
-				UserName username = new UserName(member, user.equals(member),session.getDrawer().equals(member));
-				listModel.addElement(username);
-			}
 
-			sessionMembers.setModel(listModel);
-			sessionMembers.setSelectedIndex(0);
-		} catch (RemoteException e) {
-			e.printStackTrace();
+		Session session = md.utilInstance.getSession();
+		for(String member : session.getActiveUsers()) {
+			if(md.utilInstance.getUserName().equals(member))
+				member += " ( You )";
+			if(session.getDrawer().equals(member) || session.getDrawer().equals(md.utilInstance.getUserName()))
+				member += " << Drawing Control";
+			listModel.addElement(member);
 		}
+
+		sessionMembers.setModel(listModel);
+		sessionMembers.setSelectedIndex(0);
 	}
 
 	/**
@@ -219,8 +203,8 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		UserName passToUser = (UserName) sessionMembers.getSelectedValue();
 		
 		try { 
-			if (listModel.getSize() > 1 && !md.utilInstance.getUserName().equals(passToUser.getUserName())) {
-				md.getServerInstance().passOffControl(md.utilInstance.getSession(), md.utilInstance.getUserName(), passToUser.getUserName());
+			if (listModel.getSize() > 1 && !md.utilInstance.equals(passToUser)) {
+				md.getServerInstance().passOffControl(md.utilInstance.getSession().name, md.utilInstance.getUserName(), passToUser.getUserName());
 			}
 			else 
 				JOptionPane.showMessageDialog(this, "You are attempting to assign control to yourself", 

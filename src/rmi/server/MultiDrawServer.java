@@ -34,14 +34,6 @@ public interface MultiDrawServer extends Remote {
 	public boolean passOffControl(String session, String passer, String receiver) throws RemoteException;
 	
 	/**
-	 * Client calls this if they need to check who has control.
-	 * @param session - the session key
-	 * @return username String of the user with drawing control.
-	 * @throws RemoteException
-	 */
-	public String getUserWithControl(String session) throws RemoteException;
-	
-	/**
 	 * Client calls this if trying to connect to a session or create a new session
 	 * @param session - the session key, if it is null the user wants to create a new session
 	 * @param userName - the userName of the user

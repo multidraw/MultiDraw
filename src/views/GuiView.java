@@ -5,6 +5,7 @@ import items.SaveMenuItem;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -53,17 +54,17 @@ public class GuiView extends JTabbedPane implements ActionListener {
 	private DefaultListModel listModel;
 	private JButton changeDrawer;
 	protected MultiDraw md;
-	
+
 	public GuiView(boolean isApplet, MultiDraw md) {
 		this.isApplet = isApplet;	
 		this.md = md;
 	}
-	
+
 	public void show(Container contentPane, JFrame frame){
 		contentPane.removeAll();
 		contentPane.invalidate();
 		contentPane.validate();
-		
+
 		//Create Canvas Pane
 		JPanel canvasPane = new JPanel();
 		canvasPane.setLayout(new BorderLayout());
@@ -71,29 +72,42 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		canvasPane.add(canvas, BorderLayout.CENTER);
 		controlPanel = createControlPanelView();
 		canvas.setControlPanelView(controlPanel);
-				
-		canvasPane.add(controlPanel, BorderLayout.SOUTH);
-		toolList = createToolList();
-		toolBar = new ToolBarView(toolList);
-		canvasPane.add(toolBar, BorderLayout.WEST);
-		menuBar = new MenuBarView(toolList, new FileMenuItemController( new OpenMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK)),
-				new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)));
-		canvasPane.add(menuBar, BorderLayout.NORTH);
+
+
+		try {
+			if(md.utilInstance.getUserName().equals( 
+					md.utilInstance.getServerInstance().getUserWithControl(md.utilInstance.getSession()))){		
+				canvasPane.add(controlPanel, BorderLayout.SOUTH);
+				toolList = createToolList();
+				toolBar = new ToolBarView(toolList);
+				canvasPane.add(toolBar, BorderLayout.WEST);
+				menuBar = new MenuBarView(toolList, new FileMenuItemController( new OpenMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK)),
+						new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)));
+				canvasPane.add(menuBar, BorderLayout.NORTH);
+			}
+			else{
+				menuBar = new MenuBarView(new FileMenuItemController( new OpenMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK)),
+						new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)));
+				canvasPane.add(menuBar, BorderLayout.NORTH);
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 		//End Create Canvas Pane
-		
+
 		//Create Session Pane
 		JPanel sessionPane = new JPanel();
 		sessionPane.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
-		
-		MenuBarView sessionMenuBar = new MenuBarView(toolList, new FileMenuItemController( new OpenMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK)),
+
+		MenuBarView sessionMenuBar = new MenuBarView(new FileMenuItemController( new OpenMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK)),
 				new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)));
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridy = 0;
 		c.gridx = 0;
 		c.gridwidth = 6;
 		sessionPane.add(sessionMenuBar, c);
-		
+
 		JLabel sessionHost = new JLabel("Current Session: ");
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.weighty = 0.5;
@@ -102,7 +116,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		c.weightx = 0.25;
 		c.gridwidth = 1;
 		sessionPane.add(sessionHost, c);
-		
+
 		hostName = new JTextField(md.utilInstance.getSession());
 		hostName.setEditable(false);
 		c.fill = GridBagConstraints.HORIZONTAL;
@@ -124,34 +138,43 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		c.gridwidth = 5;
 		c.ipady = 250;
 		sessionPane.add(sp, c);
-		
-		changeDrawer = new JButton("Pass Control");
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weighty = 0.5;
-		c.weightx = 0.0;
-		c.gridy = 3;
-		c.gridx = 0;
-		c.gridwidth = 1;
-		c.ipady = 0;
-		sessionPane.add(changeDrawer, c);
-		
-		changeDrawer.addActionListener(this);
+
+		try {
+			if(md.utilInstance.getUserName().equals( 
+					md.utilInstance.getServerInstance().getUserWithControl(md.utilInstance.getSession()))){
+
+				changeDrawer = new JButton("Pass Control");
+				c.fill = GridBagConstraints.HORIZONTAL;
+				c.weighty = 0.5;
+				c.weightx = 0.0;
+				c.gridy = 3;
+				c.gridx = 0;
+				c.gridwidth = 1;
+				c.ipady = 0;
+				sessionPane.add(changeDrawer, c);
+				changeDrawer.addActionListener(this);
+
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 		//End Create Session Pane
-	
+
 		JPanel toolDesignerPane = new JPanel();
 		add("Session",sessionPane);
 		add("Canvas",canvasPane);
 		add("Tool Designer",toolDesignerPane);
 
 		contentPane.add(this);
-		
+
 		frame.setTitle("MultiDraw");
 		frame.getContentPane().setLayout(new BorderLayout());
 		frame.getContentPane().add(contentPane, BorderLayout.CENTER);
+		frame.setMinimumSize(new Dimension(300,200));
 		frame.pack();
 		frame.setVisible(true);
 	}
-	
+
 	public void fillSessionMemberList() {
 		listModel = new DefaultListModel();
 		try {
@@ -160,18 +183,18 @@ public class GuiView extends JTabbedPane implements ActionListener {
 				if(md.utilInstance.getUserName().equals(member))
 					member += " ( You )";
 				if(md.getServerInstance().getUserWithControl(
-						md.utilInstance.getSession()).equals(member));
+						md.utilInstance.getSession()).equals(member))
 					member += " << Drawing Control";
 				listModel.addElement(member);
 			}
-			
+
 			sessionMembers.setModel(listModel);
 			sessionMembers.setSelectedIndex(0);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void actionPerformed(ActionEvent e){
 		String passToUser = (String)sessionMembers.getSelectedValue();
 		try { 
@@ -184,15 +207,15 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		} finally {
-			
+
 		}
 	}
-	
+
 	/**
 	 * Initialize a new ControlPanelView
 	 **/
 	protected ControlPanelView createControlPanelView()
-			throws NullPointerException {
+	throws NullPointerException {
 		if (canvas != null) {
 			return new ControlPanelView(canvas);
 		} else {
@@ -224,26 +247,26 @@ public class GuiView extends JTabbedPane implements ActionListener {
 				"Oval drawing tool", canvas, new TwoEndShapeTool(canvas,
 						new OvalShape())));
 
-		 actions.add(
-		 new ToolController("Freehand",
-		 getImageIcon("images/freehand.png"),
-		 "freehand drawing tool",
-		 canvas,
-		 new FreehandTool(canvas)));
+		actions.add(
+				new ToolController("Freehand",
+						getImageIcon("images/freehand.png"),
+						"freehand drawing tool",
+						canvas,
+						new FreehandTool(canvas)));
 
-		 actions.add(
-		 new ToolController("Text",
-		 getImageIcon("images/text.png"),
-		 "text drawing tool",
-		 canvas,
-		 new TextTool(canvas)));
+		actions.add(
+				new ToolController("Text",
+						getImageIcon("images/text.png"),
+						"text drawing tool",
+						canvas,
+						new TextTool(canvas)));
 
-		 actions.add(
-		 new ToolController("Eraser",
-		 getImageIcon("images/eraser.png"),
-		 "Eraser drawing tool",
-		 canvas,
-		 new EraserTool(canvas)));
+		actions.add(
+				new ToolController("Eraser",
+						getImageIcon("images/eraser.png"),
+						"Eraser drawing tool",
+						canvas,
+						new EraserTool(canvas)));
 
 		actions.add(new ToolController("Select",
 				getImageIcon("images/select.png"), "Selector Tool", canvas,

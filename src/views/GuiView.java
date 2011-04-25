@@ -77,7 +77,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		JPanel canvasPane = new JPanel();
 		canvasPane.setLayout(new BorderLayout());
 
-		if(currentCanvas.equals(null)){
+		if(currentCanvas == null){
 			canvas = new DrawingCanvasView(md.utilInstance);
 		}
 		else{
@@ -200,7 +200,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		
 			for(String member : session.getActiveUsers()) {
 				String user = md.utilInstance.getUserName();
-				UserName username = new UserName(user, user.equals(member),session.getDrawer().equals(member));
+				UserName username = new UserName(member, user.equals(member),session.getDrawer().equals(member));
 				listModel.addElement(username);
 			}
 
@@ -257,41 +257,26 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		ToolList actions = new ToolList();
 
 		actions.add(new ToolController("Line", getImageIcon("images/line.png"),
-				"Line drawing tool", canvas, new TwoEndShapeTool(canvas,
-						new LineShape())));
+				"Line drawing tool", canvas, new TwoEndShapeTool(canvas, new LineShape())));
 
 		actions.add(new ToolController("Rectangle",
 				getImageIcon("images/rect.png"), "Rectangle drawing tool",
 				canvas, new TwoEndShapeTool(canvas, new RectangleShape())));
 
 		actions.add(new ToolController("Oval", getImageIcon("images/oval.png"),
-				"Oval drawing tool", canvas, new TwoEndShapeTool(canvas,
-						new OvalShape())));
+				"Oval drawing tool", canvas, new TwoEndShapeTool(canvas, new OvalShape())));
 
-		actions.add(
-				new ToolController("Freehand",
-						getImageIcon("images/freehand.png"),
-						"freehand drawing tool",
-						canvas,
-						new FreehandTool(canvas)));
+		actions.add(new ToolController("Freehand", getImageIcon("images/freehand.png"),
+						"freehand drawing tool", canvas, new FreehandTool(canvas)));
 
-		actions.add(
-				new ToolController("Text",
-						getImageIcon("images/text.png"),
-						"text drawing tool",
-						canvas,
-						new TextTool(canvas)));
+		actions.add(new ToolController("Text", getImageIcon("images/text.png"),
+						"text drawing tool", canvas, new TextTool(canvas)));
 
-		actions.add(
-				new ToolController("Eraser",
-						getImageIcon("images/eraser.png"),
-						"Eraser drawing tool",
-						canvas,
-						new EraserTool(canvas)));
+		actions.add(new ToolController("Eraser", getImageIcon("images/eraser.png"),
+						"Eraser drawing tool", canvas, new EraserTool(canvas)));
 
-		actions.add(new ToolController("Select",
-				getImageIcon("images/select.png"), "Selector Tool", canvas,
-				new SelectTool(canvas)));
+		actions.add(new ToolController("Select", getImageIcon("images/select.png"), 
+				"Selector Tool", canvas, new SelectTool(canvas)));
 
 		return actions;
 	}

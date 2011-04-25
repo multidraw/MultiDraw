@@ -50,7 +50,7 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 				md.guiView.fillSessionMemberList();
 				if(md.utilInstance.getUserName().equals(options.get("newDrawer")) || 
 						md.utilInstance.getUserName().equals(options.get("oldDrawer"))) {
-					//md.guiView.show(md.getContentPane(), md.frame, md.guiView.getCanvas());
+					md.guiView.show(md.getContentPane(), md.frame, md.guiView.getCanvas());
 				}
 			}
 		}

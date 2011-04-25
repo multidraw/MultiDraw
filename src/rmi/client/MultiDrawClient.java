@@ -18,6 +18,7 @@ public interface MultiDrawClient extends Remote {
 	 * 			<li>removed - true (removes the shape from the canvas)<br>
 	 * 						- false (updates the canvas with the new object)</li>
 	 * 			<li>joinSession - sessionName (updates the users for that given session on the views)</li>
+	 * 			<li>session - Session (The actual session to update our copy)</li>
 	 * 		</ul>
 	 * @throws RemoteException
 	 */

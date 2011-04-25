@@ -5,16 +5,20 @@ import java.util.ArrayList;
 import java.util.List;
 import tools.shapes.CanvasShape;
 
-@SuppressWarnings("serial")
+
 public class Session implements Serializable{
+
+	private static final long serialVersionUID = 1346464814726331606L;
 	private ArrayList<CanvasShape> shapes;
 	private ArrayList<String> activeUsers = new ArrayList<String>();
 	private String drawer;
+	public String name;
 
 	public Session(String userName) {
 		shapes = new ArrayList<CanvasShape>();
 		activeUsers.add(userName);
 		drawer = userName;
+		name = userName;
 	}
 	
 	/**

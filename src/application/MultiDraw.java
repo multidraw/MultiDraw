@@ -98,7 +98,7 @@ public class MultiDraw extends JApplet {
 					System.exit(0);
 					break;
 				case SESSIONS_SCREEN:
-					utilInstance.getServerInstance().logout(utilInstance.getUserName(), utilInstance.getSession());
+					utilInstance.getServerInstance().logout(utilInstance.getUserName(), utilInstance.getSession().name);
 					md.showLoginWindow();
 					break;
 				case GUI_SCREEN:

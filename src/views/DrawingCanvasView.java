@@ -225,29 +225,6 @@ public class DrawingCanvasView extends JLayeredPane {
 	public void setObjects(List<CanvasShape> list) {
 		this.shapes = list;
 	}
-
-/*	public void addObject(CanvasShape shape) {
-		addObject(shape, true);
-	}
-
-	public void addObject(CanvasShape shape, boolean isMine) {
-		if (containsObject(shape)) {
-			updateObject(shapes.indexOf(shape), shape);
-		} else {
-			shapes.add(0, shape);
-
-		}
-		try {
-			if (isMine && ServerUtil.getServerInstance().getSession(ServerUtil.getUserName()).getDrawer().equals(ServerUtil.getUserName())) {
-				ServerUtil.getServerInstance().updateCanvas(ServerUtil.getUserName(), ServerUtil.getSession(), shape,
-						false);
-			}
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-	}*/
 	
 	public void updateObject(CanvasShape shape) {
 		updateObject(shape, true);
@@ -260,13 +237,11 @@ public class DrawingCanvasView extends JLayeredPane {
 
 		}
 		try {
-			System.out.println(utilInstance.getServerInstance().getSession(utilInstance.getSession()));
-			if (isMine && utilInstance.getServerInstance().getSession(utilInstance.getSession()).getDrawer().equals(utilInstance.getUserName())) {
-				utilInstance.getServerInstance().updateCanvas(utilInstance.getUserName(), utilInstance.getSession(), shape,
+			if (isMine && utilInstance.getSession().getDrawer().equals(utilInstance.getUserName())) {
+				utilInstance.getServerInstance().updateCanvas(utilInstance.getUserName(), utilInstance.getSession().name, shape,
 						false);
 			}
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	}
@@ -281,11 +256,10 @@ public class DrawingCanvasView extends JLayeredPane {
 			currentSelectedObject = null;
 			try {
 				if (isMine) {
-					utilInstance.getServerInstance().updateCanvas(utilInstance.getUserName(), utilInstance.getSession(), shape,
+					utilInstance.getServerInstance().updateCanvas(utilInstance.getUserName(), utilInstance.getSession().name, shape,
 							true);
 				}
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			return true;

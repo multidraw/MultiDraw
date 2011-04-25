@@ -5,6 +5,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import rmi.Session;
 import tools.shapes.CanvasShape;
 import utils.ServerUtil;
 import application.MultiDraw;
@@ -55,7 +56,11 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 				}
 			}
 		}
-
+		Session session;
+		if ( (session = (Session)options.get("session")) != null ){
+			md.utilInstance.setSession(session);
+		}
+		
 		if ( md.guiView != null )
 			md.guiView.getCanvas().refreshCanvas();
 	}

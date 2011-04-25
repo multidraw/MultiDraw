@@ -5,16 +5,18 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 
+import rmi.Session;
 import rmi.client.MultiDrawClient;
 import rmi.server.MultiDrawServer;
 import tools.shapes.CanvasShape;
 
 public class ServerUtil {
 
-	private String session;
+	private Session session;
 	private String userName;
 	private ArrayList<CanvasShape> shapes;
 	private MultiDrawClient client;
+	private MultiDrawServer server;
 	
 	public ServerUtil(MultiDrawClient c){
 		client = c;
@@ -23,9 +25,12 @@ public class ServerUtil {
 	public MultiDrawServer getServerInstance() {
 		Registry registry;
 		try {
-			registry = LocateRegistry.getRegistry(InetAddress.getLocalHost()
-					.getHostAddress(), 1099);
-			return (MultiDrawServer) registry.lookup("MultiDrawServer");
+			if ( server == null ){
+				registry = LocateRegistry.getRegistry(InetAddress.getLocalHost()
+						.getHostAddress(), 1099);
+				server = (MultiDrawServer) registry.lookup("MultiDrawServer");
+			} 
+			return server; 
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -40,11 +45,11 @@ public class ServerUtil {
 		return client;
 	}
 
-	public String getSession() {
+	public Session getSession() {
 		return session;
 	}
 
-	public void setSession(String sessionIN) {
+	public void setSession(Session sessionIN) {
 		session = sessionIN;
 	}
 

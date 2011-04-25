@@ -12,19 +12,18 @@ import application.MultiDraw;
 public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 
 	private static final long serialVersionUID = -3431518669864255149L;
-	public transient MultiDraw mD;
+	public transient MultiDraw md;
 	
 	public ClientImpl() throws RemoteException{
-		mD = new MultiDraw(false, new ServerUtil(this));
+		md = new MultiDraw(false, new ServerUtil(this));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T, V> void update(T update, V opts)
-			throws RemoteException {
+	public <T, V> void update(T update, V opts) throws RemoteException {
 		HashMap<String, Object> options = null;
 		try {
-			options = (HashMap<String, Object>)opts;  // Extract the options
+			options = (HashMap<String, Object>) opts;  // Extract the options
 		} catch ( ClassCastException e ){
 			e.printStackTrace();
 			return;
@@ -34,18 +33,27 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 			CanvasShape newShape = (CanvasShape)update;
 			boolean isRemoved = ( options.get("removed") == null ) ? false : (Boolean) options.get("removed");
 			if ( isRemoved ) {
-				mD.guiView.getCanvas().removeObject(newShape, false);
+				md.guiView.getCanvas().removeObject(newShape, false);
 			} else {
-				System.out.println(mD + " " + mD.guiView.getCanvas());
-				mD.guiView.getCanvas().updateObject(newShape, false);
+				System.out.println(md + " " + md.guiView.getCanvas());
+				md.guiView.getCanvas().updateObject(newShape, false);
 			}
-			mD.guiView.getCanvas().refreshCanvas();
+			md.guiView.getCanvas().refreshCanvas();
 		} else if ( update instanceof ArrayList ){
 			ArrayList<String> sessions = (ArrayList<String>)update;
-			mD.sView.updateSessionList(sessions);
+			md.sView.updateSessionList(sessions);
+		} else if( update == null ) {
+			if("session".equals(options.get("refresh"))) {
+				md.guiView.fillSessionMemberList();
+				if(md.utilInstance.getUserName().equals(options.get("newDrawer")) || 
+						md.utilInstance.getUserName().equals(options.get("oldDrawer"))) {
+					
+				}
+			}
 		}
-		if ( mD.guiView != null )
-			mD.guiView.getCanvas().refreshCanvas();
+		
+		if ( md.guiView != null )
+			md.guiView.getCanvas().refreshCanvas();
 	}
 	
 	public static void main(String args[]) {

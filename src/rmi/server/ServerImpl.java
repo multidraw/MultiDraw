@@ -57,10 +57,11 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 	}
 	
 	@Override
-	public synchronized boolean passOffControl(String session, String receiver) throws RemoteException {
-		sessions.get(session).setDrawer(receiver);
+	public synchronized boolean passOffControl(String session, String passer, String receiver) throws RemoteException {
+		Session currentSession = sessions.get(session);
+		currentSession.setDrawer(receiver);
 		
-		
+		pushUpdate(null, null, HashMapCreator.create(new Object[]{"session", session, "refresh", "session", "oldDrawer", passer, "newDrawer", receiver}));
 		
 		return false;
 	}

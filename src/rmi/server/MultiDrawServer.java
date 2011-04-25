@@ -30,7 +30,7 @@ public interface MultiDrawServer extends Remote {
 	 * @return true if it was successful, false otherwise
 	 * @throws RemoteException
 	 */
-	public boolean passOffControl(String session, String userName) throws RemoteException;
+	public boolean passOffControl(String session, String passer, String receiver) throws RemoteException;
 	
 	/**
 	 * Client calls this if they need to check who has control.

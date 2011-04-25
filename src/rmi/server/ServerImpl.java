@@ -108,7 +108,6 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		return true;
 	}
 
-	@Override
 	public synchronized boolean passOffControl(final String session, final String passer, final String receiver) throws RemoteException {
 		final Session currentSession = sessions.get(session);
 		currentSession.setDrawer(receiver);
@@ -152,7 +151,6 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		return sessions.get(updatedSession).getShapes();
 	}
 
-	@Override
 	public boolean login(MultiDrawClient client, String userName)
 	throws RemoteException {
 		if (allUsers.containsKey(userName) || userName.equals("")) {
@@ -230,7 +228,18 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		}
 	}
 
+	/**
+	 * Creates a instant HashMap in one step, useful for inline options hashes.
+	 *
+	 */
 	private static class HashMapCreator{
+		/**
+		 * Creates the HashMap with the given Object[] array of parameters.
+		 * @syntax HashMapCreator.create(new Object[]{"foo", "bar", ...})
+		 * @param args - Object[] stored as [key, value, key, value], where the keys are Strings and 
+		 * 				the values are Objects.
+		 * @return HashMap<String, Object> The new HashMap
+		 */
 		public static HashMap<String, Object> create(Object [] args){
 			if ( args.length % 2 != 0 )
 				return null;

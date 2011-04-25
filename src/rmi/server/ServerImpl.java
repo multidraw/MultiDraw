@@ -4,9 +4,9 @@ import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.InetAddress;
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,6 +36,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 	private DefaultListModel clientListModel;
 
 	public ServerImpl() throws RemoteException {
+		super(1155);
 		clientCallback = new AsyncCallback(Thread.NORM_PRIORITY-1, 3);
 
 		JFrame serverFrame = new JFrame("MultiDrawServer");
@@ -67,13 +68,13 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 	}
 
 	public static void main(String args[]) {
-		/*
-		 * if (System.getSecurityManager() == null) {
-		 * System.setSecurityManager(new SecurityManager()); }
-		 */
+		
+		  if (System.getSecurityManager() == null) {
+		  System.setSecurityManager(new SecurityManager()); }
+		 
 		try {
-			Registry registry = LocateRegistry.createRegistry(1099);
-			registry.bind("MultiDrawServer", new ServerImpl());
+			LocateRegistry.createRegistry(1099);
+			Naming.bind("//localhost:1099/MultiDrawServer", new ServerImpl());
 			System.out.println("Server ready");
 			System.out.println(InetAddress.getLocalHost());
 		} catch (Exception e) {
@@ -108,7 +109,6 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		return true;
 	}
 
-	@Override
 	public synchronized boolean passOffControl(final String session, final String passer, final String receiver) throws RemoteException {
 		final Session currentSession = sessions.get(session);
 		currentSession.setDrawer(receiver);
@@ -152,7 +152,6 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		return sessions.get(updatedSession).getShapes();
 	}
 
-	@Override
 	public boolean login(MultiDrawClient client, String userName)
 	throws RemoteException {
 		if (allUsers.containsKey(userName) || userName.equals("")) {
@@ -230,7 +229,18 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		}
 	}
 
+	/**
+	 * Creates a instant HashMap in one step, useful for inline options hashes.
+	 *
+	 */
 	private static class HashMapCreator{
+		/**
+		 * Creates the HashMap with the given Object[] array of parameters.
+		 * @syntax HashMapCreator.create(new Object[]{"foo", "bar", ...})
+		 * @param args - Object[] stored as [key, value, key, value], where the keys are Strings and 
+		 * 				the values are Objects.
+		 * @return HashMap<String, Object> The new HashMap
+		 */
 		public static HashMap<String, Object> create(Object [] args){
 			if ( args.length % 2 != 0 )
 				return null;

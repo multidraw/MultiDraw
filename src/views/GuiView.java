@@ -59,7 +59,14 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		this.md = md;
 	}
 
-	public void show(Container contentPane, JFrame frame){
+
+	/**
+	 * Creates the Gui View for the first time and shows it on the frame.
+	 * 
+	 * @param contentPane
+	 * @param frame
+	 */
+	public void show(Container contentPane, JFrame frame, DrawingCanvasView currentCanvas){
 		contentPane.removeAll();
 		contentPane.invalidate();
 		contentPane.validate();
@@ -67,10 +74,14 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		//Create Canvas Pane
 		JPanel canvasPane = new JPanel();
 		canvasPane.setLayout(new BorderLayout());
-		canvas = new DrawingCanvasView(md.utilInstance);
+
+		if(currentCanvas.equals(null)){
+			canvas = new DrawingCanvasView(md.utilInstance);
+		}
+		else{
+			canvas = currentCanvas;
+		}
 		canvasPane.add(canvas, BorderLayout.CENTER);
-		controlPanel = createControlPanelView();
-		canvas.setControlPanelView(controlPanel);
 
 		if(md.utilInstance.getUserName().equals(md.utilInstance.getSession().getDrawer())){		
 			canvasPane.add(controlPanel, BorderLayout.SOUTH);
@@ -144,23 +155,25 @@ public class GuiView extends JTabbedPane implements ActionListener {
 			sessionPane.add(changeDrawer, c);
 			changeDrawer.addActionListener(this);
 
+
+			JPanel toolDesignerPane = new JPanel();
+
+			add("Session",sessionPane);
+			add("Canvas",canvasPane);
+			add("Tool Designer",toolDesignerPane);
+
+			contentPane.add(this);
+
+			frame.setTitle("MultiDraw");
+			frame.getContentPane().setLayout(new BorderLayout());
+			frame.getContentPane().add(contentPane, BorderLayout.CENTER);
+			frame.setMinimumSize(new Dimension(300,200));
+			frame.pack();
+			frame.setVisible(true);
 		}
 
-		JPanel toolDesignerPane = new JPanel();
-		add("Session",sessionPane);
-		add("Canvas",canvasPane);
-		add("Tool Designer",toolDesignerPane);
-
-		contentPane.add(this);
-
-		frame.setTitle("MultiDraw");
-		frame.getContentPane().setLayout(new BorderLayout());
-		frame.getContentPane().add(contentPane, BorderLayout.CENTER);
-		frame.setMinimumSize(new Dimension(300,200));
-		frame.pack();
-		frame.setVisible(true);
 	}
-	
+
 	/**
 	 * Fills the JList in the sessionView.
 	 */
@@ -179,8 +192,8 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		sessionMembers.setSelectedIndex(0);
 	}
 
-	
-	
+
+
 	/**
 	 *  This is called when a user clicks the pass control button.
 	 *  Makes sure the user is not passing to themselves

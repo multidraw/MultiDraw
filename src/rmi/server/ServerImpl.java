@@ -53,7 +53,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 
 		serverFrame.add(header);
 		serverFrame.add(new JScrollPane(clientList));
-		
+
 		serverFrame.addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent e){
 				clientCallback.stop();
@@ -68,10 +68,10 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 	}
 
 	public static void main(String args[]) {
-		
-		  if (System.getSecurityManager() == null) {
-		  System.setSecurityManager(new SecurityManager()); }
-		 
+
+		if (System.getSecurityManager() == null) {
+			System.setSecurityManager(new SecurityManager()); }
+
 		try {
 			LocateRegistry.createRegistry(1099);
 			Naming.bind("//localhost:1099/MultiDrawServer", new ServerImpl());
@@ -83,7 +83,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 
 		}
 	}
-	
+
 	public synchronized boolean updateCanvas(final String userName, final String session, final CanvasShape updatedShape,
 			boolean removed) throws RemoteException {
 		Session thisSession = sessions.get(session);
@@ -152,6 +152,21 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		return sessions.get(updatedSession).getShapes();
 	}
 
+	public void leaveSession(final String userName, String session) throws RemoteException{
+		final Session currentSession = sessions.get(session);
+		currentSession.leaveSession(userName);
+
+		if (currentSession.isEmpty())
+			sessions.remove(session);
+
+		clientCallback.doCallback(new Callback() {
+			public void executeCallback(Notifier n, Object arg) {
+				pushUpdate(userName, new ArrayList<String>(sessions.keySet()), HashMapCreator.create(new Object[]{"session", currentSession}));
+				n.resetCallbackTime();
+			}
+		});
+	}
+
 	public boolean login(MultiDrawClient client, String userName)
 	throws RemoteException {
 		if (allUsers.containsKey(userName) || userName.equals("")) {
@@ -163,28 +178,10 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		}
 	}
 
-	public boolean logout(final String userName, String session)
+	public void logout(final String userName)
 	throws RemoteException {
-		try {
-			allUsers.remove(userName);
-			clientListModel.removeElement(userName);
-			final Session currentSession = sessions.get(session);
-			currentSession.leaveSession(userName);
-
-			if (currentSession.isEmpty())
-				sessions.remove(session);
-
-			clientCallback.doCallback(new Callback() {
-				public void executeCallback(Notifier n, Object arg) {
-					pushUpdate(userName, new ArrayList<String>(sessions.keySet()), HashMapCreator.create(new Object[]{"session", currentSession}));
-					n.resetCallbackTime();
-				}
-			});
-			
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
+		allUsers.remove(userName);
+		clientListModel.removeElement(userName);
 	}
 
 	public Session getSession(String session) throws RemoteException {

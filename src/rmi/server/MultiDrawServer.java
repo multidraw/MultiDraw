@@ -25,12 +25,13 @@ public interface MultiDrawServer extends Remote {
 	/**
 	 * Client calls this if they have control and want to pass it off to someone
 	 * else.
+	 * @param passer - the userName of the person that is passing control
 	 * @param session - the session key
-	 * @param userName - the userName of the person they want to pass off to
+	 * @param receiver - the userName of the person they want to pass off to
 	 * @return true if it was successful, false otherwise
 	 * @throws RemoteException
 	 */
-	public boolean passOffControl(String session, String userName) throws RemoteException;
+	public boolean passOffControl(String session, String passer, String receiver) throws RemoteException;
 	
 	/**
 	 * Client calls this if they need to check who has control.

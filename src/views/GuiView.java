@@ -187,11 +187,11 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		frame.pack();
 		frame.setVisible(true);
 
-
-
-
 	}
-
+	
+	/**
+	 * Fills the JList in the sessionView.
+	 */
 	public void fillSessionMemberList() {
 		listModel = new DefaultListModel();
 		try {
@@ -199,8 +199,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 			for(String member : session.getActiveUsers()) {
 				if(md.utilInstance.getUserName().equals(member))
 					member += " ( You )";
-				if(md.getServerInstance().getUserWithControl(
-						md.utilInstance.getSession()).equals(member))
+				if(session.getDrawer().equals(member) || session.getDrawer().equals(md.utilInstance.getUserName()))
 					member += " << Drawing Control";
 				listModel.addElement(member);
 			}
@@ -212,11 +211,17 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		}
 	}
 
+	
+	
+	/**
+	 *  This is called when a user clicks the pass control button.
+	 *  Makes sure the user is not passing to themselves
+	 */
 	public void actionPerformed(ActionEvent e){
 		String passToUser = (String)sessionMembers.getSelectedValue();
 		try { 
 			if (listModel.getSize() > 1 && !md.utilInstance.equals(passToUser)) {
-				md.getServerInstance().passOffControl(md.utilInstance.getSession(), passToUser);
+				md.getServerInstance().passOffControl(md.utilInstance.getSession(), md.utilInstance.getUserName(), passToUser);
 			}
 			else 
 				JOptionPane.showMessageDialog(this, "You are attempting to assign control to yourself", 

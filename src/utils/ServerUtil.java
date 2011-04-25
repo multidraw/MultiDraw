@@ -23,6 +23,7 @@ public class ServerUtil {
 	public MultiDrawServer getServerInstance() {
 		try {
 			if ( server == null ){
+				//server = (MultiDrawServer)Naming.lookup("//cbarton.mine.nu:1099/MultiDrawServer");
 				server = (MultiDrawServer)Naming.lookup("//localhost:1099/MultiDrawServer");
 			} 
 			return server; 

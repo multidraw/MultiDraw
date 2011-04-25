@@ -4,9 +4,9 @@ import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.InetAddress;
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,13 +67,15 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 	}
 
 	public static void main(String args[]) {
-		/*
-		 * if (System.getSecurityManager() == null) {
-		 * System.setSecurityManager(new SecurityManager()); }
-		 */
+		
+		  if (System.getSecurityManager() == null) {
+		  System.setSecurityManager(new SecurityManager()); }
+		 
 		try {
-			Registry registry = LocateRegistry.createRegistry(1099);
-			registry.bind("MultiDrawServer", new ServerImpl());
+			LocateRegistry.createRegistry(1099);
+			Naming.bind("//localhost:1099/MultiDrawServer", new ServerImpl());
+			//Registry registry = LocateRegistry.createRegistry(1099);
+			//registry.bind("MultiDrawServer", new ServerImpl());
 			System.out.println("Server ready");
 			System.out.println(InetAddress.getLocalHost());
 		} catch (Exception e) {

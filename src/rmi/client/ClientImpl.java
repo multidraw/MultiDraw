@@ -65,9 +65,9 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 	}
 
 	public static void main(String args[]) {
-		/*if (System.getSecurityManager() == null) {
+		if (System.getSecurityManager() == null) {
 			System.setSecurityManager(new SecurityManager());
-		}*/
+		}
 		try {
 			new ClientImpl();
 

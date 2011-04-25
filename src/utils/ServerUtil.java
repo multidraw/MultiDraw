@@ -1,8 +1,6 @@
 package utils;
 
-import java.net.InetAddress;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
+import java.rmi.Naming;
 import java.util.ArrayList;
 
 import rmi.Session;
@@ -23,12 +21,10 @@ public class ServerUtil {
 	}
 
 	public MultiDrawServer getServerInstance() {
-		Registry registry;
 		try {
 			if ( server == null ){
-				registry = LocateRegistry.getRegistry(InetAddress.getLocalHost()
-						.getHostAddress(), 1099);
-				server = (MultiDrawServer) registry.lookup("MultiDrawServer");
+				System.out.println(Naming.list("//localhost:1099").toString());
+				server = (MultiDrawServer)Naming.lookup("MultiDrawServer");
 			} 
 			return server; 
 		} catch (Exception e) {

@@ -2,6 +2,7 @@ package rmi.client;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.HashMap;
 
 public interface MultiDrawClient extends Remote {
 
@@ -10,5 +11,5 @@ public interface MultiDrawClient extends Remote {
 	 * @param changedShape - The changed shape.
 	 * @throws RemoteException
 	 */
-	public <T, V> void update(T changedShape, V opts) throws RemoteException;
+	public <T> void update(T changedShape, HashMap<String, Object> opts) throws RemoteException;
 }

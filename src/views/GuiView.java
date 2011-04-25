@@ -160,7 +160,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 				if(md.utilInstance.getUserName().equals(member))
 					member += " ( You )";
 				if(md.getServerInstance().getUserWithControl(
-						md.utilInstance.getSession()).equals(member));
+						md.utilInstance.getSession()).equals(member))
 					member += " << Drawing Control";
 				listModel.addElement(member);
 			}

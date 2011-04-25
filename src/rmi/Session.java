@@ -16,7 +16,13 @@ public class Session implements Serializable{
 		activeUsers.add(userName);
 		drawer = userName;
 	}
-
+	
+	/**
+	 * joinSession(String userName)
+	 * Joins the current session with the given username.
+	 * @param userName - String the user joining the session.
+	 * @return Session - this session.
+	 */
 	public Session joinSession(String userName) {
 		activeUsers.add(userName);
 		return this;

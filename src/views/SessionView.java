@@ -160,4 +160,11 @@ public class SessionView extends JPanel implements ActionListener, ListSelection
 	public void updateSessionList(ArrayList<String> sessions){
 		sessionList.setListData(sessions.toArray());
 	}
+	
+	public void updateSessionUserList(String session, ArrayList<String> users){
+		String selectedSession = (String) sessionList.getSelectedValue();
+		if ( session.equals(selectedSession) ){
+			userList.setListData(users.toArray());
+		}
+	}
 }

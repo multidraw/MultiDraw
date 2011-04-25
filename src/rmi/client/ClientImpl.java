@@ -19,30 +19,31 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
-	public <T, V> void update(T update, V opts)
+	public <T> void update(T update, HashMap<String, Object> options)
 			throws RemoteException {
-		HashMap<String, Object> options = null;
-		try {
-			options = (HashMap<String, Object>)opts;  // Extract the options
-		} catch ( ClassCastException e ){
-			e.printStackTrace();
-			return;
-		}
-	
+		
 		if ( update instanceof CanvasShape ){
 			CanvasShape newShape = (CanvasShape)update;
 			boolean isRemoved = ( options.get("removed") == null ) ? false : (Boolean) options.get("removed");
 			if ( isRemoved ) {
 				mD.guiView.getCanvas().removeObject(newShape, false);
 			} else {
-				System.out.println(mD + " " + mD.guiView.getCanvas());
 				mD.guiView.getCanvas().updateObject(newShape, false);
 			}
 			mD.guiView.getCanvas().refreshCanvas();
 		} else if ( update instanceof ArrayList ){
-			ArrayList<String> sessions = (ArrayList<String>)update;
-			mD.sView.updateSessionList(sessions);
+			ArrayList<String> updateList = (ArrayList<String>)update;
+			
+			if ( options == null ){
+				mD.sView.updateSessionList(updateList);
+			} else {
+				String session = (String) options.remove("joinSession");
+				if ( session != null ){
+					mD.sView.updateSessionUserList(session, updateList);
+					if ( mD.guiView != null )
+						mD.guiView.fillSessionMemberList();
+				}
+			}	
 		}
 		if ( mD.guiView != null )
 			mD.guiView.getCanvas().refreshCanvas();

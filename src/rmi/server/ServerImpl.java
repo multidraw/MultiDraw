@@ -74,8 +74,6 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		try {
 			LocateRegistry.createRegistry(1099);
 			Naming.bind("//localhost:1099/MultiDrawServer", new ServerImpl());
-			//Registry registry = LocateRegistry.createRegistry(1099);
-			//registry.bind("MultiDrawServer", new ServerImpl());
 			System.out.println("Server ready");
 			System.out.println(InetAddress.getLocalHost());
 		} catch (Exception e) {

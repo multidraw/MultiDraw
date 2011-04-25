@@ -164,7 +164,6 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		}
 	}
 
-	@Override
 	public boolean logout(final String userName, String session)
 	throws RemoteException {
 		try {
@@ -220,6 +219,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 			if(user.equalsIgnoreCase(userName)) {
 				continue;
 			}
+			System.out.println("Pushing update:" + update + "with opts: "  + options);
 			try{
 				MultiDrawClient client = allUsers.get(user);
 				client.update(update, options);

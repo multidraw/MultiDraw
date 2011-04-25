@@ -76,9 +76,11 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		if (session == null) {
 			sessions.put(userName, new Session(userName));
 			session = userName;
-			pushUpdate(userName, new ArrayList<String>(sessions.keySet()), HashMapCreator.create(new Object[]{}));
+			pushUpdate(userName, new ArrayList<String>(sessions.keySet()), null);
 		} else {
-			sessions.put(session, sessions.get(session).joinSession(userName));	
+			Session sesh = sessions.get(session).joinSession(userName);
+			sessions.put(session, sesh);	
+			pushUpdate(userName, sesh.getActiveUsers(), HashMapCreator.create(new Object[]{"joinSession", session}));
 		}
 		return sessions.get(session).getShapes();
 	}
@@ -105,6 +107,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 			if (currentSession.isEmpty())
 				sessions.remove(session);
 
+			pushUpdate(userName, new ArrayList<String>(sessions.keySet()), null);
 			return true;
 		} catch (Exception e) {
 			return false;
@@ -130,24 +133,19 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 	/**
 	 * Pushes a update to the clients.
 	 * @param <T> - Type of class for the Clients to receive
-	 * @param <V> - Values of the options array
 	 * @param userName - String current username of the client.
-	 * @param update - The updated object to send off
+	 * @param update - The updated object to send off <br>
 	 * 					( CanvasShape, ArrayList<String> )
-	 * @param opts - Options for the push
-	 * 				("session" => sessionName, "removed" => true/false)
+	 * @param options - Options for the push <br>
+	 * 				("session" => sessionName, "removed" => true/false, "joinSession" => sessionName)
 	 */
-	@SuppressWarnings("unchecked")
-	private synchronized <T, V> void pushUpdate(String userName, T update, V opts) {
-		HashMap<String, Object> options = null;
-		try {
-			options = (HashMap<String, Object>)opts;  // Extract the options
-		} catch ( ClassCastException e ){
-			e.printStackTrace();
-			return;
+	private synchronized <T> void pushUpdate(String userName, T update, HashMap<String, Object> options) {
+		String session = null;
+		
+		if ( options != null ){
+			session = (String) options.remove("session");
 		}
 		
-		String session = (String) options.remove("session");
 		ArrayList<String> users = ( session == null ) ? new ArrayList<String>(allUsers.keySet()) : sessions.get(session).getActiveUsers();
 		
 		for( String user : users ) {
@@ -170,7 +168,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 				return null;
 			
 			HashMap<String, Object> map = new HashMap<String, Object>();
-			for ( int i = 0; i < args.length; i++ ){
+			for ( int i = 0; i < args.length; i+= 2 ){
 				map.put((String)args[i], args[i+1]);
 			}
 			return map;

@@ -2,13 +2,24 @@ package rmi.client;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.HashMap;
 
 public interface MultiDrawClient extends Remote {
 
 	/**
-	 * Server calls this for every active user in a session when the drawer changes an object.
-	 * @param changedShape - The changed shape.
+	 * Updates the client with the given update and options
+	 * @param update - The update
+	 * 		<ul>
+	 * 			<li>CavnasShape - redraws the shape given.</li>
+	 * 			<li>ArrayList<String> - updates a list of either users or sessions.</li>
+	 * 		</ul>
+	 * @param options - HashMap<String, Object> , options given for the update
+	 * 		<ul>
+	 * 			<li>removed - true (removes the shape from the canvas)<br>
+	 * 						- false (updates the canvas with the new object)</li>
+	 * 			<li>joinSession - sessionName (updates the users for that given session on the views)</li>
+	 * 		</ul>
 	 * @throws RemoteException
 	 */
-	public <T, V> void update(T changedShape, V opts) throws RemoteException;
+	public <T> void update(T update, HashMap<String, Object> options) throws RemoteException;
 }

@@ -61,7 +61,14 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		this.md = md;
 	}
 
-	public void show(Container contentPane, JFrame frame){
+
+	/**
+	 * Creates the Gui View for the first time and shows it on the frame.
+	 * 
+	 * @param contentPane
+	 * @param frame
+	 */
+	public void show(Container contentPane, JFrame frame, DrawingCanvasView currentCanvas){
 		contentPane.removeAll();
 		contentPane.invalidate();
 		contentPane.validate();
@@ -69,14 +76,21 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		//Create Canvas Pane
 		JPanel canvasPane = new JPanel();
 		canvasPane.setLayout(new BorderLayout());
-		canvas = new DrawingCanvasView(md.utilInstance);
+
+		if(currentCanvas.equals(null)){
+			canvas = new DrawingCanvasView(md.utilInstance);
+		}
+		else{
+			canvas = currentCanvas;
+		}
 		canvasPane.add(canvas, BorderLayout.CENTER);
-		controlPanel = createControlPanelView();
-		canvas.setControlPanelView(controlPanel);
 
 		try {
 			if(md.utilInstance.getUserName().equals( 
 					md.utilInstance.getServerInstance().getUserWithControl(md.utilInstance.getSession()))){		
+
+				controlPanel = createControlPanelView();
+				canvas.setControlPanelView(controlPanel);
 				canvasPane.add(controlPanel, BorderLayout.SOUTH);
 				toolList = createToolList();
 				toolBar = new ToolBarView(toolList);
@@ -141,7 +155,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 
 		try {
 			if(md.utilInstance.getUserName().equals( 
-					md.utilInstance.getServerInstance().getUserWithControl(md.utilInstance.getSession()))){
+					md.utilInstance.getServerInstance().getUserWithControl(md.utilInstance.getSession()))){		
 
 				changeDrawer = new JButton("Pass Control");
 				c.fill = GridBagConstraints.HORIZONTAL;
@@ -153,7 +167,6 @@ public class GuiView extends JTabbedPane implements ActionListener {
 				c.ipady = 0;
 				sessionPane.add(changeDrawer, c);
 				changeDrawer.addActionListener(this);
-
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -161,6 +174,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		//End Create Session Pane
 
 		JPanel toolDesignerPane = new JPanel();
+
 		add("Session",sessionPane);
 		add("Canvas",canvasPane);
 		add("Tool Designer",toolDesignerPane);
@@ -173,6 +187,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		frame.setMinimumSize(new Dimension(300,200));
 		frame.pack();
 		frame.setVisible(true);
+
 	}
 	
 	/**

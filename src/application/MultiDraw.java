@@ -1,5 +1,6 @@
 package application;
 
+import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -57,12 +58,14 @@ public class MultiDraw extends JApplet {
 	}
 	
 	public void showLoginWindow(){
+		frame.setMinimumSize(new Dimension(0,0));
 		state = MultiDrawState.AUTH_SCREEN;
 		LoginView lview = new LoginView(this);
 		lview.show(getContentPane(), frame);
 	}
 	
 	public void showSessionsWindow(){
+		frame.setMinimumSize(new Dimension(0,0));
 		state = MultiDrawState.SESSIONS_SCREEN;
 		sView = new SessionView(this);
 		sView.show(getContentPane(), frame);
@@ -71,7 +74,7 @@ public class MultiDraw extends JApplet {
 	public void showGUIWindow(){
 		state = MultiDrawState.GUI_SCREEN;
 		guiView = new GuiView(isApplet, this);
-		guiView.show(getContentPane(), frame);
+		guiView.show(getContentPane(), frame, null);
 	}
 	
 	public MultiDrawServer getServerInstance() {
@@ -93,12 +96,12 @@ public class MultiDraw extends JApplet {
 		
 		public void windowClosing(WindowEvent e) {
 			try {
-				utilInstance.getServerInstance().logout(utilInstance.getUserName(), utilInstance.getSession());
 				switch ( md.state ){
 				case AUTH_SCREEN:
 					System.exit(0);
 					break;
 				case SESSIONS_SCREEN:
+					utilInstance.getServerInstance().logout(utilInstance.getUserName(), utilInstance.getSession());
 					md.showLoginWindow();
 					break;
 				case GUI_SCREEN:

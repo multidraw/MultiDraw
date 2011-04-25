@@ -25,8 +25,9 @@ public interface MultiDrawServer extends Remote {
 	/**
 	 * Client calls this if they have control and want to pass it off to someone
 	 * else.
+	 * @param passer - the userName of the person that is passing control
 	 * @param session - the session key
-	 * @param userName - the userName of the person they want to pass off to
+	 * @param receiver - the userName of the person they want to pass off to
 	 * @return true if it was successful, false otherwise
 	 * @throws RemoteException
 	 */

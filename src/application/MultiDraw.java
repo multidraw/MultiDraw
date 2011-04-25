@@ -93,12 +93,12 @@ public class MultiDraw extends JApplet {
 		
 		public void windowClosing(WindowEvent e) {
 			try {
-				utilInstance.getServerInstance().logout(utilInstance.getUserName(), utilInstance.getSession());
 				switch ( md.state ){
 				case AUTH_SCREEN:
 					System.exit(0);
 					break;
 				case SESSIONS_SCREEN:
+					utilInstance.getServerInstance().logout(utilInstance.getUserName(), utilInstance.getSession());
 					md.showLoginWindow();
 					break;
 				case GUI_SCREEN:

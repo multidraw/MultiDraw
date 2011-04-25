@@ -36,6 +36,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 	private DefaultListModel clientListModel;
 
 	public ServerImpl() throws RemoteException {
+		super(1155);
 		clientCallback = new AsyncCallback(Thread.NORM_PRIORITY-1, 3);
 
 		JFrame serverFrame = new JFrame("MultiDrawServer");

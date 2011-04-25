@@ -37,6 +37,7 @@ import tools.TwoEndShapeTool;
 import tools.shapes.LineShape;
 import tools.shapes.OvalShape;
 import tools.shapes.RectangleShape;
+import utils.UserName;
 import application.MultiDraw;
 import controllers.FileMenuItemController;
 import controllers.ToolController;
@@ -181,12 +182,11 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		listModel = new DefaultListModel();
 		try {
 			Session session = md.getServerInstance().getSession(md.utilInstance.getSession());
+		
 			for(String member : session.getActiveUsers()) {
-				if(md.utilInstance.getUserName().equals(member))
-					member += " ( You )";
-				if(session.getDrawer().equals(member) || session.getDrawer().equals(md.utilInstance.getUserName()))
-					member += " << Drawing Control";
-				listModel.addElement(member);
+				String user = md.utilInstance.getUserName();
+				UserName username = new UserName(user, user.equals(member),session.getDrawer().equals(member));
+				listModel.addElement(username);
 			}
 
 			sessionMembers.setModel(listModel);
@@ -196,17 +196,16 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		}
 	}
 
-	
-	
 	/**
 	 *  This is called when a user clicks the pass control button.
 	 *  Makes sure the user is not passing to themselves
 	 */
 	public void actionPerformed(ActionEvent e){
-		String passToUser = (String)sessionMembers.getSelectedValue();
+		UserName passToUser = (UserName) sessionMembers.getSelectedValue();
+		
 		try { 
-			if (listModel.getSize() > 1 && !md.utilInstance.equals(passToUser)) {
-				md.getServerInstance().passOffControl(md.utilInstance.getSession(), md.utilInstance.getUserName(), passToUser);
+			if (listModel.getSize() > 1 && !md.utilInstance.getUserName().equals(passToUser.getUserName())) {
+				md.getServerInstance().passOffControl(md.utilInstance.getSession(), md.utilInstance.getUserName(), passToUser.getUserName());
 			}
 			else 
 				JOptionPane.showMessageDialog(this, "You are attempting to assign control to yourself", 

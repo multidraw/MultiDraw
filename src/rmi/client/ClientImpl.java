@@ -22,7 +22,6 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 	public <T> void update(T update, HashMap<String, Object> options)
 	throws RemoteException {
 
-
 		if ( update instanceof CanvasShape ){
 			CanvasShape newShape = (CanvasShape)update;
 			boolean isRemoved = ( options.get("removed") == null ) ? false : (Boolean) options.get("removed");
@@ -51,11 +50,11 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 				md.guiView.fillSessionMemberList();
 				if(md.utilInstance.getUserName().equals(options.get("newDrawer")) || 
 						md.utilInstance.getUserName().equals(options.get("oldDrawer"))) {
-
+					//md.guiView.show(md.getContentPane(), md.frame, md.guiView.getCanvas());
 				}
 			}
 		}
-
+		
 		if ( md.guiView != null )
 			md.guiView.getCanvas().refreshCanvas();
 	}
@@ -66,7 +65,6 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 		}*/
 		try {
 			new ClientImpl();
-
 		} catch (Exception e) {
 			System.err.println("Client exception: " + e.toString());
 			e.printStackTrace();

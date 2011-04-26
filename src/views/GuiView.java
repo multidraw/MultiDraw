@@ -92,8 +92,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 			menuBar = new MenuBarView(toolList, new FileMenuItemController( new OpenMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK)),
 					new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)));
 			canvasPane.add(menuBar, BorderLayout.NORTH);
-		}
-		else{
+		} else{
 			menuBar = new MenuBarView(new FileMenuItemController( new OpenMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK)),
 					new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)));
 			canvasPane.add(menuBar, BorderLayout.NORTH);
@@ -155,23 +154,20 @@ public class GuiView extends JTabbedPane implements ActionListener {
 			c.ipady = 0;
 			sessionPane.add(changeDrawer, c);
 			changeDrawer.addActionListener(this);
-
-
-			JPanel toolDesignerPane = new JPanel();
-
-			add("Session",sessionPane);
-			add("Canvas",canvasPane);
-			add("Tool Designer",toolDesignerPane);
-
-			contentPane.add(this);
-
-			frame.setTitle("MultiDraw");
-			frame.getContentPane().setLayout(new BorderLayout());
-			frame.getContentPane().add(contentPane, BorderLayout.CENTER);
-			frame.setMinimumSize(new Dimension(300,200));
-			frame.pack();
-			frame.setVisible(true);
 		}
+
+		JPanel toolDesignerPane = new JPanel();
+
+		add("Session",sessionPane);
+		add("Canvas",canvasPane);
+		add("Tool Designer",toolDesignerPane);
+		contentPane.add(this);
+		frame.setTitle("MultiDraw");
+		frame.getContentPane().setLayout(new BorderLayout());
+		frame.getContentPane().add(contentPane, BorderLayout.CENTER);
+		frame.setMinimumSize(new Dimension(300,200));
+		frame.pack();
+		frame.setVisible(true);
 
 	}
 

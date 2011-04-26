@@ -22,7 +22,11 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 	@SuppressWarnings("unchecked")
 	public <T> void update(T update, HashMap<String, Object> options)
 	throws RemoteException {
-
+		// Keep up their session if needed.
+		Session session;
+		if ( (session = (Session)options.remove("session")) != null ){
+			md.utilInstance.setSession(session);
+		}
 
 		if ( update instanceof CanvasShape ){
 			CanvasShape newShape = (CanvasShape)update;
@@ -35,15 +39,16 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 			md.guiView.getCanvas().refreshCanvas();
 		} else if ( update instanceof ArrayList ){
 			ArrayList<String> updateList = (ArrayList<String>)update;
-			String session;
+			String joinSession;
 
-			if ( (session = (String)options.get("joinSession")) == null ){
+			if ( (joinSession = (String)options.get("joinSession")) == null ){
 				md.sView.updateSessionList(updateList);
 			} else {
-				md.sView.updateSessionUserList(session, updateList);
-				if ( md.guiView != null )
-					md.guiView.fillSessionMemberList();
+				md.sView.updateSessionUserList(joinSession, updateList);	
 			}	
+			
+			if ( md.guiView != null )
+				md.guiView.fillSessionMemberList();
 		} else if( update == null ) {
 			if("session".equals(options.get("refresh"))) {
 				md.guiView.fillSessionMemberList();
@@ -52,11 +57,6 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 
 				}
 			}
-		}
-		// Keep up their session if needed.
-		Session session;
-		if ( (session = (Session)options.get("session")) != null ){
-			md.utilInstance.setSession(session);
 		}
 		
 		// Refresh the canvas if something happened there.

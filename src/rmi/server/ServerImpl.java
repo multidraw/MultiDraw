@@ -173,12 +173,13 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		}
 
 		ArrayList<String> users = ( sessionid == null ) ? new ArrayList<String>(allUsers.keySet()) : sessions.get(sessionid).getActiveUsers();
-
+		
+		System.out.println("Pushing update:" + update + " with opts: "  + options + " to clients: " + users);
+		
 		for( String user : users ) {
 			if(user.equalsIgnoreCase(userName)) {
 				continue;
 			}
-			System.out.println("Pushing update:" + update + "with opts: "  + options);
 			try{
 				MultiDrawClient client = allUsers.get(user);
 				client.update(update, options);

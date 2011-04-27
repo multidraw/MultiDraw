@@ -71,7 +71,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		contentPane.removeAll();
 		contentPane.invalidate();
 		contentPane.validate();
-
+		
 		//Create Canvas Pane
 		JPanel canvasPane = new JPanel();
 		canvasPane.setLayout(new BorderLayout());
@@ -81,6 +81,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		}
 		else{
 			canvas = currentCanvas;
+			removeAll();
 		}
 		canvasPane.add(canvas, BorderLayout.CENTER);
 
@@ -180,11 +181,10 @@ public class GuiView extends JTabbedPane implements ActionListener {
 
 		Session session = md.utilInstance.getSession();
 		for(String member : session.getActiveUsers()) {
-			if(md.utilInstance.getUserName().equals(member))
-				member += " ( You )";
-			if(session.getDrawer().equals(member) || session.getDrawer().equals(md.utilInstance.getUserName()))
-				member += " << Drawing Control";
-			listModel.addElement(member);
+			UserName user = new UserName(member, session.getDrawer().equals(member), 
+					md.utilInstance.getUserName().equals(member));
+			
+			listModel.addElement(user);
 		}
 
 		sessionMembers.setModel(listModel);
@@ -199,8 +199,9 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		UserName passToUser = (UserName) sessionMembers.getSelectedValue();
 		
 		try { 
-			if (listModel.getSize() > 1 && !md.utilInstance.equals(passToUser)) {
-				md.getServerInstance().passOffControl(md.utilInstance.getSession().name, md.utilInstance.getUserName(), passToUser.getUserName());
+			if (listModel.getSize() > 1 && !md.utilInstance.getUserName().equals(passToUser.getUserName())) {
+				md.getServerInstance().passOffControl(md.utilInstance.getSession().name, 
+						md.utilInstance.getUserName(), passToUser.getUserName());
 			}
 			else 
 				JOptionPane.showMessageDialog(this, "You are attempting to assign control to yourself", 

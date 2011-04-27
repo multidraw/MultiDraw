@@ -110,12 +110,12 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 			updatedSession = new Session(userName);
 			sessions.put(userName, updatedSession);
 			
-			registerPushCallback(userName, new ArrayList<String>(sessions.keySet()), HashMapCreator.create(new Object[]{"session", updatedSession}));
+			registerPushCallback(userName, new ArrayList<String>(sessions.keySet()), HashMapCreator.create(new Object[]{"session", updatedSession, "sessionid", userName}));
 		} else {
 			updatedSession = sessions.get(session).joinSession(userName);
 			sessions.put(session, updatedSession);
 			
-			registerPushCallback(userName, updatedSession.getActiveUsers(), HashMapCreator.create(new Object[]{"session", updatedSession, "joinSession", session}));
+			registerPushCallback(userName, updatedSession.getActiveUsers(), HashMapCreator.create(new Object[]{"session", updatedSession, "joinSession", session, "sessionid", session}));
 		}
 		return sessions.get(updatedSession.name).getShapes();
 	}
@@ -175,6 +175,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 
 		if ( options != null ){
 			sessionid = (String) options.remove("sessionid");
+			options.put("sessionid", sessionid);
 		}
 
 		ArrayList<String> users = ( sessionid == null ) ? new ArrayList<String>(allUsers.keySet()) : sessions.get(sessionid).getActiveUsers();

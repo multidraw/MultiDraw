@@ -5,6 +5,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.JOptionPane;
+
 import rmi.Session;
 import tools.shapes.CanvasShape;
 import utils.ServerUtil;
@@ -53,8 +55,12 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 		} else if( update == null ) {
 			if("session".equals(options.get("refresh"))) {
 				md.guiView.fillSessionMemberList();
-				if(md.utilInstance.getUserName().equals(options.get("newDrawer")) || 
-						md.utilInstance.getUserName().equals(options.get("oldDrawer"))) {
+				if(md.utilInstance.getUserName().equals(options.get("newDrawer"))) {
+					JOptionPane.showMessageDialog(md.getContentPane(), "You have been assigned drawing control. Go Wild!", 
+							"Control Passed", JOptionPane.WARNING_MESSAGE);
+					md.guiView.show(md.getContentPane(), md.frame, md.guiView.getCanvas());
+				}
+				else if (md.utilInstance.getUserName().equals(options.get("oldDrawer"))) {
 					md.guiView.show(md.getContentPane(), md.frame, md.guiView.getCanvas());
 				}
 			}

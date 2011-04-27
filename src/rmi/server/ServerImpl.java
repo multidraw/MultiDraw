@@ -126,6 +126,11 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 
 		if (currentSession.isEmpty())
 			sessions.remove(session);
+		
+		else if(userName.equals(currentSession.getDrawer())){
+			String reciever = currentSession.getActiveUsers().get(0);
+			passOffControl(session, userName, reciever);
+		}
 
 		registerPushCallback(userName, new ArrayList<String>(sessions.keySet()), HashMapCreator.create(new Object[]{"session", currentSession}));
 	}

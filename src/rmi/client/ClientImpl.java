@@ -5,6 +5,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.JOptionPane;
+
 import rmi.Session;
 import tools.shapes.CanvasShape;
 import utils.ServerUtil;
@@ -22,6 +24,7 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 	@SuppressWarnings("unchecked")
 	public <T> void update(T update, HashMap<String, Object> options)
 	throws RemoteException {
+
 		// Keep up their session if needed.
 		Session session;
 		if ( (session = (Session)options.remove("session")) != null ){
@@ -52,9 +55,13 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 		} else if( update == null ) {
 			if("session".equals(options.get("refresh"))) {
 				md.guiView.fillSessionMemberList();
-				if(md.utilInstance.getUserName().equals(options.get("newDrawer")) || 
-						md.utilInstance.getUserName().equals(options.get("oldDrawer"))) {
-
+				if(md.utilInstance.getUserName().equals(options.get("newDrawer"))) {
+					JOptionPane.showMessageDialog(md.getContentPane(), "You have been assigned drawing control. Go Wild!", 
+							"Control Passed", JOptionPane.WARNING_MESSAGE);
+					md.guiView.show(md.getContentPane(), md.frame, md.guiView.getCanvas());
+				}
+				else if (md.utilInstance.getUserName().equals(options.get("oldDrawer"))) {
+					md.guiView.show(md.getContentPane(), md.frame, md.guiView.getCanvas());
 				}
 			}
 		}
@@ -70,7 +77,6 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 		}
 		try {
 			new ClientImpl();
-
 		} catch (Exception e) {
 			System.err.println("Client exception: " + e.toString());
 			e.printStackTrace();

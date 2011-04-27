@@ -4,6 +4,10 @@ import java.io.File;
 
 import javax.swing.filechooser.FileFilter;
 
+/**
+ * Filters the files that MultiDraw can open.
+ *
+ */
 public class MdwFileFilter extends FileFilter {
 
 	public final String multiExt = "mdw";

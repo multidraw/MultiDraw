@@ -43,6 +43,14 @@ public interface MultiDrawServer extends Remote {
 	public ArrayList<CanvasShape> connectToSession(String session, String userName) throws RemoteException;
 	
 	/**
+	 * Leaves the session with the given username.
+	 * @param userName String - the user to leave the session
+	 * @param session String - the sessionid
+	 * @throws RemoteException
+	 */
+	public void leaveSession(String userName, String session) throws RemoteException;
+	
+	/**
 	 * Used to log a user into the system. 
 	 * @param userName - the desired username of the user logging in
 	 * @return true if it was a successful login, false otherwise 
@@ -52,13 +60,11 @@ public interface MultiDrawServer extends Remote {
 	public boolean login(MultiDrawClient client, String userName) throws RemoteException;
 	
 	/**
-	 * logout a user;
+	 * logout a user
 	 * @param userName - the username
-	 * @param session - the session they were in
-	 * @return if successful or not
 	 * @throws RemoteExcpetion
 	 */
-	public boolean logout(String userName, String session) throws RemoteException;
+	public void logout(String userName) throws RemoteException;
 	
 	/**
 	 * Used to get the session information (users in session and such)

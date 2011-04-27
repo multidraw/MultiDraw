@@ -192,6 +192,7 @@ public class DrawingCanvasView extends JLayeredPane {
 			shapes.get(currentSelectedObject).setSelected(false);
 			shapes.get(currentSelectedObject).highlightSelected(
 					imageBufferGraphics);
+			updateObject(shapes.get(currentSelectedObject));
 			currentSelectedObject = null;
 			refreshCanvas();
 		}

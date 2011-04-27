@@ -85,6 +85,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 
 		if(md.utilInstance.getUserName().equals(md.utilInstance.getSession().getDrawer())){	
 			controlPanel = createControlPanelView();
+			canvas.setControlPanelView(controlPanel);
 			canvasPane.add(controlPanel, BorderLayout.SOUTH);
 			toolList = createToolList();
 			toolBar = new ToolBarView(toolList);

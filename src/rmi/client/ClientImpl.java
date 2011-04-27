@@ -30,7 +30,7 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 
 		if ( update instanceof CanvasShape ){
 			CanvasShape newShape = (CanvasShape)update;
-			boolean isRemoved = ( options.get("removed") == null ) ? false : (Boolean) options.get("removed");
+			boolean isRemoved = ( options.get("remove") == null ) ? false : (Boolean) options.get("remove");
 			if ( isRemoved ) {
 				md.guiView.getCanvas().removeObject(newShape, false);
 			} else {

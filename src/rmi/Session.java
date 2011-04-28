@@ -76,6 +76,10 @@ public class Session implements Serializable{
 	public ArrayList<String> getActiveUsers() {
 		return activeUsers;
 	}
+	
+	public boolean isActive(String username) {
+		return activeUsers.contains(username);
+	}
 
 	/**
 	 * Gets the current drawer of the session.

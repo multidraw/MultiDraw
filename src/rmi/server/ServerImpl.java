@@ -100,7 +100,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 	public synchronized boolean passOffControl(String session, String passer, String receiver) throws RemoteException {
 		Session currentSession = sessions.get(session);
 		currentSession.setDrawer(receiver);
-		registerPushCallback(null, null, HashMapCreator.create(new Object[]{"session", currentSession, "sessionid", session, "refresh", "session", "oldDrawer", passer, "newDrawer", receiver}));
+		registerPushCallback(null, null, HashMapCreator.create(new Object[]{"session", currentSession, "sessionid", session, "refresh", "session", "oldDrawer", passer, "newDrawer", receiver, "specific", session}));
 		return false;
 	}
 
@@ -110,12 +110,12 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 			updatedSession = new Session(userName);
 			sessions.put(userName, updatedSession);
 			
-			registerPushCallback(userName, new ArrayList<String>(sessions.keySet()), HashMapCreator.create(new Object[]{"session", updatedSession, "sessionid", userName}));
+			registerPushCallback(userName, new ArrayList<String>(sessions.keySet()), HashMapCreator.create(new Object[]{"session", updatedSession, "specific", userName}));
 		} else {
 			updatedSession = sessions.get(session).joinSession(userName);
 			sessions.put(session, updatedSession);
 			
-			registerPushCallback(userName, updatedSession.getActiveUsers(), HashMapCreator.create(new Object[]{"session", updatedSession, "joinSession", session, "sessionid", session}));
+			registerPushCallback(userName, updatedSession.getActiveUsers(), HashMapCreator.create(new Object[]{"session", updatedSession, "joinSession", session, "specific", session}));
 		}
 		return sessions.get(updatedSession.name).getShapes();
 	}
@@ -132,7 +132,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 			passOffControl(session, userName, reciever);
 		}
 
-		registerPushCallback(userName, new ArrayList<String>(sessions.keySet()), HashMapCreator.create(new Object[]{"session", currentSession}));
+		registerPushCallback(userName, new ArrayList<String>(sessions.keySet()), HashMapCreator.create(new Object[]{"session", currentSession, "specific", session}));
 	}
 
 	public boolean login(MultiDrawClient client, String userName)
@@ -175,15 +175,15 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 
 		if ( options != null ){
 			sessionid = (String) options.remove("sessionid");
-			options.put("sessionid", sessionid);
 		}
 
 		ArrayList<String> users = ( sessionid == null ) ? new ArrayList<String>(allUsers.keySet()) : sessions.get(sessionid).getActiveUsers();
 		
 		System.out.println("Pushing update:" + update + " with opts: "  + options + " to clients: " + users);
 		
+		String session = (String)options.remove("specific");
 		for( String user : users ) {
-			if(user.equalsIgnoreCase(userName)) {
+			if(user.equalsIgnoreCase(userName) && session == null) {
 				continue;
 			}
 			try{

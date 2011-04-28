@@ -235,7 +235,6 @@ public class DrawingCanvasView extends JLayeredPane {
 			shapes.set(shapes.indexOf(shape), shape);
 		} else {
 			shapes.add(0, shape);
-
 		}
 		try {
 			if (isMine && utilInstance.getSession().getDrawer().equals(utilInstance.getUserName())) {

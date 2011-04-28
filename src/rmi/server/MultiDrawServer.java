@@ -80,4 +80,6 @@ public interface MultiDrawServer extends Remote {
 	 * @throws RemoteException
 	 */
 	public ArrayList<String> getSessions() throws RemoteException;
+	
+	public void setCanvas(String userName, String session, ArrayList<CanvasShape> updatedShape) throws RemoteException;
 }

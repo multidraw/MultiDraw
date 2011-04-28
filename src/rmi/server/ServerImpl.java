@@ -96,11 +96,17 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		}
 		return true;
 	}
+	
+	public synchronized void setCanvas(String userName, String session, ArrayList<CanvasShape> updatedShapes) throws RemoteException {
+		Session thisSession = sessions.get(session);
+		thisSession.setObjects(updatedShapes);
+		registerPushCallback(userName, updatedShapes, HashMapCreator.create(new Object[]{"remove", false, "sessionid", session, "mass", true}));	
+	}
 
 	public synchronized boolean passOffControl(String session, String passer, String receiver) throws RemoteException {
 		Session currentSession = sessions.get(session);
 		currentSession.setDrawer(receiver);
-		registerPushCallback(null, null, HashMapCreator.create(new Object[]{"session", currentSession, "sessionid", session, "refresh", "session", "oldDrawer", passer, "newDrawer", receiver, "specific", session}));
+		registerPushCallback(null, null, HashMapCreator.create(new Object[]{"session", currentSession, "sessionid", session, "refresh", "session", "oldDrawer", passer, "newDrawer", receiver}));
 		return false;
 	}
 
@@ -132,7 +138,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 			passOffControl(session, userName, reciever);
 		}
 
-		registerPushCallback(userName, new ArrayList<String>(sessions.keySet()), HashMapCreator.create(new Object[]{"session", currentSession, "specific", session}));
+		registerPushCallback(userName, new ArrayList<String>(sessions.keySet()), HashMapCreator.create(new Object[]{"session", currentSession}));
 	}
 
 	public boolean login(MultiDrawClient client, String userName)

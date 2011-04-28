@@ -72,7 +72,6 @@ public class OpenMenuItem extends FileMenuItem {
 
 			XMLCanvasWrapper wrapper = (XMLCanvasWrapper) xstream.fromXML(contents.toString());
 			canvas.setObjects(wrapper.getShapes());
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

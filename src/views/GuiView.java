@@ -83,11 +83,9 @@ public class GuiView extends JTabbedPane implements ActionListener {
 			canvas = currentCanvas;
 			removeAll();
 		}
-		System.out.println("got here");
 
 		canvas.setObjects(md.utilInstance.getSession().getShapes(), false);
 		canvasPane.add(canvas, BorderLayout.CENTER);
-		System.out.println("got here");
 		if(md.utilInstance.getUserName().equals(md.utilInstance.getSession().getDrawer())){	
 			controlPanel = createControlPanelView();
 			canvas.setControlPanelView(controlPanel);
@@ -98,7 +96,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 			menuBar = new MenuBarView(toolList, new FileMenuItemController( new OpenMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK)),
 					new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)));
 			canvasPane.add(menuBar, BorderLayout.NORTH);
-		} else{
+		} else {
 			menuBar = new MenuBarView(new FileMenuItemController( new OpenMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK)),
 					new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)));
 			canvasPane.add(menuBar, BorderLayout.NORTH);
@@ -212,6 +210,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 						"Can't Pass Control", JOptionPane.WARNING_MESSAGE);
 		} catch (Exception e1) {
 			e1.printStackTrace();
+			System.out.println("Tring to passs!!!");
 		} finally {
 
 		}

@@ -56,7 +56,10 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 
 		serverFrame.addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent e){
-				clientCallback.stop();
+				killAllUsers();
+				try { Thread.sleep(4000); } 
+				catch (InterruptedException e1) {}
+				finally { clientCallback.stop(); }
 			}
 		});
 
@@ -70,17 +73,16 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 	public static void main(String args[]) {
 
 		if (System.getSecurityManager() == null) {
-			System.setSecurityManager(new SecurityManager()); }
-
+			System.setSecurityManager(new SecurityManager()); 
+		}
 		try {
 			LocateRegistry.createRegistry(1099);
-			Naming.bind("//localhost:1099/MultiDrawServer", new ServerImpl());
+			Naming.bind("MultiDrawServer", new ServerImpl());
 			System.out.println("Server ready");
 			System.out.println(InetAddress.getLocalHost());
 		} catch (Exception e) {
 			System.err.println("Server exception: " + e.toString());
 			e.printStackTrace();
-
 		}
 	}
 
@@ -110,6 +112,10 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		return false;
 	}
 
+	private void killAllUsers() {
+		registerPushCallback(null, null, HashMapCreator.create(new Object[]{"method", "killAllUsers"}));
+	}
+	
 	public ArrayList<CanvasShape> connectToSession(String session, String userName) throws RemoteException {
 		Session updatedSession = null;
 		if (session == null) {
@@ -152,8 +158,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		}
 	}
 
-	public void logout(final String userName)
-	throws RemoteException {
+	public void logout(final String userName) throws RemoteException {
 		allUsers.remove(userName);
 		clientListModel.removeElement(userName);
 	}
@@ -187,7 +192,6 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		
 		System.out.println("Pushing update:" + update + " with opts: "  + options + " to clients: " + users);
 		
-		//String session = (String)options.remove("specific");
 		for( String user : users ) {
 			if(user.equalsIgnoreCase(userName)) {
 				continue;

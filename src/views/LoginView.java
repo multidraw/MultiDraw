@@ -77,7 +77,7 @@ public class LoginView extends JPanel implements ActionListener{
 		frame.getContentPane().add(contentPane, BorderLayout.CENTER);
 		frame.setTitle("Login");
 		frame.pack();
-		frame.setVisible(true);
+		frame.setVisible(true); 
 	}
 	
 	public String getUsername(){

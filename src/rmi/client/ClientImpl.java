@@ -27,12 +27,12 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 
 		// Keep up their session if needed.
 		Session session = (Session)options.remove("session");
-		Boolean mass;
+		String method = (String) options.remove("method");
 		if ( session != null && session.isActive(md.utilInstance.getUserName())){
 			md.utilInstance.setSession(session);			
 		}
 
-		if ( update instanceof CanvasShape ){
+		if ( method.equals("updateCanvas")){
 			CanvasShape newShape = (CanvasShape)update;
 			boolean isRemoved = ( options.get("remove") == null ) ? false : (Boolean) options.get("remove");
 			if ( isRemoved ) {
@@ -41,10 +41,10 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 				md.guiView.getCanvas().updateObject(newShape, false);
 			}
 			md.guiView.getCanvas().refreshCanvas();
-		} else if((mass = (Boolean)options.remove("mass")) != null && mass){
+		} else if(method.equals("setCanvas")){
 			md.guiView.getCanvas().setObjects((ArrayList<CanvasShape>) update, false);
 			md.guiView.getCanvas().refreshCanvas();
-		} else if ( update instanceof ArrayList ){
+		} else if ( method.equals("connectToSession") || method.equals("leaveSession") ){
 			ArrayList<String> updateList = (ArrayList<String>)update;
 			String joinSession;
 
@@ -56,7 +56,7 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 			
 			if ( md.guiView != null )
 				md.guiView.fillSessionMemberList();
-		} else if( update == null ) {
+		} else if( method.equals("passOffControl") ) {
 			if("session".equals(options.get("refresh"))) {
 				md.guiView.fillSessionMemberList();
 				if(md.utilInstance.getUserName().equals(options.get("newDrawer"))) {

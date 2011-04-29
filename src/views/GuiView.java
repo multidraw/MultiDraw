@@ -83,9 +83,11 @@ public class GuiView extends JTabbedPane implements ActionListener {
 			canvas = currentCanvas;
 			removeAll();
 		}
-		canvas.setObjects(md.utilInstance.getSession().getShapes());
-		canvasPane.add(canvas, BorderLayout.CENTER);
+		System.out.println("got here");
 
+		canvas.setObjects(md.utilInstance.getSession().getShapes(), false);
+		canvasPane.add(canvas, BorderLayout.CENTER);
+		System.out.println("got here");
 		if(md.utilInstance.getUserName().equals(md.utilInstance.getSession().getDrawer())){	
 			controlPanel = createControlPanelView();
 			canvas.setControlPanelView(controlPanel);

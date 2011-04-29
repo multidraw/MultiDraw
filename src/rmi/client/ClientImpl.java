@@ -28,6 +28,7 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 		// Keep up their session if needed.
 		Session session = (Session)options.remove("session");
 		String method = (String) options.remove("method");
+		System.out.println(method);
 		if ( session != null && session.isActive(md.utilInstance.getUserName())){
 			md.utilInstance.setSession(session);			
 		}
@@ -57,16 +58,15 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 			if ( md.guiView != null )
 				md.guiView.fillSessionMemberList();
 		} else if( method.equals("passOffControl") ) {
-			if("session".equals(options.get("refresh"))) {
-				md.guiView.fillSessionMemberList();
-				if(md.utilInstance.getUserName().equals(options.get("newDrawer"))) {
-					JOptionPane.showMessageDialog(md.getContentPane(), "You have been assigned drawing control. Go Wild!", 
-							"Control Passed", JOptionPane.WARNING_MESSAGE);
-					md.guiView.show(md.getContentPane(), md.frame, md.guiView.getCanvas());
-				}
-				else if (md.utilInstance.getUserName().equals(options.get("oldDrawer"))) {
-					md.guiView.show(md.getContentPane(), md.frame, md.guiView.getCanvas());
-				}
+			md.guiView.fillSessionMemberList();
+
+			if(md.utilInstance.getUserName().equals(options.get("newDrawer"))) {
+				JOptionPane.showMessageDialog(md.getContentPane(), "You have been assigned drawing control. Go Wild!", 
+						"Control Passed", JOptionPane.WARNING_MESSAGE);
+				md.guiView.show(md.getContentPane(), md.frame, md.guiView.getCanvas());
+			}
+			else if (md.utilInstance.getUserName().equals(options.get("oldDrawer"))) {
+				md.guiView.show(md.getContentPane(), md.frame, md.guiView.getCanvas());
 			}
 		}
 		

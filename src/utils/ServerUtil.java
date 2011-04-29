@@ -1,12 +1,10 @@
 package utils;
 
 import java.rmi.Naming;
-import java.util.ArrayList;
 
 import rmi.Session;
 import rmi.client.MultiDrawClient;
 import rmi.server.MultiDrawServer;
-import tools.shapes.CanvasShape;
 
 /**
  * The ServerUtil class maintains all of the "global" variables that the client will use within its
@@ -20,7 +18,6 @@ public class ServerUtil {
 	private String userName;	// The current username of the client.
 	private MultiDrawClient client;	// The current client impl object of the client.
 	private MultiDrawServer server;	// The current server object that the client interacts with.
-	private ArrayList<CanvasShape> shapes = new ArrayList<CanvasShape>();
 	
 	/**
 	 * Constructor for the utils class.
@@ -93,13 +90,5 @@ public class ServerUtil {
 	 */
 	public void setUserName(String userNameIN) {
 		userName = userNameIN;
-	}
-	
-	public ArrayList<CanvasShape> getShapes() {
-		return shapes ;
-	}
-
-	public void setShapes(ArrayList<CanvasShape> shapes) {
-		this.shapes = shapes;
 	}
 }

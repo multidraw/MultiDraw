@@ -228,7 +228,6 @@ public class DrawingCanvasView extends JLayeredPane {
 	
 	public void setObjects(ArrayList<CanvasShape> list, boolean isMine) {
 		this.shapes = list;
-		
 		try {
 			if (isMine) {
 				utilInstance.getServerInstance().setCanvas(utilInstance.getUserName(), utilInstance.getSession().name, list);

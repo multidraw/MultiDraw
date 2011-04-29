@@ -134,14 +134,14 @@ public class SessionView extends JPanel implements ActionListener, ListSelection
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(createSessionBtn)) {
 			try {
-				md.utilInstance.setShapes(md.utilInstance.getServerInstance().connectToSession(null, md.utilInstance.getUserName()));
+				md.utilInstance.getServerInstance().connectToSession(null, md.utilInstance.getUserName());
 				md.utilInstance.setSession(md.utilInstance.getServerInstance().getSession(md.utilInstance.getUserName()));
 			} catch(Exception e1) {
 			}
 		}
 		if(e.getSource().equals(joinSessionBtn)) {
 			try {
-				md.utilInstance.setShapes(md.utilInstance.getServerInstance().connectToSession((String)sessionList.getSelectedValue(), md.utilInstance.getUserName()));
+				md.utilInstance.getServerInstance().connectToSession((String)sessionList.getSelectedValue(), md.utilInstance.getUserName());
 				md.utilInstance.setSession(md.utilInstance.getServerInstance().getSession((String)sessionList.getSelectedValue()));
 			} catch(Exception e1) {
 				e1.printStackTrace();

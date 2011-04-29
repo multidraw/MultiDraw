@@ -10,7 +10,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import javax.swing.JLayeredPane;
 
@@ -40,7 +39,7 @@ public class DrawingCanvasView extends JLayeredPane {
 	protected int canvasHeight;
 	protected int canvasWidth;
 
-	protected List<CanvasShape> shapes = new ArrayList<CanvasShape>();
+	protected ArrayList<CanvasShape> shapes = new ArrayList<CanvasShape>();
 	protected Integer currentSelectedObject = null;
 	protected Graphics2D imageBufferGraphics;
 	protected Image imageBuffer;
@@ -81,7 +80,7 @@ public class DrawingCanvasView extends JLayeredPane {
 	 * Paints over the drawing canvas in the background color
 	 */
 	public void clearCanvas() {
-		shapes.clear();
+		setObjects(new ArrayList<CanvasShape>());
 		currentSelectedObject = null;
 		imageBufferGraphics.setColor(BACKGROUND);
 		imageBufferGraphics.fillRect(0, 0, canvasWidth, canvasHeight);
@@ -192,6 +191,7 @@ public class DrawingCanvasView extends JLayeredPane {
 			shapes.get(currentSelectedObject).setSelected(false);
 			shapes.get(currentSelectedObject).highlightSelected(
 					imageBufferGraphics);
+			updateObject(shapes.get(currentSelectedObject));
 			currentSelectedObject = null;
 			refreshCanvas();
 		}
@@ -213,7 +213,7 @@ public class DrawingCanvasView extends JLayeredPane {
 	 * 
 	 * @return list of objects on the canvas
 	 */
-	public List<CanvasShape> getObjects() {
+	public ArrayList<CanvasShape> getObjects() {
 		return shapes;
 	}
 
@@ -222,8 +222,20 @@ public class DrawingCanvasView extends JLayeredPane {
 	 * 
 	 * @param objects
 	 */
-	public void setObjects(List<CanvasShape> list) {
+	public void setObjects(ArrayList<CanvasShape> list) {
+		setObjects(list, true);
+	}
+	
+	public void setObjects(ArrayList<CanvasShape> list, boolean isMine) {
 		this.shapes = list;
+		
+		try {
+			if (isMine) {
+				utilInstance.getServerInstance().setCanvas(utilInstance.getUserName(), utilInstance.getSession().name, list);
+			}
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
 	}
 	
 	public void updateObject(CanvasShape shape) {
@@ -234,7 +246,6 @@ public class DrawingCanvasView extends JLayeredPane {
 			shapes.set(shapes.indexOf(shape), shape);
 		} else {
 			shapes.add(0, shape);
-
 		}
 		try {
 			if (isMine && utilInstance.getSession().getDrawer().equals(utilInstance.getUserName())) {

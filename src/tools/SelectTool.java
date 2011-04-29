@@ -69,9 +69,10 @@ public class SelectTool extends Tool {
 			}
 			canvas.removeSelection();
 			selection = (found) ? selection : null;
-
+			
 			if (selection != null) {
 				selection.setSelected(true);
+
 				canvas.setCurrentSelectedObject(canvas.getObjects().indexOf(
 						selection));
 				selection.highlightSelected(iBGraphics);
@@ -138,6 +139,9 @@ public class SelectTool extends Tool {
 			selection.move(iBGraphics, deltaX, deltaY);
 			canvas.refreshCanvas();
 		}
+		if(selection != null)
+			canvas.updateObject(canvas.getObject(canvas.getCurrentSelectedObject()));
+		
 		activeSelection = false;
 	}
 

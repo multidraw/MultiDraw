@@ -1,7 +1,6 @@
 package tools.utils;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import tools.shapes.CanvasShape;
 
@@ -11,17 +10,17 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class XMLCanvasWrapper {
 	
 	@XStreamAlias("Shapes")
-	private List<CanvasShape> shapes;
+	private ArrayList<CanvasShape> shapes;
 	
 	public XMLCanvasWrapper () {
 		shapes = new ArrayList<CanvasShape>();
 	}
 	
-	public void setShapes(List<CanvasShape> shapes) {
+	public void setShapes(ArrayList<CanvasShape> shapes) {
 		this.shapes = shapes;
 	}
 	
-	public List<CanvasShape> getShapes() { 
+	public ArrayList<CanvasShape> getShapes() { 
 		return shapes;
 	}
 }

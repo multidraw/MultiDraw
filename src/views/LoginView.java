@@ -6,8 +6,10 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -92,7 +94,9 @@ public class LoginView extends JPanel implements ActionListener{
 				JOptionPane.showMessageDialog(this, "Username is unavailable.", "Bad Username", JOptionPane.ERROR_MESSAGE);
 			}
 		} catch (Exception e1) {
-			e1.printStackTrace();
+			md.serverDown = true;
+			WindowEvent wev = new WindowEvent(md.frame, WindowEvent.WINDOW_CLOSING);
+            Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
 		} finally {
 			md.utilInstance.setUserName(getUsername());
 		}

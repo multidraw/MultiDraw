@@ -6,6 +6,7 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JApplet;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import rmi.server.MultiDrawServer;
 import tools.ToolList;
@@ -31,6 +32,7 @@ public class MultiDraw extends JApplet {
 	
 	public MultiDrawState state;
 	public ServerUtil utilInstance;
+	public boolean serverDown = false;
 	
 	public MultiDraw(boolean isApplet, ServerUtil serv) {
 		this.utilInstance = serv;
@@ -95,6 +97,14 @@ public class MultiDraw extends JApplet {
 		}
 		
 		public void windowClosing(WindowEvent e) {
+			
+			if(serverDown) {
+				JOptionPane.showMessageDialog(md.getContentPane(), "Sorry...but the server has gone down for maintenance.\n" +
+						"The application will now exit. Please try again later.", 
+						"Server Down", JOptionPane.ERROR_MESSAGE);
+				System.exit(0);
+			}
+			
 			try {
 				switch ( md.state ){
 				case AUTH_SCREEN:

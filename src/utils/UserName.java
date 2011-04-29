@@ -6,6 +6,9 @@ public class UserName {
 	private boolean isSelf;
 	
 	/**
+	 * Utility which facilitates populating the session tab of the GuiView.
+	 * Maintains the integrity of usernames while allowing the session list
+	 * to display other user attributes such as drawing control and identity.
 	 * 
 	 * @param userName the username string
 	 * @param isDrawer determines whether they are the drawer or not
@@ -16,7 +19,6 @@ public class UserName {
 		this.isDrawer = isDrawer;
 		this.isSelf = isSelf;
 	}
-	
 	
 	public String toString() {
 		StringBuilder builder = new StringBuilder(userName);

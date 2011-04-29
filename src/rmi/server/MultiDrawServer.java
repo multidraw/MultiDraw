@@ -33,6 +33,7 @@ public interface MultiDrawServer extends Remote {
 	 */
 	public boolean passOffControl(String session, String passer, String receiver) throws RemoteException;
 	
+	
 	/**
 	 * Client calls this if trying to connect to a session or create a new session
 	 * @param session - the session key, if it is null the user wants to create a new session

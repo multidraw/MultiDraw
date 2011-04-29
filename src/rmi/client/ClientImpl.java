@@ -1,5 +1,7 @@
 package rmi.client;
 
+import java.awt.Toolkit;
+import java.awt.event.WindowEvent;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -22,9 +24,7 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> void update(T update, HashMap<String, Object> options)
-	throws RemoteException {
-
+	public <T> void update(T update, HashMap<String, Object> options) throws RemoteException {
 		// Keep up their session if needed.
 		Session session;
 		if ( (session = (Session)options.remove("session")) != null ){
@@ -57,12 +57,17 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 				md.guiView.fillSessionMemberList();
 				if(md.utilInstance.getUserName().equals(options.get("newDrawer"))) {
 					JOptionPane.showMessageDialog(md.getContentPane(), "You have been assigned drawing control. Go Wild!", 
-							"Control Passed", JOptionPane.WARNING_MESSAGE);
+							"Control Passed", JOptionPane.INFORMATION_MESSAGE);
 					md.guiView.show(md.getContentPane(), md.frame, md.guiView.getCanvas());
 				}
 				else if (md.utilInstance.getUserName().equals(options.get("oldDrawer"))) {
 					md.guiView.show(md.getContentPane(), md.frame, md.guiView.getCanvas());
 				}
+			}
+			else if("all".equals(options.get("kill"))) {
+				md.serverDown = true;
+				WindowEvent wev = new WindowEvent(md.frame, WindowEvent.WINDOW_CLOSING);
+                Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
 			}
 		}
 		

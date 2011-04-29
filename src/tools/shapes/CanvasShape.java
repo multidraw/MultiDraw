@@ -19,10 +19,12 @@ public abstract class CanvasShape implements Serializable{
 	protected Shape shape;
 	protected Color color;
 	protected boolean resizable;
+	protected long timeStamp;
 	
 	public CanvasShape() {
 		selected = false;
 		borders = new Borders();
+		timeStamp = System.currentTimeMillis();
 	}
 	
 	/**
@@ -56,6 +58,11 @@ public abstract class CanvasShape implements Serializable{
 		Rectangle2D.Double point = new Rectangle2D.Double(x-2, y-2, 4, 4);
 		g.fill(point);
 		g.draw(point);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return ((CanvasShape) obj).timeStamp == this.timeStamp;
 	}
 	
 	public Borders getBorders() {

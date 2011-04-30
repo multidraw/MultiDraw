@@ -314,7 +314,18 @@ public class DrawingCanvasView extends JLayeredPane {
 		repaint();
 	}
 	
+	/**
+	 * Adds the plugin to the main view so that we can use it.
+	 * Yay Demeter
+	 * @param plugin - Plugin that is to be imported.
+	 */
 	public void importPlugin(Plugin plugin){
-		
+		try {
+			gView.addPlugin(plugin);
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -12,7 +12,10 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.HashMap;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -27,11 +30,15 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
+import plugins.Plugin;
+import plugins.PluginWindow;
+
 import rmi.Session;
 import tools.EraserTool;
 import tools.FreehandTool;
 import tools.SelectTool;
 import tools.TextTool;
+import tools.Tool;
 import tools.ToolList;
 import tools.TwoEndShapeTool;
 import tools.shapes.LineShape;
@@ -55,8 +62,12 @@ public class GuiView extends JTabbedPane implements ActionListener {
 	private DefaultListModel listModel;
 	private JButton changeDrawer;
 	protected MultiDraw md;
+	
+	private HashMap<String, Class<?>> plugins;
 
 	public GuiView(boolean isApplet, MultiDraw md) {
+		plugins = new HashMap<String, Class<?>>();
+		
 		this.isApplet = isApplet;	
 		this.md = md;
 	}
@@ -295,5 +306,65 @@ public class GuiView extends JTabbedPane implements ActionListener {
 
 	public DrawingCanvasView getCanvas() {
 		return canvas;
+	}
+	
+	/**
+	 * Adds a plugin to the current GUI frame.
+	 * @param plugin - Plugin the plugin to add.
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	public void addPlugin(Plugin plugin) throws InstantiationException, IllegalAccessException{
+		Class<?> shapeClass = plugin.getShapeClass();
+		Class<?> toolClass = plugin.getToolClass();
+			
+		plugins.put(toolClass.getName(), toolClass);
+		plugins.put(shapeClass.getName(), shapeClass);
+		
+		toolBar.addTool(new ToolController(plugin.getName(), plugin.getImage(), 
+				plugin.getDescription(), canvas, (Tool)initializeClass(toolClass, shapeClass)));
+	}
+	
+	/**
+	 * Tries to initialize the Class passed in with its given constructor.
+	 * The current supported constructor params are that of a reference to the
+	 * current DrawingCanvasView and a new CanvasShape (which will have to be casted).
+	 * @param clazz - Class, The class to initialize.
+	 * @param klazz - Class, The class that would be the shape for example in the constructor of clazz
+	 * @return Object - The initialized class.
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	private Object initializeClass(Class<?> clazz, Class<?> klazz) throws InstantiationException, IllegalAccessException{
+		Constructor<?> [] constructors = clazz.getConstructors();
+		
+		if ( constructors.length > 1 || constructors[0] == null ){
+			JOptionPane.showMessageDialog(this, "There is only 1 constructor allowed for plugins.", "Plugin Load Error", JOptionPane.ERROR_MESSAGE);	
+			new PluginWindow(getCanvas());
+		}
+		
+		Class<?> [] args = constructors[0].getParameterTypes();
+		
+		if ( args.length == 0 ){
+			return clazz.newInstance();
+		} 
+
+		Object [] params = new Object[args.length];
+		
+		for ( int i = 0; i < args.length; i++ ){
+			if ( args[i] == DrawingCanvasView.class ){
+				params[i] = getCanvas();
+			} else
+				params[i] = initializeClass(klazz, null);
+		}
+		
+		try {
+			return constructors[0].newInstance(params);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

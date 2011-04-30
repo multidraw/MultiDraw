@@ -9,7 +9,7 @@ import javax.swing.ImageIcon;
  */
 public class Plugin {
 	private ImageIcon image;
-	private String description;
+	private String description, name;
 	private Class<?> toolClass, shapeClass;
 
 	/**
@@ -19,23 +19,18 @@ public class Plugin {
 	 * @param toolPath - String THe filepath of the Tool to import.
 	 * @param shapePath - String The filepath of the Shape to import.
 	 */
-	public Plugin(String imagePath, String desc, String toolPath, String shapePath){
+	public Plugin(String imagePath, String name, String desc, String toolPath, String shapePath) throws ClassNotFoundException{
 		PluginClassLoader classLoader = new PluginClassLoader(Plugin.class.getClassLoader());
 
 		if ( !imagePath.isEmpty() )
 			image = new ImageIcon(imagePath);
 		description = desc;
+		this.name = name;
 
-		try{
-			if ( !toolPath.isEmpty() )
-				toolClass = classLoader.loadClass(toolPath);
-			if ( !shapePath.isEmpty())
-				shapeClass = classLoader.loadClass(shapePath);
-		} catch ( ClassNotFoundException e ){
-			e.printStackTrace();
-		}
+		toolClass = classLoader.loadClass(toolPath);
+		shapeClass = classLoader.loadClass(shapePath);
 	}
-	
+
 	/**
 	 * Gets the icon for the plugin.
 	 * @return ImageIcon - The icon, may be null.
@@ -45,24 +40,32 @@ public class Plugin {
 	}
 	
 	/**
+	 * Gets the name for the 
+	 * @return
+	 */
+	public String getName(){
+		return name;
+	}
+
+	/**
 	 * Gets the description for the plugin.
 	 * @return String - The description.
 	 */
 	public String getDescription(){
 		return description;
 	}
-	
+
 	/**
 	 * Gets the shape class for the shape imported.
-	 * @return Class - The shape class, may be null.
+	 * @return Class - The shape class.
 	 */
 	public Class<?> getShapeClass(){
 		return shapeClass;
 	}
-	
+
 	/**
 	 * Gets the tool class for the tool imported.
-	 * @return Class - The tool class, may be null.
+	 * @return Class - The tool class.
 	 */
 	public Class<?> getToolClass(){
 		return toolClass;

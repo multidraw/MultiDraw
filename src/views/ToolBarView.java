@@ -40,5 +40,14 @@ public class ToolBarView extends JToolBar {
 				this.add(a);
 		}
 
-	}				  
+	}		
+	
+	/**
+	 * 
+	 * Adds a tool action to the ToolBar
+	 * @param tool - Object The tool action to add.
+	 */
+	public void addTool(Object tool){
+		this.add((Action) tool);
+	}
 }

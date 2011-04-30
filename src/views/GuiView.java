@@ -1,6 +1,7 @@
 package views;
 
 import items.OpenMenuItem;
+import items.PluginMenuItem;
 import items.SaveMenuItem;
 
 import java.awt.BorderLayout;
@@ -77,7 +78,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		canvasPane.setLayout(new BorderLayout());
 
 		if(currentCanvas == null){
-			canvas = new DrawingCanvasView(md.utilInstance);
+			canvas = new DrawingCanvasView(md.utilInstance, this);
 		}
 		else{
 			canvas = currentCanvas;
@@ -94,7 +95,8 @@ public class GuiView extends JTabbedPane implements ActionListener {
 			toolBar = new ToolBarView(toolList);
 			canvasPane.add(toolBar, BorderLayout.WEST);
 			menuBar = new MenuBarView(toolList, new FileMenuItemController( new OpenMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK)),
-					new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)));
+							new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)),
+							new FileMenuItemController(new PluginMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.CTRL_DOWN_MASK)));
 			canvasPane.add(menuBar, BorderLayout.NORTH);
 		} else {
 			menuBar = new MenuBarView(new FileMenuItemController( new OpenMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK)),

@@ -1,11 +1,11 @@
-package utils;
+package utils.filefilters;
 
 import java.io.File;
 
 import javax.swing.filechooser.FileFilter;
 
 /**
- * Filters the files that MultiDraw can open.
+ * Filters the files that MultiDraw can open to .mdw.
  *
  */
 public class MdwFileFilter extends FileFilter {
@@ -31,7 +31,7 @@ public class MdwFileFilter extends FileFilter {
 	 * @param f File to grab the extension
 	 * @return String the file extension
 	 */
-	private String getExtension(File f){
+	public static String getExtension(File f){
 		String ext = null, s = f.getName();
 		int i = s.lastIndexOf(".");
 		

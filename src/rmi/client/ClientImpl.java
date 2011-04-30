@@ -28,7 +28,7 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 		// Keep up their session if needed.
 		Session session = (Session)options.remove("session");
 		String method = (String) options.remove("method");
-		System.out.println(method);
+		
 		if ( session != null && session.isActive(md.utilInstance.getUserName())){
 			md.utilInstance.setSession(session);			
 		}

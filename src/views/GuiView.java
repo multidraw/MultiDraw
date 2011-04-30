@@ -321,8 +321,11 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		plugins.put(toolClass.getName(), toolClass);
 		plugins.put(shapeClass.getName(), shapeClass);
 		
-		toolBar.addTool(new ToolController(plugin.getName(), plugin.getImage(), 
-				plugin.getDescription(), canvas, (Tool)initializeClass(toolClass, shapeClass)));
+		ToolController pluginController = new ToolController(plugin.getName(), plugin.getImage(), 
+				plugin.getDescription(), canvas, (Tool)initializeClass(toolClass, shapeClass));
+		
+		toolBar.addTool(pluginController);
+		menuBar.addMenuItem(pluginController);
 	}
 	
 	/**

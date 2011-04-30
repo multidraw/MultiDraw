@@ -12,8 +12,10 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileFilter;
 
 import utils.filefilters.ClassFileFilter;
+import utils.filefilters.ImageFileFilter;
 import views.DrawingCanvasView;
 
 @SuppressWarnings("serial")
@@ -96,11 +98,11 @@ public class PluginWindow extends JDialog implements ActionListener{
 		String cmd = e.getActionCommand();
 		try {
 			if ( "tool".equals(cmd) ){
-				toolField.setText(getFilepath());
+				toolField.setText(getFilepath(new ClassFileFilter()));
 			} else if ( "shape".equals(cmd) ){
-				shapeField.setText(getFilepath());
+				shapeField.setText(getFilepath(new ClassFileFilter()));
 			} else if ( "image".equals(cmd) ){
-				imageField.setText(getFilepath());
+				imageField.setText(getFilepath(new ImageFileFilter()));
 			} else if ( "import".equals(cmd) ){
 				String shape = shapeField.getText();
 				String tool = toolField.getText();
@@ -140,9 +142,9 @@ public class PluginWindow extends JDialog implements ActionListener{
 	 * Returns the filepath of the selected file from a new FileChooser.
 	 * @return String - The filepath of the string.
 	 */
-	private String getFilepath(){
+	private String getFilepath(FileFilter f){
 		JFileChooser fc = new JFileChooser();
-		fc.setFileFilter(new ClassFileFilter());
+		fc.setFileFilter(f);
 
 		int returnVal = fc.showOpenDialog(this);
 

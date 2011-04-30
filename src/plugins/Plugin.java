@@ -24,6 +24,8 @@ public class Plugin {
 
 		if ( !imagePath.isEmpty() )
 			image = new ImageIcon(imagePath);
+		else 
+			image = new ImageIcon("images/select.png");
 		description = desc;
 		this.name = name;
 

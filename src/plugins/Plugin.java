@@ -1,5 +1,7 @@
 package plugins;
 
+import java.io.Serializable;
+
 import javax.swing.ImageIcon;
 
 /**
@@ -7,7 +9,9 @@ import javax.swing.ImageIcon;
  * the tool bar view will show, and the class types of the tool/plugin.
  *
  */
-public class Plugin {
+public class Plugin implements Serializable {
+
+	private static final long serialVersionUID = 3689083384108501680L;
 	private ImageIcon image;
 	private String description, name;
 	private Class<?> toolClass, shapeClass;

@@ -1,16 +1,15 @@
 package plugins;
 
-import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
@@ -19,7 +18,7 @@ import utils.filefilters.ImageFileFilter;
 import views.DrawingCanvasView;
 
 @SuppressWarnings("serial")
-public class PluginWindow extends JDialog implements ActionListener{
+public class PluginWindow extends JPanel implements ActionListener{
 	private DrawingCanvasView canvas;
 
 	private JTextField imageField, descriptionField, nameField, toolField, shapeField;
@@ -79,18 +78,9 @@ public class PluginWindow extends JDialog implements ActionListener{
 		importBtn.setActionCommand("import");
 		importBtn.addActionListener(this);
 
-		JButton cancelBtn = new JButton("Cancel");
-		cancelBtn.setActionCommand("cancel");
-		cancelBtn.addActionListener(this);
-
 		add(importBtn);
 		add(new JLabel());
-		add(cancelBtn);
 
-		pack();
-
-		setResizable(false);
-		setSize(new Dimension(700, 200));
 		setVisible(true);
 	}
 
@@ -126,11 +116,8 @@ public class PluginWindow extends JDialog implements ActionListener{
 				} else {
 					canvas.importPlugin(new Plugin(imageField.getText(), descriptionField.getText(),
 							nameField.getText(), toolField.getText(), shapeField.getText()));
-					dispose();
 				}
 
-			} else if ( "cancel".equals(cmd) ){
-				dispose();
 			}
 		} catch (ClassNotFoundException e1) {
 			e1.printStackTrace();

@@ -1,7 +1,6 @@
 package views;
 
 import items.OpenMenuItem;
-import items.PluginMenuItem;
 import items.SaveMenuItem;
 
 import java.awt.BorderLayout;
@@ -34,7 +33,6 @@ import javax.swing.KeyStroke;
 
 import plugins.Plugin;
 import plugins.PluginWindow;
-
 import rmi.Session;
 import tools.EraserTool;
 import tools.FreehandTool;
@@ -108,8 +106,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 			toolBar = new ToolBarView(toolList);
 			canvasPane.add(toolBar, BorderLayout.WEST);
 			menuBar = new MenuBarView(toolList, new FileMenuItemController( new OpenMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK)),
-							new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)),
-							new FileMenuItemController(new PluginMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.CTRL_DOWN_MASK)));
+							new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)));
 			
 			try {
 				reloadPlugins();
@@ -182,12 +179,21 @@ public class GuiView extends JTabbedPane implements ActionListener {
 			sessionPane.add(changeDrawer, c);
 			changeDrawer.addActionListener(this);
 		}
-
+		
 		JPanel toolDesignerPane = new JPanel();
 
+		if(md.utilInstance.getUserName().equals(md.utilInstance.getSession().getDrawer())){
+		PluginWindow toolDesigner = new PluginWindow(canvas);
+		toolDesignerPane.add(toolDesigner);
+		}
+		
 		add("Session",sessionPane);
 		add("Canvas",canvasPane);
-		add("Tool Designer",toolDesignerPane);
+		
+		if(md.utilInstance.getUserName().equals(md.utilInstance.getSession().getDrawer())){
+			add("Tool Designer",toolDesignerPane);
+		}
+		
 		contentPane.add(this);
 		
 		frame.setTitle("MultiDraw");

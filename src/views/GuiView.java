@@ -191,7 +191,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		add("Canvas",canvasPane);
 		
 		if(md.utilInstance.getUserName().equals(md.utilInstance.getSession().getDrawer())){
-			add("Tool Designer",toolDesignerPane);
+			add("Import Tool",toolDesignerPane);
 		}
 		
 		contentPane.add(this);

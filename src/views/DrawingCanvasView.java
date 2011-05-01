@@ -13,6 +13,8 @@ import java.util.Collections;
 
 import javax.swing.JLayeredPane;
 
+import plugins.Plugin;
+
 import tools.Tool;
 import tools.shapes.CanvasShape;
 import utils.ServerUtil;
@@ -44,15 +46,17 @@ public class DrawingCanvasView extends JLayeredPane {
 	protected Graphics2D imageBufferGraphics;
 	protected Image imageBuffer;
 	protected ServerUtil utilInstance;
+	private GuiView gView;
 
 	/**
 	 * Creates a default DrawingCanvas with a white background
 	 */
-	public DrawingCanvasView(ServerUtil utilInstance) {
+	public DrawingCanvasView(ServerUtil utilInstance, GuiView gView) {
 		canvasController = createDrawingCanvasController();
 		addDrawingCanvasListener(canvasController);
 		setBackground(BACKGROUND);
 		this.utilInstance = utilInstance;
+		this.gView = gView;
 	}
 
 	protected DrawingCanvasController createDrawingCanvasController() {
@@ -309,5 +313,20 @@ public class DrawingCanvasView extends JLayeredPane {
 			shapes.add(0, shape);
 		}
 		repaint();
+	}
+	
+	/**
+	 * Adds the plugin to the main view so that we can use it.
+	 * Yay Demeter
+	 * @param plugin - Plugin that is to be imported.
+	 */
+	public void importPlugin(Plugin plugin){
+		try {
+			gView.addPlugin(plugin);
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
 	}
 }

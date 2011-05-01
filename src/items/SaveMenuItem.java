@@ -16,7 +16,7 @@ import tools.shapes.OvalShape;
 import tools.shapes.RectangleShape;
 import tools.shapes.TextShape;
 import tools.utils.XMLCanvasWrapper;
-import utils.MdwFileFilter;
+import utils.filefilters.MdwFileFilter;
 import views.DrawingCanvasView;
 
 import com.thoughtworks.xstream.XStream;

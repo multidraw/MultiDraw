@@ -18,7 +18,7 @@ import controllers.FileMenuItemController;
  */
 @SuppressWarnings("serial")
 public class MenuBarView extends JMenuBar {
-
+	private JMenu toolMenu;
 	/**
 	 * Constructor
 	 * 
@@ -34,7 +34,7 @@ public class MenuBarView extends JMenuBar {
 	 * @return Initialized MenuBarView
 	 */
 	public MenuBarView(ToolList actions, FileMenuItemController ... items) {
-		JMenu toolMenu = new JMenu("Tool Menu");
+		toolMenu = new JMenu("Tool Menu");
 		JMenu fileMenu = new JMenu("File");
 
 		for ( FileMenuItemController item : items ){
@@ -58,5 +58,9 @@ public class MenuBarView extends JMenuBar {
 		}
 
 		add(fileMenu);
+	}
+	
+	public void addMenuItem(Object tool){
+		toolMenu.add((Action)tool);
 	}
 }

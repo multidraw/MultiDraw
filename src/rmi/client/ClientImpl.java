@@ -9,6 +9,8 @@ import java.util.HashMap;
 
 import javax.swing.JOptionPane;
 
+import plugins.Plugin;
+
 import rmi.Session;
 import tools.shapes.CanvasShape;
 import utils.ServerUtil;
@@ -32,7 +34,7 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 			md.utilInstance.setSession(session);			
 		}
 
-		if ( method.equals("updateCanvas")){
+		if ( "updateCanvas".equals(method)){
 			CanvasShape newShape = (CanvasShape)update;
 			boolean isRemoved = ( options.get("remove") == null ) ? false : (Boolean) options.get("remove");
 			if ( isRemoved ) {
@@ -41,10 +43,10 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 				md.guiView.getCanvas().updateObject(newShape, false);
 			}
 			md.guiView.getCanvas().refreshCanvas();
-		} else if(method.equals("setCanvas")){
+		} else if("setCanvas".equals(method)){
 			md.guiView.getCanvas().setObjects((ArrayList<CanvasShape>) update, false);
 			md.guiView.getCanvas().refreshCanvas();
-		} else if ( method.equals("connectToSession") || method.equals("leaveSession") ){
+		} else if ( "connectToSession".equals(method) || "leaveSession".equals(method) ){
 			ArrayList<String> updateList = (ArrayList<String>)update;
 			String joinSession;
 
@@ -56,22 +58,29 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 			
 			if ( md.guiView != null )
 				md.guiView.fillSessionMemberList();
-		} else if( method.equals("passOffControl") ) {
-			if("session".equals(options.get("refresh"))) {
-				md.guiView.fillSessionMemberList();
-				if(md.utilInstance.getUserName().equals(options.get("newDrawer"))) {
-					JOptionPane.showMessageDialog(md.getContentPane(), "You have been assigned drawing control. Go Wild!", 
-							"Control Passed", JOptionPane.INFORMATION_MESSAGE);
-					md.guiView.show(md.getContentPane(), md.frame, md.guiView.getCanvas());
-				}
-				else if (md.utilInstance.getUserName().equals(options.get("oldDrawer"))) {
-					md.guiView.show(md.getContentPane(), md.frame, md.guiView.getCanvas());
-				}
+		} else if( "passOffControl".equals(method) ) {
+			md.guiView.fillSessionMemberList();
+			if(md.utilInstance.getUserName().equals(options.get("newDrawer"))) {
+				JOptionPane.showMessageDialog(md.getContentPane(), "You have been assigned drawing control. Go Wild!", 
+						"Control Passed", JOptionPane.INFORMATION_MESSAGE);
+				md.guiView.show(md.getContentPane(), md.frame, md.guiView.getCanvas());
 			}
-			else if("all".equals(options.get("kill"))) {
-				md.serverDown = true;
-				WindowEvent wev = new WindowEvent(md.frame, WindowEvent.WINDOW_CLOSING);
-                Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
+			else if (md.utilInstance.getUserName().equals(options.get("oldDrawer"))) {
+				md.guiView.show(md.getContentPane(), md.frame, md.guiView.getCanvas());
+			}
+		} else if("killAllUsers".equals(method)) {
+			md.serverDown = true;
+			WindowEvent wev = new WindowEvent(md.frame, WindowEvent.WINDOW_CLOSING);
+            Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
+		} else if ( update instanceof Plugin ){
+			if ( md.guiView != null ){
+				try {
+					md.guiView.addPlugin((Plugin) update);
+				} catch (InstantiationException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		

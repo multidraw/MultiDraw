@@ -4,6 +4,8 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
+import plugins.Plugin;
+
 import rmi.Session;
 import rmi.client.MultiDrawClient;
 import tools.shapes.CanvasShape;
@@ -28,10 +30,9 @@ public interface MultiDrawServer extends Remote {
 	 * @param passer - the userName of the person that is passing control
 	 * @param session - the session key
 	 * @param receiver - the userName of the person they want to pass off to
-	 * @return true if it was successful, false otherwise
 	 * @throws RemoteException
 	 */
-	public boolean passOffControl(String session, String passer, String receiver) throws RemoteException;
+	public void passOffControl(String session, String passer, String receiver) throws RemoteException;
 	
 	
 	/**
@@ -81,6 +82,15 @@ public interface MultiDrawServer extends Remote {
 	 * @throws RemoteException
 	 */
 	public ArrayList<String> getSessions() throws RemoteException;
+	
+	/**
+	 * Adds a plugin to a given session for everyone to use.
+	 * @param userName String - The current username.
+	 * @param session String - The session name.
+	 * @param plugin Plugin - The plugin to import.
+	 * @throws RemoteException
+	 */
+	public void addPlugin(String userName, String session, Plugin plugin) throws RemoteException;
 	
 	public void setCanvas(String userName, String session, ArrayList<CanvasShape> updatedShape) throws RemoteException;
 }

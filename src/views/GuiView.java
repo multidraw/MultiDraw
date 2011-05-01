@@ -1,6 +1,7 @@
 package views;
 
 import items.OpenMenuItem;
+import items.PluginMenuItem;
 import items.SaveMenuItem;
 
 import java.awt.BorderLayout;
@@ -11,7 +12,12 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.HashMap;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -26,11 +32,15 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
+import plugins.Plugin;
+import plugins.PluginWindow;
+
 import rmi.Session;
 import tools.EraserTool;
 import tools.FreehandTool;
 import tools.SelectTool;
 import tools.TextTool;
+import tools.Tool;
 import tools.ToolList;
 import tools.TwoEndShapeTool;
 import tools.shapes.LineShape;
@@ -54,8 +64,12 @@ public class GuiView extends JTabbedPane implements ActionListener {
 	private DefaultListModel listModel;
 	private JButton changeDrawer;
 	protected MultiDraw md;
+	
+	private HashMap<Plugin, Boolean> plugins;
 
 	public GuiView(boolean isApplet, MultiDraw md) {
+		plugins = new HashMap<Plugin, Boolean>();
+		
 		this.isApplet = isApplet;	
 		this.md = md;
 	}
@@ -77,7 +91,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		canvasPane.setLayout(new BorderLayout());
 
 		if(currentCanvas == null){
-			canvas = new DrawingCanvasView(md.utilInstance);
+			canvas = new DrawingCanvasView(md.utilInstance, this);
 		}
 		else{
 			canvas = currentCanvas;
@@ -94,11 +108,20 @@ public class GuiView extends JTabbedPane implements ActionListener {
 			toolBar = new ToolBarView(toolList);
 			canvasPane.add(toolBar, BorderLayout.WEST);
 			menuBar = new MenuBarView(toolList, new FileMenuItemController( new OpenMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK)),
-					new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)));
+							new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)),
+							new FileMenuItemController(new PluginMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.CTRL_DOWN_MASK)));
+			
+			try {
+				reloadPlugins();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+			
 			canvasPane.add(menuBar, BorderLayout.NORTH);
 		} else {
-			menuBar = new MenuBarView(new FileMenuItemController( new OpenMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK)),
-					new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)));
+			menuBar = new MenuBarView(new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)));
 			canvasPane.add(menuBar, BorderLayout.NORTH);
 		}
 
@@ -166,20 +189,22 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		add("Canvas",canvasPane);
 		add("Tool Designer",toolDesignerPane);
 		contentPane.add(this);
+		
 		frame.setTitle("MultiDraw");
 		frame.getContentPane().setLayout(new BorderLayout());
 		frame.getContentPane().add(contentPane, BorderLayout.CENTER);
 		frame.setMinimumSize(new Dimension(300,200));
 		frame.pack();
 		frame.setVisible(true);
-
+		
 	}
 
 	/**
 	 * Fills the JList in the sessionView.
 	 */
 	public void fillSessionMemberList() {
-		listModel = new DefaultListModel();
+		try{
+			listModel = new DefaultListModel();
 
 		Session session = md.utilInstance.getSession();
 		for(String member : session.getActiveUsers()) {
@@ -191,6 +216,9 @@ public class GuiView extends JTabbedPane implements ActionListener {
 
 		sessionMembers.setModel(listModel);
 		sessionMembers.setSelectedIndex(0);
+		} catch ( NullPointerException e){
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -292,5 +320,96 @@ public class GuiView extends JTabbedPane implements ActionListener {
 
 	public DrawingCanvasView getCanvas() {
 		return canvas;
+	}
+	
+	/**
+	 * Loads all the plugins for the GUI view.
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+	 */
+	private void loadPlugins() throws InstantiationException, IllegalAccessException{
+		Collection<Plugin> plugins = this.plugins.keySet();
+		
+		for ( Plugin plugin : plugins ){
+			if ( !this.plugins.get(plugin) ){
+				ToolController pluginController = new ToolController(plugin.getName(), plugin.getImage(), 
+						plugin.getDescription(), canvas, (Tool)initializeClass(plugin.getToolClass(), plugin.getShapeClass()));
+			
+				toolBar.addTool(pluginController);
+				menuBar.addMenuItem(pluginController);
+				this.plugins.put(plugin, true);
+			}
+		}
+	}
+	
+	private void reloadPlugins() throws InstantiationException, IllegalAccessException{
+		Collection<Plugin> plugins = this.plugins.keySet();
+		
+		for ( Plugin plugin : plugins ){
+			this.plugins.put(plugin, false);
+		}
+		loadPlugins();
+	}
+	
+	/**
+	 * Adds a plugin to the current GUI frame.
+	 * @param plugin - Plugin the plugin to add.
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	public void addPlugin(Plugin plugin) throws InstantiationException, IllegalAccessException{
+		plugins.put(plugin, false);
+	
+		if ( md.utilInstance.getUserName().equals(md.utilInstance.getSession().getDrawer()) ){
+			try {
+				loadPlugins();
+				md.utilInstance.getServerInstance().addPlugin(md.utilInstance.getUserName(), md.utilInstance.getSession().name, plugin);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * Tries to initialize the Class passed in with its given constructor.
+	 * The current supported constructor params are that of a reference to the
+	 * current DrawingCanvasView and a new CanvasShape (which will have to be casted).
+	 * @param clazz - Class, The class to initialize.
+	 * @param klazz - Class, The class that would be the shape for example in the constructor of clazz
+	 * @return Object - The initialized class.
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	private Object initializeClass(Class<?> clazz, Class<?> klazz) throws InstantiationException, IllegalAccessException{
+		Constructor<?> [] constructors = clazz.getConstructors();
+		
+		if ( constructors.length > 1 || constructors[0] == null ){
+			JOptionPane.showMessageDialog(this, "There is only 1 constructor allowed for plugins.", "Plugin Load Error", JOptionPane.ERROR_MESSAGE);	
+			new PluginWindow(getCanvas());
+		}
+		
+		Class<?> [] args = constructors[0].getParameterTypes();
+		
+		if ( args.length == 0 ){
+			return clazz.newInstance();
+		} 
+
+		Object [] params = new Object[args.length];
+		
+		for ( int i = 0; i < args.length; i++ ){
+			if ( args[i] == DrawingCanvasView.class ){
+				params[i] = getCanvas();
+			} else
+				params[i] = initializeClass(klazz, null);
+		}
+		
+		try {
+			return constructors[0].newInstance(params);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

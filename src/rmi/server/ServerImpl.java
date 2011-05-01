@@ -3,6 +3,9 @@ package rmi.server;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
@@ -210,7 +213,17 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 
 		ArrayList<String> users = ( sessionid == null ) ? new ArrayList<String>(allUsers.keySet()) : sessions.get(sessionid).getActiveUsers();
 		
-		System.out.println("Pushing update:" + update + " with opts: "  + options + " to clients: " + users);
+		ByteArrayOutputStream bStream = new ByteArrayOutputStream();
+		ObjectOutputStream oStream;
+		try {
+			oStream = new ObjectOutputStream( bStream );
+			oStream.writeObject ( update );
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		byte[] byteVal = bStream. toByteArray();
+		System.out.println("Pushing update:" + update + " with opts: "  + options + " to clients: " + users + ", payload: " + byteVal.length);
 		
 		String session = (String)options.remove("specific");
 		for( String user : users ) {

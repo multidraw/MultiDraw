@@ -342,6 +342,11 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		}
 	}
 	
+	/**
+	 * Reloads all the plugins that have been imported.
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
 	private void reloadPlugins() throws InstantiationException, IllegalAccessException{
 		Collection<Plugin> plugins = this.plugins.keySet();
 		

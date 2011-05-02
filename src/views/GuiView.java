@@ -77,6 +77,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 	 * @param contentPane
 	 * @param frame
 	 */
+	@SuppressWarnings("unchecked")
 	public void show(Container contentPane, JFrame frame, DrawingCanvasView currentCanvas){
 		contentPane.removeAll();
 		contentPane.invalidate();
@@ -337,12 +338,15 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		
 		for ( Plugin plugin : plugins ){
 			if ( !md.utilInstance.getSession().getPlugins().get(plugin) ){
-				ToolController pluginController = new ToolController(plugin.getName(), plugin.getImage(), 
-						plugin.getDescription(), canvas, (Tool)initializeClass(plugin.getToolClass(), plugin.getShapeClass()));
-			
-				toolBar.addTool(pluginController);
-				menuBar.addMenuItem(pluginController);
-				md.utilInstance.getSession().getPlugins().put(plugin, true);
+				Tool tool = (Tool)initializeClass(plugin.getToolClass(), plugin.getShapeClass());
+				if ( tool != null ){
+					ToolController pluginController = new ToolController(plugin.getName(), plugin.getImage(), 
+							plugin.getDescription(), canvas, tool);
+				
+					toolBar.addTool(pluginController);
+					menuBar.addMenuItem(pluginController);
+					md.utilInstance.getSession().getPlugins().put(plugin, true);
+				} else md.utilInstance.getSession().getPlugins().remove(plugin);
 			}
 		}
 	}
@@ -408,7 +412,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		
 		if ( constructors.length > 1 || constructors[0] == null ){
 			JOptionPane.showMessageDialog(this, "There is only 1 constructor allowed for plugins.", "Plugin Load Error", JOptionPane.ERROR_MESSAGE);	
-			new PluginWindow(getCanvas());
+			return null;
 		}
 		
 		Class<?> [] args = constructors[0].getParameterTypes();

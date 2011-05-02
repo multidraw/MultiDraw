@@ -1,7 +1,6 @@
 package views;
 
 import items.OpenMenuItem;
-import items.PluginMenuItem;
 import items.SaveMenuItem;
 
 import java.awt.BorderLayout;
@@ -16,8 +15,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -34,7 +33,6 @@ import javax.swing.KeyStroke;
 
 import plugins.Plugin;
 import plugins.PluginWindow;
-
 import rmi.Session;
 import tools.EraserTool;
 import tools.FreehandTool;
@@ -65,13 +63,11 @@ public class GuiView extends JTabbedPane implements ActionListener {
 	private JButton changeDrawer;
 	protected MultiDraw md;
 	
-	private HashMap<Plugin, Boolean> plugins;
 
 	public GuiView(boolean isApplet, MultiDraw md) {
-		plugins = new HashMap<Plugin, Boolean>();
-		
 		this.isApplet = isApplet;	
 		this.md = md;
+		
 	}
 
 
@@ -108,8 +104,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 			toolBar = new ToolBarView(toolList);
 			canvasPane.add(toolBar, BorderLayout.WEST);
 			menuBar = new MenuBarView(toolList, new FileMenuItemController( new OpenMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK)),
-							new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)),
-							new FileMenuItemController(new PluginMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.CTRL_DOWN_MASK)));
+							new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)));
 			
 			try {
 				reloadPlugins();
@@ -182,12 +177,21 @@ public class GuiView extends JTabbedPane implements ActionListener {
 			sessionPane.add(changeDrawer, c);
 			changeDrawer.addActionListener(this);
 		}
-
+		
 		JPanel toolDesignerPane = new JPanel();
 
+		if(md.utilInstance.getUserName().equals(md.utilInstance.getSession().getDrawer())){
+		PluginWindow toolDesigner = new PluginWindow(canvas);
+		toolDesignerPane.add(toolDesigner);
+		}
+		
 		add("Session",sessionPane);
 		add("Canvas",canvasPane);
-		add("Tool Designer",toolDesignerPane);
+		
+		if(md.utilInstance.getUserName().equals(md.utilInstance.getSession().getDrawer())){
+			add("Import Tool",toolDesignerPane);
+		}
+		
 		contentPane.add(this);
 		
 		frame.setTitle("MultiDraw");
@@ -203,6 +207,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 	 * Fills the JList in the sessionView.
 	 */
 	public void fillSessionMemberList() {
+		sessionMembers = (sessionMembers == null) ? new JList() : sessionMembers;
 		try{
 			listModel = new DefaultListModel();
 
@@ -328,32 +333,41 @@ public class GuiView extends JTabbedPane implements ActionListener {
 	 * @throws InstantiationException 
 	 */
 	private void loadPlugins() throws InstantiationException, IllegalAccessException{
-		Collection<Plugin> plugins = this.plugins.keySet();
+		Collection<Plugin> plugins = md.utilInstance.getSession().getPlugins().keySet();
 		
 		for ( Plugin plugin : plugins ){
-			if ( !this.plugins.get(plugin) ){
+			if ( !md.utilInstance.getSession().getPlugins().get(plugin) ){
 				ToolController pluginController = new ToolController(plugin.getName(), plugin.getImage(), 
 						plugin.getDescription(), canvas, (Tool)initializeClass(plugin.getToolClass(), plugin.getShapeClass()));
 			
 				toolBar.addTool(pluginController);
 				menuBar.addMenuItem(pluginController);
-				this.plugins.put(plugin, true);
+				md.utilInstance.getSession().getPlugins().put(plugin, true);
 			}
 		}
 	}
 	
-	/**
-	 * Reloads all the plugins that have been imported.
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
-	 */
-	private void reloadPlugins() throws InstantiationException, IllegalAccessException{
-		Collection<Plugin> plugins = this.plugins.keySet();
+/**
+ * Reloads all the plugins that have been imported.
+ * @throws InstantiationException
+ * @throws IllegalAccessException
+ */
+	private void reloadPlugins() throws InstantiationException, IllegalAccessException{	
+		ArrayList<Plugin> plugins = new ArrayList<Plugin>(md.utilInstance.getSession().getPlugins().keySet());
+		ArrayList<Plugin> myPlugins = new ArrayList<Plugin>(md.getMyPlugins().keySet());
+		
+		for(Plugin plugin : myPlugins) {
+			plugins.add(plugin);
+		}
 		
 		for ( Plugin plugin : plugins ){
-			this.plugins.put(plugin, false);
+			md.utilInstance.getSession().getPlugins().put(plugin, false);
 		}
 		loadPlugins();
+	}
+	
+	public void addPlugin(Plugin plugin) throws InstantiationException, IllegalAccessException {
+		addPlugin(plugin, false);
 	}
 	
 	/**
@@ -362,8 +376,8 @@ public class GuiView extends JTabbedPane implements ActionListener {
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 */
-	public void addPlugin(Plugin plugin) throws InstantiationException, IllegalAccessException{
-		plugins.put(plugin, false);
+	public void addPlugin(Plugin plugin, boolean isImport) throws InstantiationException, IllegalAccessException{
+		md.utilInstance.getSession().getPlugins().put(plugin, false);
 	
 		if ( md.utilInstance.getUserName().equals(md.utilInstance.getSession().getDrawer()) ){
 			try {
@@ -372,6 +386,10 @@ public class GuiView extends JTabbedPane implements ActionListener {
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
+		}
+		
+		if(isImport) {
+			md.addPlugin(plugin);
 		}
 	}
 	

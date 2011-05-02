@@ -14,7 +14,6 @@ import java.util.Collections;
 import javax.swing.JLayeredPane;
 
 import plugins.Plugin;
-
 import tools.Tool;
 import tools.shapes.CanvasShape;
 import utils.ServerUtil;
@@ -47,7 +46,7 @@ public class DrawingCanvasView extends JLayeredPane {
 	protected Image imageBuffer;
 	protected ServerUtil utilInstance;
 	private GuiView gView;
-
+	
 	/**
 	 * Creates a default DrawingCanvas with a white background
 	 */
@@ -322,7 +321,7 @@ public class DrawingCanvasView extends JLayeredPane {
 	 */
 	public void importPlugin(Plugin plugin){
 		try {
-			gView.addPlugin(plugin);
+			gView.addPlugin(plugin, true);
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {

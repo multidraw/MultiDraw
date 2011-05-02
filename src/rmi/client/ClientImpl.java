@@ -86,7 +86,7 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 		}
 		
 		// Refresh the canvas if something happened there.
-		if ( md.guiView != null )
+		if ( md.guiView != null && md.guiView.getCanvas() != null && md.guiView.getCanvas().getImageBufferGraphics() != null)
 			md.guiView.getCanvas().refreshCanvas();
 	}
 

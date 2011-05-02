@@ -2,6 +2,7 @@ package rmi.client;
 
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
+import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -91,7 +92,7 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 
 	public static void main(String args[]) {
 		if (System.getSecurityManager() == null) {
-			System.setSecurityManager(new SecurityManager());
+			System.setSecurityManager(new RMISecurityManager());
 		}
 		try {
 			new ClientImpl();

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.rmi.Naming;
+import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
@@ -78,7 +79,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 	public static void main(String args[]) {
 
 		if (System.getSecurityManager() == null) {
-			System.setSecurityManager(new SecurityManager()); 
+			System.setSecurityManager(new RMISecurityManager()); 
 		}
 		try {
 			LocateRegistry.createRegistry(1099);

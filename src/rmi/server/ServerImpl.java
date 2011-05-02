@@ -126,6 +126,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 	
 	public void addPlugin(String userName, String session, Plugin plugin) throws RemoteException{
 		Session currentSession = sessions.get(session);
+		currentSession.addPlugin(plugin);
 		synchronized ( currentSession ){
 			registerPushCallback(userName, plugin, HashMapCreator.create(new Object[]{"sessionid", session}));
 		}

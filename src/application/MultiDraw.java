@@ -3,11 +3,13 @@ package application;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.HashMap;
 
 import javax.swing.JApplet;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import plugins.Plugin;
 import rmi.server.MultiDrawServer;
 import tools.ToolList;
 import utils.ServerUtil;
@@ -33,6 +35,8 @@ public class MultiDraw extends JApplet {
 	public MultiDrawState state;
 	public ServerUtil utilInstance;
 	public boolean serverDown = false;
+	
+	HashMap<Plugin, Boolean> myPlugins = new HashMap<Plugin, Boolean>();
 	
 	public MultiDraw(boolean isApplet, ServerUtil serv) {
 		this.utilInstance = serv;
@@ -123,5 +127,13 @@ public class MultiDraw extends JApplet {
 				err.printStackTrace();
 			} 
 		}
+	}
+	
+	public void addPlugin(Plugin plugin) {
+		myPlugins.put(plugin, false);
+	}
+	
+	public HashMap<Plugin, Boolean> getMyPlugins() {
+		return myPlugins;
 	}
 }

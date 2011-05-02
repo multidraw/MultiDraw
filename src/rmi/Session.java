@@ -2,6 +2,9 @@ package rmi;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import plugins.Plugin;
 import tools.shapes.CanvasShape;
 
 /**
@@ -19,6 +22,8 @@ public class Session implements Serializable{
 	private ArrayList<CanvasShape> shapes;
 	private ArrayList<String> activeUsers;
 	private String drawer;
+	private HashMap<Plugin, Boolean> plugins;
+
 	
 	/**
 	 * Constructor for the session creating it and adding the creator as the drawer.
@@ -30,6 +35,7 @@ public class Session implements Serializable{
 		activeUsers.add(userName);
 		drawer = userName;
 		name = userName;
+		plugins = new HashMap<Plugin, Boolean>();
 	}
 	
 	/**
@@ -140,5 +146,21 @@ public class Session implements Serializable{
 	 */
 	public boolean containsObject(CanvasShape shape) {
 		return (shapes.indexOf(shape) != -1);
+	}
+
+	public HashMap<Plugin, Boolean> getPlugins() {
+		return plugins;
+	}
+
+	public void setPlugins(HashMap<Plugin, Boolean> plugins) {
+		this.plugins = plugins;
+	}
+	
+	public void addPlugin(Plugin plugin) {
+		addPlugin(plugin, false);
+	}
+	
+	public void addPlugin(Plugin plugin, Boolean loaded ) {
+		this.plugins.put(plugin, loaded);
 	}
 }

@@ -4,6 +4,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.net.MalformedURLException;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -15,10 +16,11 @@ import javax.swing.filechooser.FileFilter;
 
 import utils.filefilters.ClassFileFilter;
 import utils.filefilters.ImageFileFilter;
+import utils.filefilters.JarFileFilter;
 import views.DrawingCanvasView;
 
 @SuppressWarnings("serial")
-public class PluginWindow extends JPanel implements ActionListener{
+public class PluginWindow<T> extends JPanel implements ActionListener{
 	private DrawingCanvasView canvas;
 
 	private JTextField imageField, descriptionField, nameField, toolField, shapeField;
@@ -84,44 +86,55 @@ public class PluginWindow extends JPanel implements ActionListener{
 		setVisible(true);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void actionPerformed(ActionEvent e){
 		String cmd = e.getActionCommand();
 		try {
 			if ( "tool".equals(cmd) ){
-				toolField.setText(getFilepath(new ClassFileFilter()));
+				toolField.setText(getFilepath(new ClassFileFilter(), new JarFileFilter()));
 			} else if ( "shape".equals(cmd) ){
-				shapeField.setText(getFilepath(new ClassFileFilter()));
+				shapeField.setText(getFilepath(new ClassFileFilter(), new JarFileFilter()));
 			} else if ( "image".equals(cmd) ){
 				imageField.setText(getFilepath(new ImageFileFilter()));
 			} else if ( "import".equals(cmd) ){
-				String shape = shapeField.getText();
-				String tool = toolField.getText();
-				File shapeFile = new File(shape);
-				File toolFile = new File(tool);
-
-				if ( tool.isEmpty() || shape.isEmpty() )
+				T shape = (T) shapeField.getText();
+				T tool = (T) toolField.getText();
+				File shapeFile = new File((String)shape);
+				File toolFile = new File((String)tool);
+				
+				if ( ((String)tool).isEmpty() || ((String)shape).isEmpty() )
 					JOptionPane.showMessageDialog(this, "No Shape Class or Tool Class entered!",  "Validation Error", JOptionPane.ERROR_MESSAGE);
 				else if ( !toolFile.exists() ){
 					try{
-						Class.forName(tool);	
+						tool = (T) Class.forName((String)tool);	
 					} catch (ClassNotFoundException e1){
 						JOptionPane.showMessageDialog(this, "No Tool found by Class " + tool, "Validation Error", JOptionPane.ERROR_MESSAGE);
 					}
 				} else if ( !shapeFile.exists() ){
 					try{
-						Class.forName(shape);
+						shape = (T) Class.forName((String)shape);
 					} catch (ClassNotFoundException e1){
 						JOptionPane.showMessageDialog(this, "No Shape found by Class " + shape, "Validation Error", JOptionPane.ERROR_MESSAGE);	
 					}	
-				} else {
-					canvas.importPlugin(new Plugin(imageField.getText(), descriptionField.getText(),
-							nameField.getText(), toolField.getText(), shapeField.getText()));
-				}
+				} 
+				
+				canvas.importPlugin(new Plugin(imageField.getText(), descriptionField.getText(), nameField.getText(), tool, shape));
 
 			}
 		} catch (ClassNotFoundException e1) {
 			e1.printStackTrace();
 			JOptionPane.showMessageDialog(this, "Class Files are invalid!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+		} catch ( MalformedURLException e1){
+			e1.printStackTrace();
+			JOptionPane.showMessageDialog(this, "Class Filepaths are invalid!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+		} catch (SecurityException e1) {
+			e1.printStackTrace();
+		} catch (IllegalArgumentException e1) {
+			e1.printStackTrace();
+		} catch (NoSuchFieldException e1) {
+			e1.printStackTrace();
+		} catch (IllegalAccessException e1) {
+			e1.printStackTrace();
 		}
 	}
 
@@ -129,10 +142,12 @@ public class PluginWindow extends JPanel implements ActionListener{
 	 * Returns the filepath of the selected file from a new FileChooser.
 	 * @return String - The filepath of the string.
 	 */
-	private String getFilepath(FileFilter f){
+	private String getFilepath(FileFilter ... filters){
 		JFileChooser fc = new JFileChooser();
-		fc.setFileFilter(f);
-
+		for ( FileFilter f : filters ){
+			fc.addChoosableFileFilter(f);
+		}
+		
 		int returnVal = fc.showOpenDialog(this);
 
 		if ( returnVal == JFileChooser.APPROVE_OPTION ){

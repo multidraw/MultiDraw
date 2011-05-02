@@ -1,11 +1,14 @@
 package plugins;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.jar.Attributes;
 
 import javax.swing.ImageIcon;
 
@@ -131,6 +134,18 @@ public class Plugin implements Serializable {
 	 */
 	private Class<?> loadClass(URL loadPath) throws ClassNotFoundException{
 		ClassLoader cl = new URLClassLoader(new URL[]{(URL)loadPath});
-		return cl.loadClass("TriangleShape");
+		
+		try{
+			String jarPath = "jar:".concat(loadPath.toString()).concat("!/");
+			URL jarUrl = new URL(jarPath);
+			JarURLConnection jarConn = (JarURLConnection) jarUrl.openConnection();
+			
+			String name = jarConn.getMainAttributes().getValue(Attributes.Name.MAIN_CLASS);
+			return cl.loadClass(name);
+		} catch ( IOException e){
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 }

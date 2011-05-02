@@ -14,7 +14,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
-import utils.filefilters.ClassFileFilter;
 import utils.filefilters.ImageFileFilter;
 import utils.filefilters.JarFileFilter;
 import views.DrawingCanvasView;
@@ -91,9 +90,9 @@ public class PluginWindow<T> extends JPanel implements ActionListener{
 		String cmd = e.getActionCommand();
 		try {
 			if ( "tool".equals(cmd) ){
-				toolField.setText(getFilepath(new ClassFileFilter(), new JarFileFilter()));
+				toolField.setText(getFilepath(new JarFileFilter()));
 			} else if ( "shape".equals(cmd) ){
-				shapeField.setText(getFilepath(new ClassFileFilter(), new JarFileFilter()));
+				shapeField.setText(getFilepath(new JarFileFilter()));
 			} else if ( "image".equals(cmd) ){
 				imageField.setText(getFilepath(new ImageFileFilter()));
 			} else if ( "import".equals(cmd) ){

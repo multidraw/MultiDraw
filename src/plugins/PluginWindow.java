@@ -125,10 +125,12 @@ public class PluginWindow<T> extends JPanel implements ActionListener{
 					imageField.setText("images/tool.png");
 				}
 				if("".equals(descriptionField.getText())) {
-					descriptionField.setText("Imported Tool");
+					JOptionPane.showMessageDialog(this, "No Tool Description Specified", "Validation Error", JOptionPane.ERROR_MESSAGE);
+					return;
 				}
 				if("".equals(nameField.getText())) {
-					nameField.setText("Imported Tool");
+					JOptionPane.showMessageDialog(this, "No Tool Name Specified", "Validation Error", JOptionPane.ERROR_MESSAGE);
+					return;
 				}
 				
 				canvas.importPlugin(new Plugin(imageField.getText(), descriptionField.getText(), nameField.getText(), tool, shape));

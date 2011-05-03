@@ -42,6 +42,7 @@ public class ServerUtil {
 			} 
 			return server; 
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}

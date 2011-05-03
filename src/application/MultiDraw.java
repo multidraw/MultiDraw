@@ -29,7 +29,6 @@ public class MultiDraw extends JApplet {
 	public SessionView sView;
 	
 	public ToolList toolList;
-	public boolean isApplet = false;
 	public JFrame frame;
 	
 	public MultiDrawState state;
@@ -38,18 +37,10 @@ public class MultiDraw extends JApplet {
 	
 	HashMap<Plugin, Boolean> myPlugins = new HashMap<Plugin, Boolean>();
 	
-	public MultiDraw(boolean isApplet, ServerUtil serv) {
-		this.utilInstance = serv;
-		this.isApplet = isApplet;
-		this.frame  = new JFrame();
-		if (!isApplet) {
-			init();
-		}
-	}
-
 	public MultiDraw(ServerUtil serv) {
-		/* invoked as Applet */
-		this(true, serv);
+		this.utilInstance = serv;
+		this.frame  = new JFrame();
+		init();
 	}
 
 	/**
@@ -79,7 +70,7 @@ public class MultiDraw extends JApplet {
 	
 	public void showGUIWindow(){
 		state = MultiDrawState.GUI_SCREEN;
-		guiView = new GuiView(isApplet, this);
+		guiView = new GuiView(this);
 		guiView.show(getContentPane(), frame, null);
 	}
 	
@@ -110,7 +101,7 @@ public class MultiDraw extends JApplet {
 			}
 			
 			try {
-				switch ( md.state ){
+				switch (md.state){
 				case AUTH_SCREEN:
 					System.exit(0);
 					break;

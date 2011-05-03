@@ -13,7 +13,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,15 +55,13 @@ public class GuiView extends JTabbedPane implements ActionListener {
 	protected ToolBarView toolBar;
 	protected MenuBarView menuBar;
 	protected ToolList toolList;
-	protected boolean isApplet;
 	private JTextField hostName;
 	private JList sessionMembers;
 	private DefaultListModel listModel;
 	private JButton changeDrawer;
 	protected MultiDraw md;
 
-	public GuiView(boolean isApplet, MultiDraw md) {
-		this.isApplet = isApplet;
+	public GuiView(MultiDraw md) {
 		this.md = md;
 
 	}
@@ -75,8 +72,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 	 * @param contentPane
 	 * @param frame
 	 */
-	public void show(Container contentPane, JFrame frame,
-			DrawingCanvasView currentCanvas) {
+	public void show(Container contentPane, JFrame frame, DrawingCanvasView currentCanvas) {
 		contentPane.removeAll();
 		contentPane.invalidate();
 		contentPane.validate();
@@ -129,18 +125,6 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		JPanel sessionPane = new JPanel();
 		sessionPane.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
-
-		MenuBarView sessionMenuBar = new MenuBarView(
-				new FileMenuItemController(new OpenMenuItem(canvas),
-						KeyStroke.getKeyStroke(KeyEvent.VK_O,
-								KeyEvent.CTRL_DOWN_MASK)),
-				new FileMenuItemController(new SaveMenuItem(canvas), KeyStroke
-						.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK)));
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridy = 0;
-		c.gridx = 0;
-		c.gridwidth = 6;
-		sessionPane.add(sessionMenuBar, c);
 
 		JLabel sessionHost = new JLabel("Current Session: ");
 		c.fill = GridBagConstraints.HORIZONTAL;
@@ -332,17 +316,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 	 * @return new ImageIcon
 	 */
 	protected ImageIcon getImageIcon(String fileName) {
-		URL url;
-		if (isApplet) {
-			try {
-				url = MultiDraw.class.getResource(fileName);
-			} catch (Exception e) {
-				return null;
-			}
-			return new ImageIcon(url);
-		} else {
-			return new ImageIcon(fileName);
-		}
+		return new ImageIcon(fileName);
 	}
 
 	public DrawingCanvasView getCanvas() {
@@ -355,10 +329,8 @@ public class GuiView extends JTabbedPane implements ActionListener {
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
-	private void loadPlugins() throws InstantiationException,
-			IllegalAccessException {
-		Collection<Plugin> plugins = md.utilInstance.getSession().getPlugins()
-				.keySet();
+	private void loadPlugins() throws InstantiationException, IllegalAccessException {
+		Collection<Plugin> plugins = md.utilInstance.getSession().getPlugins().keySet();
 
 		for (Plugin plugin : plugins) {
 			if (!md.utilInstance.getSession().getPlugins().get(plugin)) {
@@ -471,9 +443,9 @@ public class GuiView extends JTabbedPane implements ActionListener {
 		Object[] params = new Object[args.length];
 
 		for (int i = 0; i < args.length; i++) {
-			if (args[i] == DrawingCanvasView.class) {
+			if (args[i] == DrawingCanvasView.class)
 				params[i] = getCanvas();
-			} else
+			else
 				params[i] = initializeClass(klazz, null);
 		}
 

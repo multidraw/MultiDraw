@@ -25,7 +25,7 @@ import javax.swing.event.ListSelectionListener;
 import application.MultiDraw;
 
 @SuppressWarnings("serial")
-public class SessionView extends JPanel implements ActionListener, ListSelectionListener{
+public class SessionView extends JPanel implements ActionListener, ListSelectionListener {
 
 	public JList sessionList;
 	public JList userList;
@@ -33,11 +33,11 @@ public class SessionView extends JPanel implements ActionListener, ListSelection
 	private JButton createSessionBtn;
 	private MultiDraw md;
 	
-	public SessionView(MultiDraw m){
+	public SessionView(MultiDraw m) {
 		md = m;
 	}
 	
-	private void setup(){
+	private void setup() {
 		FlowLayout fLayout = new FlowLayout(FlowLayout.CENTER, 40, 4); 
 		GridBagLayout gBag = new GridBagLayout();
 		GridBagConstraints gConstraints = new GridBagConstraints();
@@ -89,7 +89,6 @@ public class SessionView extends JPanel implements ActionListener, ListSelection
 		userList.setBorder(new LineBorder(Color.BLACK));
 		userList.setEnabled(false);
 
-		
 		createSession.add(createSessionBtn);
 		joinSession.add(joinSessionBtn);
 		

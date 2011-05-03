@@ -23,7 +23,8 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 	public transient MultiDraw md;
 
 	public ClientImpl() throws RemoteException{
-		md = new MultiDraw(false, new ServerUtil(this));
+		super(1100);
+		md = new MultiDraw(new ServerUtil(this));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -101,5 +102,4 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 			e.printStackTrace();
 		}
 	}
-
 }

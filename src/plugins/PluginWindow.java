@@ -1,6 +1,10 @@
 package plugins;
 
-import java.awt.GridLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -11,6 +15,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
@@ -27,60 +32,105 @@ public class PluginWindow<T> extends JPanel implements ActionListener{
 	public PluginWindow(DrawingCanvasView c){
 		canvas = c;
 
-		setLayout(new GridLayout(6, 3, 10, 10));
+		FlowLayout fLayout = new FlowLayout(FlowLayout.CENTER); 
+		GridBagLayout gBag = new GridBagLayout();
+		GridBagConstraints gConstraints = new GridBagConstraints();
+		
+		JPanel importButton = new JPanel(fLayout);
+		JPanel imglay = new JPanel(fLayout);
+		JPanel toollay = new JPanel(fLayout);
+		JPanel shplay = new JPanel(fLayout);
+					
+		
+		setLayout(gBag);
+		
+		gConstraints.gridy = 1;
+		gConstraints.insets = new Insets(5,5,5,5);
+		gConstraints.anchor = GridBagConstraints.NORTHWEST;
+
 
 		/* Add the image row */
 		imageField = new JTextField(20);
 		imageField.setEditable(false);
+		
 		JButton imageBrowse = new JButton("Browse...");
 		imageBrowse.setActionCommand("image");
 		imageBrowse.addActionListener(this);
+		imageBrowse.setPreferredSize(new Dimension (100,25));
+		imglay.add(imageBrowse);
 
-		add(new JLabel("PNG Image to be displayed:"));
-		add(imageField);
-		add(imageBrowse);
+		add(new JLabel("PNG Image to be displayed:"),gConstraints);
+		add(imageField, gConstraints);
+		add(imglay, gConstraints);
+		
+		gConstraints.gridy = 2;
+		
 
 		/* Add the description row */
 		descriptionField = new JTextField(20);
 
-		add(new JLabel("Enter the tool description:"));
-		add(descriptionField);
-		add(new JLabel());
+		add(new JLabel("Enter the tool description:"),gConstraints);
+		add(descriptionField,gConstraints);
 
+		gConstraints.gridy = 3;
+		
 		/* Add the name row */
-		nameField = new JTextField(10);
+		nameField = new JTextField(20);
+		JLabel nameLabel = new JLabel("Enter the tool name:");
 
-		add(new JLabel("Enter the tool name:"));
-		add(nameField);
-		add(new JLabel());
+		add(nameLabel, gConstraints);
+		add(nameField, gConstraints);
+		
+		gConstraints.gridy = 4;
 
 		/* Add the tool row */
 		toolField = new JTextField(20);
 		JButton toolBrowse = new JButton("Browse...");
 		toolBrowse.setActionCommand("tool");
 		toolBrowse.addActionListener(this);
+		toolBrowse.setPreferredSize(new Dimension (100,25));
+		toollay.add(toolBrowse);
+		
+		JTextArea jta1 = new JTextArea("Pick the tool plugin (.jar) or enter \r\npkg name of existing MultiDraw tool:");
+		jta1.setBorder(null);
+		jta1.setEditable(false);
+		jta1.setBackground(getBackground());
+		jta1.setFont(nameLabel.getFont());
 
-		add(new JLabel("Pick the tool plugin (.jar) or enter pkg name of existing MultiDraw tool:"));
-		add(toolField);
-		add(toolBrowse);
+		add(jta1,gConstraints);
+		add(toolField,gConstraints);
+		add(toollay,gConstraints);
+		
+		gConstraints.gridy = 5;
 
 		/* Add the shape row */
 		shapeField = new JTextField(20);
 		JButton shapeBrowse = new JButton("Browse...");
 		shapeBrowse.setActionCommand("shape");
 		shapeBrowse.addActionListener(this);
+		shapeBrowse.setPreferredSize(new Dimension (100,25));
+		shplay.add(shapeBrowse);
+		
+		JTextArea jta2 = new JTextArea("Pick the shape plugin (.jar) or enter \r\npkg name of existing MultiDraw shape:");
+		jta2.setBorder(null);
+		jta2.setEditable(false);
+		jta2.setBackground(getBackground());
+		jta2.setFont(nameLabel.getFont());
 
-		add(new JLabel("Pick the shape plugin or enter pkg name:"));
-		add(shapeField);
-		add(shapeBrowse);
+		add(jta2,gConstraints);
+		add(shapeField,gConstraints);
+		add(shplay,gConstraints);
 
+		gConstraints.gridy = 6;
+		
 		/* Add the action row */
 		JButton importBtn = new JButton("Import!");
 		importBtn.setActionCommand("import");
 		importBtn.addActionListener(this);
+		importBtn.setPreferredSize(new Dimension (100,25));
+		importButton.add(importBtn);
 
-		add(importBtn);
-		add(new JLabel());
+		add(importButton,gConstraints);
 
 		setVisible(true);
 	}

@@ -23,6 +23,8 @@ public class Plugin implements Serializable {
 	private ImageIcon image;
 	private String description, name;
 	private Class<?> toolClass, shapeClass;
+	protected long timeStamp;
+
 
 	/**
 	 * Constructor to load in the image, and create the classes.
@@ -56,6 +58,7 @@ public class Plugin implements Serializable {
 			initializeClasses(new String[]{(String)tool, (String)shape}, this.getClass().getDeclaredField("toolClass"), 
 					this.getClass().getDeclaredField("shapeClass"));
 		}
+		timeStamp = System.currentTimeMillis();
 	}
 
 	/**
@@ -147,5 +150,15 @@ public class Plugin implements Serializable {
 		}
 		
 		return null;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return ((Plugin) obj).timeStamp == this.timeStamp;
+	}
+	
+	@Override
+	public int hashCode() {
+		return (int) timeStamp;
 	}
 }

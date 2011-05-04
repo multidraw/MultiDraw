@@ -10,12 +10,12 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.MalformedURLException;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
@@ -32,6 +32,7 @@ public class PluginWindow<T> extends JPanel implements ActionListener{
 	public PluginWindow(DrawingCanvasView c){
 		canvas = c;
 
+		ImageIcon questionIcon = new ImageIcon("images/question.png");
 		FlowLayout fLayout = new FlowLayout(FlowLayout.CENTER); 
 		GridBagLayout gBag = new GridBagLayout();
 		GridBagConstraints gConstraints = new GridBagConstraints();
@@ -41,15 +42,17 @@ public class PluginWindow<T> extends JPanel implements ActionListener{
 		JPanel toollay = new JPanel(fLayout);
 		JPanel shplay = new JPanel(fLayout);
 					
-		
 		setLayout(gBag);
 		
 		gConstraints.gridy = 1;
 		gConstraints.insets = new Insets(5,5,5,5);
 		gConstraints.anchor = GridBagConstraints.NORTHWEST;
-
-
+		
 		/* Add the image row */
+		JLabel imageLabel;
+		imageLabel = new JLabel("     Tool Image:", questionIcon, JLabel.CENTER);
+		imageLabel.setToolTipText("Tool must be a .png file of size 32 x 32");
+		
 		imageField = new JTextField(20);
 		imageField.setEditable(false);
 		
@@ -59,24 +62,30 @@ public class PluginWindow<T> extends JPanel implements ActionListener{
 		imageBrowse.setPreferredSize(new Dimension (100,25));
 		imglay.add(imageBrowse);
 
-		add(new JLabel("PNG Image to be displayed:"),gConstraints);
+		add(imageLabel,gConstraints);
 		add(imageField, gConstraints);
 		add(imglay, gConstraints);
 		
 		gConstraints.gridy = 2;
-		
 
 		/* Add the description row */
 		descriptionField = new JTextField(20);
 
-		add(new JLabel("Enter the tool description:"),gConstraints);
+		JLabel descriptionLabel;
+		descriptionLabel = new JLabel("     Tooltip Description:", questionIcon, JLabel.CENTER);
+		descriptionLabel.setToolTipText("Tooltip description is required");
+		
+		add(descriptionLabel,gConstraints);
 		add(descriptionField,gConstraints);
 
 		gConstraints.gridy = 3;
 		
 		/* Add the name row */
 		nameField = new JTextField(20);
-		JLabel nameLabel = new JLabel("Enter the tool name:");
+		
+		JLabel nameLabel;
+		nameLabel = new JLabel("     Tool Name:", questionIcon, JLabel.CENTER);
+		nameLabel.setToolTipText("Tool name is required");
 
 		add(nameLabel, gConstraints);
 		add(nameField, gConstraints);
@@ -91,13 +100,11 @@ public class PluginWindow<T> extends JPanel implements ActionListener{
 		toolBrowse.setPreferredSize(new Dimension (100,25));
 		toollay.add(toolBrowse);
 		
-		JTextArea jta1 = new JTextArea("Pick the tool plugin (.jar) or enter \r\npkg name of existing MultiDraw tool:");
-		jta1.setBorder(null);
-		jta1.setEditable(false);
-		jta1.setBackground(getBackground());
-		jta1.setFont(nameLabel.getFont());
+		JLabel toolLabel;
+		toolLabel = new JLabel("     Tool Plugin:", questionIcon, JLabel.CENTER);
+		toolLabel.setToolTipText("<html>Enter one of the following: <ul><li>Type in the package name of existing MultiDraw Tool</li> <li>Pick a tool plugin (.jar) from your file system</li></ul></html>");
 
-		add(jta1,gConstraints);
+		add(toolLabel,gConstraints);
 		add(toolField,gConstraints);
 		add(toollay,gConstraints);
 		
@@ -111,13 +118,11 @@ public class PluginWindow<T> extends JPanel implements ActionListener{
 		shapeBrowse.setPreferredSize(new Dimension (100,25));
 		shplay.add(shapeBrowse);
 		
-		JTextArea jta2 = new JTextArea("Pick the shape plugin (.jar) or enter \r\npkg name of existing MultiDraw shape:");
-		jta2.setBorder(null);
-		jta2.setEditable(false);
-		jta2.setBackground(getBackground());
-		jta2.setFont(nameLabel.getFont());
+		JLabel shapeLabel;
+		shapeLabel = new JLabel("     Tool Plugin:", questionIcon, JLabel.CENTER);
+		shapeLabel.setToolTipText("<html>Enter one of the following: <ul><li>Type in the package name of existing MultiDraw Shape</li> <li>Pick a shape plugin (.jar) from your file system</li></ul></html>");
 
-		add(jta2,gConstraints);
+		add(shapeLabel,gConstraints);
 		add(shapeField,gConstraints);
 		add(shplay,gConstraints);
 

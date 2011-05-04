@@ -5,7 +5,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
 
-import javax.swing.JApplet;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -24,7 +23,7 @@ import views.SessionView;
  * associations.
  */
 @SuppressWarnings("serial")
-public class MultiDraw extends JApplet {
+public class MultiDraw extends JFrame {
 	public GuiView guiView;
 	public SessionView sView;
 	

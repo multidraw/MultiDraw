@@ -365,7 +365,8 @@ public class GuiView extends JTabbedPane implements ActionListener {
 				.keySet());
 
 		for (Plugin plugin : myPlugins) {
-			plugins.add(plugin);
+			if(md.utilInstance.getSession().getPlugins().get(plugin) == null)
+				plugins.add(plugin);
 		}
 
 		for (Plugin plugin : plugins) {

@@ -27,6 +27,7 @@ public class Plugin implements Serializable {
 	private Class<?> toolClass, shapeClass;
 	public String toolName, shapeName;
 	public transient byte [] toolJar, shapeJar;
+	protected long timeStamp;
 
 	/**
 	 * Constructor to load in the image, and create the classes.
@@ -63,6 +64,7 @@ public class Plugin implements Serializable {
 		
 		shapeName = shapeClass.getName();
 		toolName = toolClass.getName();
+		timeStamp = System.currentTimeMillis();
 	}
 
 	/**
@@ -185,5 +187,15 @@ public class Plugin implements Serializable {
 		}
 
 		return null;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return ((Plugin) obj).timeStamp == this.timeStamp;
+	}
+	
+	@Override
+	public int hashCode() {
+		return (int) timeStamp;
 	}
 }

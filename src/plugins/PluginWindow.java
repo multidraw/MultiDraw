@@ -1,11 +1,16 @@
 package plugins;
 
-import java.awt.GridLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.MalformedURLException;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -27,60 +32,110 @@ public class PluginWindow<T> extends JPanel implements ActionListener{
 	public PluginWindow(DrawingCanvasView c){
 		canvas = c;
 
-		setLayout(new GridLayout(6, 3, 10, 10));
-
+		ImageIcon questionIcon = new ImageIcon("images/question.png");
+		FlowLayout fLayout = new FlowLayout(FlowLayout.CENTER); 
+		GridBagLayout gBag = new GridBagLayout();
+		GridBagConstraints gConstraints = new GridBagConstraints();
+		
+		JPanel importButton = new JPanel(fLayout);
+		JPanel imglay = new JPanel(fLayout);
+		JPanel toollay = new JPanel(fLayout);
+		JPanel shplay = new JPanel(fLayout);
+					
+		setLayout(gBag);
+		
+		gConstraints.gridy = 1;
+		gConstraints.insets = new Insets(5,5,5,5);
+		gConstraints.anchor = GridBagConstraints.NORTHWEST;
+		
 		/* Add the image row */
+		JLabel imageLabel;
+		imageLabel = new JLabel("     Tool Image:", questionIcon, JLabel.CENTER);
+		imageLabel.setToolTipText("Tool must be a .png file of size 32 x 32");
+		
 		imageField = new JTextField(20);
 		imageField.setEditable(false);
+		
 		JButton imageBrowse = new JButton("Browse...");
 		imageBrowse.setActionCommand("image");
 		imageBrowse.addActionListener(this);
+		imageBrowse.setPreferredSize(new Dimension (100,25));
+		imglay.add(imageBrowse);
 
-		add(new JLabel("Pick image to be displayed:"));
-		add(imageField);
-		add(imageBrowse);
+		add(imageLabel,gConstraints);
+		add(imageField, gConstraints);
+		add(imglay, gConstraints);
+		
+		gConstraints.gridy = 2;
 
 		/* Add the description row */
 		descriptionField = new JTextField(20);
 
-		add(new JLabel("Enter the tool description:"));
-		add(descriptionField);
-		add(new JLabel());
+		JLabel descriptionLabel;
+		descriptionLabel = new JLabel("     Tooltip Description:", questionIcon, JLabel.CENTER);
+		descriptionLabel.setToolTipText("Tooltip description is required");
+		
+		add(descriptionLabel,gConstraints);
+		add(descriptionField,gConstraints);
 
+		gConstraints.gridy = 3;
+		
 		/* Add the name row */
-		nameField = new JTextField(10);
+		nameField = new JTextField(20);
+		
+		JLabel nameLabel;
+		nameLabel = new JLabel("     Tool Name:", questionIcon, JLabel.CENTER);
+		nameLabel.setToolTipText("Tool name is required");
 
-		add(new JLabel("Enter the name:"));
-		add(nameField);
-		add(new JLabel());
+		add(nameLabel, gConstraints);
+		add(nameField, gConstraints);
+		
+		gConstraints.gridy = 4;
 
 		/* Add the tool row */
 		toolField = new JTextField(20);
 		JButton toolBrowse = new JButton("Browse...");
 		toolBrowse.setActionCommand("tool");
 		toolBrowse.addActionListener(this);
+		toolBrowse.setPreferredSize(new Dimension (100,25));
+		toollay.add(toolBrowse);
+		
+		JLabel toolLabel;
+		toolLabel = new JLabel("     Tool Plugin:", questionIcon, JLabel.CENTER);
+		toolLabel.setToolTipText("<html>Enter one of the following: <ul><li>Type in the package name of existing MultiDraw Tool</li> <li>Pick a tool plugin (.jar) from your file system</li></ul></html>");
 
-		add(new JLabel("Pick the tool plugin or enter pkg name:"));
-		add(toolField);
-		add(toolBrowse);
+		add(toolLabel,gConstraints);
+		add(toolField,gConstraints);
+		add(toollay,gConstraints);
+		
+		gConstraints.gridy = 5;
 
 		/* Add the shape row */
 		shapeField = new JTextField(20);
 		JButton shapeBrowse = new JButton("Browse...");
 		shapeBrowse.setActionCommand("shape");
 		shapeBrowse.addActionListener(this);
+		shapeBrowse.setPreferredSize(new Dimension (100,25));
+		shplay.add(shapeBrowse);
+		
+		JLabel shapeLabel;
+		shapeLabel = new JLabel("     Shape Plugin:", questionIcon, JLabel.CENTER);
+		shapeLabel.setToolTipText("<html>Enter one of the following: <ul><li>Type in the package name of existing MultiDraw Shape</li> <li>Pick a shape plugin (.jar) from your file system</li></ul></html>");
 
-		add(new JLabel("Pick the shape plugin or enter pkg name:"));
-		add(shapeField);
-		add(shapeBrowse);
+		add(shapeLabel,gConstraints);
+		add(shapeField,gConstraints);
+		add(shplay,gConstraints);
 
+		gConstraints.gridy = 6;
+		
 		/* Add the action row */
 		JButton importBtn = new JButton("Import!");
 		importBtn.setActionCommand("import");
 		importBtn.addActionListener(this);
+		importBtn.setPreferredSize(new Dimension (100,25));
+		importButton.add(importBtn);
 
-		add(importBtn);
-		add(new JLabel());
+		add(importButton,gConstraints);
 
 		setVisible(true);
 	}
@@ -101,24 +156,40 @@ public class PluginWindow<T> extends JPanel implements ActionListener{
 				File shapeFile = new File((String)shape);
 				File toolFile = new File((String)tool);
 				
-				if ( ((String)tool).isEmpty() || ((String)shape).isEmpty() )
+				if ( ((String)tool).isEmpty() || ((String)shape).isEmpty() ) {
 					JOptionPane.showMessageDialog(this, "No Shape Class or Tool Class entered!",  "Validation Error", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
 				else if ( !toolFile.exists() ){
 					try{
 						tool = (T) Class.forName((String)tool);	
 					} catch (ClassNotFoundException e1){
 						JOptionPane.showMessageDialog(this, "No Tool found by Class " + tool, "Validation Error", JOptionPane.ERROR_MESSAGE);
+						return;
 					}
 				} else if ( !shapeFile.exists() ){
 					try{
 						shape = (T) Class.forName((String)shape);
 					} catch (ClassNotFoundException e1){
-						JOptionPane.showMessageDialog(this, "No Shape found by Class " + shape, "Validation Error", JOptionPane.ERROR_MESSAGE);	
+						JOptionPane.showMessageDialog(this, "No Shape found by Class " + shape, "Validation Error", JOptionPane.ERROR_MESSAGE);
+						return;
 					}	
 				} 
 				
+				if("".equals(imageField.getText())) {
+					imageField.setText("images/tool.png");
+				}
+				if("".equals(descriptionField.getText())) {
+					JOptionPane.showMessageDialog(this, "No Tool Description Specified", "Validation Error", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				if("".equals(nameField.getText())) {
+					JOptionPane.showMessageDialog(this, "No Tool Name Specified", "Validation Error", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				
 				canvas.importPlugin(new Plugin(imageField.getText(), descriptionField.getText(), nameField.getText(), tool, shape));
-
+				JOptionPane.showMessageDialog(this, "Tool Uploaded Successfully", "Tool Upload", JOptionPane.INFORMATION_MESSAGE);
 			}
 		} catch (ClassNotFoundException e1) {
 			e1.printStackTrace();

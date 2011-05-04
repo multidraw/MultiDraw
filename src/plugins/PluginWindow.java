@@ -119,7 +119,7 @@ public class PluginWindow<T> extends JPanel implements ActionListener{
 		shplay.add(shapeBrowse);
 		
 		JLabel shapeLabel;
-		shapeLabel = new JLabel("     Tool Plugin:", questionIcon, JLabel.CENTER);
+		shapeLabel = new JLabel("     Shape Plugin:", questionIcon, JLabel.CENTER);
 		shapeLabel.setToolTipText("<html>Enter one of the following: <ul><li>Type in the package name of existing MultiDraw Shape</li> <li>Pick a shape plugin (.jar) from your file system</li></ul></html>");
 
 		add(shapeLabel,gConstraints);

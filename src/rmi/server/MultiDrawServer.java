@@ -1,5 +1,7 @@
 package rmi.server;
 
+
+import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -91,6 +93,16 @@ public interface MultiDrawServer extends Remote {
 	 * @throws RemoteException
 	 */
 	public void addPlugin(String userName, String session, Plugin plugin) throws RemoteException;
+	
+	/**
+	 * Uploads the plugin jar file to the server so we can store it locally.
+	 * @param jarName - String the name of the jar.
+	 * @param pluginJar - byte[] The plugin file.
+	 * @param force - boolean Whether to force overwrite any existing files or not.
+	 * @return boolean, whether the file exists or not.
+	 * @throws RemoteException
+	 */
+	public boolean uploadPlugin(String jarName, byte[] pluginJar, boolean force) throws RemoteException, IOException;
 	
 	public void setCanvas(String userName, String session, ArrayList<CanvasShape> updatedShape) throws RemoteException;
 }

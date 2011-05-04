@@ -11,6 +11,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
@@ -398,7 +399,15 @@ public class GuiView extends JTabbedPane implements ActionListener {
 						md.utilInstance.getUserName(),
 						md.utilInstance.getSession().name, plugin);
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				try {
+					// Upload the plugin and see if that helps?
+					md.utilInstance.getServerInstance().uploadPlugin(plugin.shapeName, plugin.shapeJar, true);
+					md.utilInstance.getServerInstance().addPlugin(
+							md.utilInstance.getUserName(),
+							md.utilInstance.getSession().name, plugin);
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				} 
 			}
 		}
 

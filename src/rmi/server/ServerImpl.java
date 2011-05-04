@@ -3,7 +3,11 @@ package rmi.server;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
@@ -126,6 +130,24 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 
 	private void killAllUsers() {
 		registerPushCallback(null, null, HashMapCreator.create(new Object[]{"method", "killAllUsers"}));
+	}
+	
+	public boolean uploadPlugin(String jarName, byte[] pluginJar, boolean force) throws RemoteException, IOException{
+		File jar = new File(new File(".").getAbsolutePath() + "plugins/"+ jarName);	// Cheap way to get the working directory
+		System.out.println(new File(".").getAbsolutePath() + "plugins/");
+		if ( jar.exists() && !force )
+			return false;
+		
+		BufferedOutputStream bs;
+		try {
+			bs = new BufferedOutputStream(new FileOutputStream(jar));
+			bs.write(pluginJar);
+			bs.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}  
+		
+		return true;
 	}
 	
 	public void addPlugin(String userName, String session, Plugin plugin) throws RemoteException{

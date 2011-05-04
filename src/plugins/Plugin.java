@@ -1,6 +1,8 @@
 package plugins;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -23,6 +25,8 @@ public class Plugin implements Serializable {
 	private ImageIcon image;
 	private String description, name;
 	private Class<?> toolClass, shapeClass;
+	public String toolName, shapeName;
+	public transient byte [] toolJar, shapeJar;
 
 	/**
 	 * Constructor to load in the image, and create the classes.
@@ -42,7 +46,7 @@ public class Plugin implements Serializable {
 			image = new ImageIcon("images/select.png");
 		description = desc;
 		this.name = name;
-		
+
 		if ( tool instanceof Class<?> && shape instanceof Class<?> ){
 			shapeClass = (Class<?>)shape;
 			toolClass = (Class<?>)tool;
@@ -56,6 +60,9 @@ public class Plugin implements Serializable {
 			initializeClasses(new String[]{(String)tool, (String)shape}, this.getClass().getDeclaredField("toolClass"), 
 					this.getClass().getDeclaredField("shapeClass"));
 		}
+		
+		shapeName = shapeClass.getName();
+		toolName = toolClass.getName();
 	}
 
 	/**
@@ -65,7 +72,7 @@ public class Plugin implements Serializable {
 	public ImageIcon getImage(){
 		return image;
 	}
-	
+
 	/**
 	 * Gets the name for the 
 	 * @return
@@ -97,7 +104,7 @@ public class Plugin implements Serializable {
 	public Class<?> getToolClass(){
 		return toolClass;
 	}
-	
+
 	/**
 	 * Initializes all of the classes with the given source files or package names.
 	 * @param paths String [] - The absolute files path of the classes to load.
@@ -111,10 +118,11 @@ public class Plugin implements Serializable {
 
 		for ( int i = 0; i < paths.length; i++ ){
 			URL pathUrl = getClasspathUrl(paths[i]);
+			decompressJar(paths[i], fields[i]);
 			fields[i].set(this, loadClass(pathUrl));
 		}
 	}
-	
+
 	/**
 	 * Gets the classpath URL extracted from a filepath.  
 	 * @param filepath String the filepath for which the URL is to be generated
@@ -125,7 +133,36 @@ public class Plugin implements Serializable {
 		File file = new File(filepath);
 		return file.toURI().toURL();
 	}
-	
+
+	/**
+	 * Saves the jar file in a byte array to be read in later if needed.
+	 * @param filepath String the path to the jar file.
+	 * @param field Field the current working field of the plugin.
+	 */
+	private void decompressJar(String filepath, Field field){
+		File jar = new File(filepath);
+		
+		ByteArrayOutputStream bs = new ByteArrayOutputStream();
+		
+		try{
+			FileInputStream fis = new FileInputStream(jar);
+			
+			byte [] buf = new byte[1024];
+
+			for ( int readNum; (readNum = fis.read(buf)) != -1; ){
+				bs.write(buf, 0, readNum);
+			}
+		} catch ( Exception e ){
+			e.printStackTrace();
+		}
+
+		if ( field.getName().startsWith("shape") ){
+			shapeJar = bs.toByteArray(); 
+		} else {
+			toolJar = bs.toByteArray();
+		}
+	}
+
 	/**
 	 * Attempts to load a class from the given load path.
 	 * @param loadPath - The path that contains either the jar file of the new class to load.
@@ -134,18 +171,19 @@ public class Plugin implements Serializable {
 	 */
 	private Class<?> loadClass(URL loadPath) throws ClassNotFoundException{
 		ClassLoader cl = new URLClassLoader(new URL[]{(URL)loadPath});
-		
+
 		try{
 			String jarPath = "jar:".concat(loadPath.toString()).concat("!/");
 			URL jarUrl = new URL(jarPath);
 			JarURLConnection jarConn = (JarURLConnection) jarUrl.openConnection();
-			
+
 			String name = jarConn.getMainAttributes().getValue(Attributes.Name.MAIN_CLASS);
+			
 			return cl.loadClass(name);
 		} catch ( IOException e){
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 }

@@ -290,7 +290,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 			client.update(plugin.shapeJar, HashMapCreator.create(new Object[]{"jarName", shape}));
 		if ( plugin.toolJar != null )
 			client.update(plugin.toolJar, HashMapCreator.create(new Object[]{"jarName", tool}));
-		client.update(plugin, null);
+		client.update(plugin, HashMapCreator.create(new Object[]{}));
 	}
 	
 	/**

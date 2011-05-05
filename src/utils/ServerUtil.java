@@ -28,13 +28,15 @@ public class ServerUtil {
 	private MultiDrawClient client;	// The current client impl object of the client.
 	private MultiDrawServer server;	// The current server object that the client interacts with.
 	private ArrayList<CanvasShape> shapes = new ArrayList<CanvasShape>();
+	private String host;
 	
 	/**
 	 * Constructor for the utils class.
 	 * @param c - MultiDrawClient The current client.
 	 */
-	public ServerUtil(MultiDrawClient c){
+	public ServerUtil(MultiDrawClient c, String host){
 		client = c;
+		this.host = host;
 	}
 
 	/**
@@ -44,8 +46,7 @@ public class ServerUtil {
 	public MultiDrawServer getServerInstance() {
 		try {
 			if ( server == null ){
-				//server = (MultiDrawServer)Naming.lookup("//cbarton.mine.nu:1099/MultiDrawServer");
-				server = (MultiDrawServer)Naming.lookup("//localhost:1099/MultiDrawServer");
+				server = (MultiDrawServer)Naming.lookup("//"+host+":1099/MultiDrawServer");
 			} 
 			return server; 
 		} catch (Exception e) {

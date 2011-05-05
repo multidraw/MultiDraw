@@ -22,9 +22,9 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 	private static final long serialVersionUID = -3431518669864255149L;
 	public transient MultiDraw md;
 
-	public ClientImpl() throws RemoteException{
-		super(1100);
-		md = new MultiDraw(new ServerUtil(this));
+	public ClientImpl(String host, int port) throws RemoteException{
+		super(port);
+		md = new MultiDraw(new ServerUtil(this, host));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -104,7 +104,9 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 			System.setSecurityManager(new RMISecurityManager());
 		}
 		try {
-			new ClientImpl();
+			String host = (args.length < 1) ? "localhost" : args[0];
+			int port = (args.length < 2) ? 1100 : Integer.parseInt(args[1]);
+			new ClientImpl(host, port);
 		} catch (Exception e) {
 			System.err.println("Client exception: " + e.toString());
 			e.printStackTrace();

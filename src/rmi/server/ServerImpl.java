@@ -36,11 +36,11 @@ import utils.ServerUtil;
 public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 
 	private static final long serialVersionUID = 3899322995886823259L;
-	private Hashtable<String, Session> sessions = new Hashtable<String, Session>();
-	private Hashtable<String, MultiDrawClient> allUsers = new Hashtable<String, MultiDrawClient>();
-	private AsyncCallback clientCallback;
-	private DefaultListModel clientListModel;
-	private Hashtable<String, ArrayList<Plugin>> sessionPlugins = new Hashtable<String, ArrayList<Plugin>>();
+	private transient Hashtable<String, Session> sessions = new Hashtable<String, Session>();
+	private transient Hashtable<String, MultiDrawClient> allUsers = new Hashtable<String, MultiDrawClient>();
+	private transient AsyncCallback clientCallback;
+	private transient DefaultListModel clientListModel;
+	private transient Hashtable<String, ArrayList<Plugin>> sessionPlugins = new Hashtable<String, ArrayList<Plugin>>();
 
 	public ServerImpl() throws RemoteException {
 		super(1155);

@@ -106,7 +106,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 									KeyEvent.CTRL_DOWN_MASK)));
 
 			try {
-				loadPlugins();
+				reloadPlugins();
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
@@ -346,6 +346,11 @@ public class GuiView extends JTabbedPane implements ActionListener {
 				}
 			}
 		}
+	}
+	
+	private void reloadPlugins() throws InstantiationException, IllegalAccessException{
+		md.getPluginManager().unloadAll();
+		loadPlugins();
 	}
 
 	/**

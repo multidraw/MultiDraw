@@ -51,6 +51,12 @@ public class PluginManager extends HashMap<Plugin, Boolean> implements Iterable<
 		put(plugin, false);
 	}
 	
+	public void unloadAll(){
+		for ( Plugin plugin : keySet() ){
+			put(plugin,false);
+		}
+	}
+	
 	public void add(Plugin plugin, boolean isImported){
 		if ( get(plugin) == null ){
 			pluginsToLoad++;

@@ -22,7 +22,7 @@ public class Session implements Serializable{
 	private ArrayList<CanvasShape> shapes;
 	private ArrayList<String> activeUsers;
 	private String drawer;
-	private HashMap<Plugin, Boolean> plugins;
+	public HashMap<Plugin, Boolean> plugins;
 
 	
 	/**

@@ -406,9 +406,9 @@ public class GuiView extends JTabbedPane implements ActionListener {
 			} catch (RemoteException e) {
 				try {
 					// Upload the plugin and see if that helps?
-					if ( plugin.shapeJar.length > 0 )
+					if ( plugin.shapeJar != null )
 						md.utilInstance.getServerInstance().uploadPlugin(plugin.shapeName, plugin.shapeJar, true);
-					if ( plugin.toolJar.length > 0 )
+					if ( plugin.toolJar != null )
 						md.utilInstance.getServerInstance().uploadPlugin(plugin.toolName, plugin.toolJar, true);
 
 					md.utilInstance.getServerInstance().addPlugin(

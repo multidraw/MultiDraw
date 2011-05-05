@@ -26,7 +26,7 @@ public class Plugin implements Serializable {
 	private String description, name;
 	private Class<?> toolClass, shapeClass;
 	public String toolName, shapeName;
-	public  byte [] toolJar, shapeJar;
+	public byte [] toolJar, shapeJar;
 	protected long timeStamp;
 
 	/**

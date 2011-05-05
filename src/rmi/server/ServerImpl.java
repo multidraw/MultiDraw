@@ -40,6 +40,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 	private Hashtable<String, MultiDrawClient> allUsers = new Hashtable<String, MultiDrawClient>();
 	private AsyncCallback clientCallback;
 	private DefaultListModel clientListModel;
+	private Hashtable<String, Plugin> plugins = new Hashtable<String, Plugin>();
 
 	public ServerImpl() throws RemoteException {
 		super(1155);
@@ -250,6 +251,15 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 			} catch (Exception e) {
 				System.err.println("Update Push exception: " + e.toString());
 				e.printStackTrace();
+				if ( e.getCause() instanceof ClassNotFoundException ){
+					for ( Plugin plugin : ((Session)options.get("session")).plugins.keySet() ){
+						try {
+							addPlugin(userName, sessionid, plugin);
+						} catch (RemoteException e1) {
+							e1.printStackTrace();
+						}
+					}
+				}
 			}
 		}
 	}

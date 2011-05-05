@@ -135,6 +135,7 @@ public class SessionView extends JPanel implements ActionListener, ListSelection
 			try {
 				md.utilInstance.setShapes(md.utilInstance.getServerInstance().connectToSession(null, md.utilInstance.getUserName()));
 				md.utilInstance.setSession(md.utilInstance.getServerInstance().getSession(md.utilInstance.getUserName()));
+				md.showGUIWindow();
 			} catch(Exception e1) {
 			}
 		}
@@ -142,11 +143,11 @@ public class SessionView extends JPanel implements ActionListener, ListSelection
 			try {
 				md.utilInstance.setShapes(md.utilInstance.getServerInstance().connectToSession((String)sessionList.getSelectedValue(), md.utilInstance.getUserName()));
 				md.utilInstance.setSession(md.utilInstance.getServerInstance().getSession((String)sessionList.getSelectedValue()));
+				md.showGUIWindow();
 			} catch(Exception e1) {
 				e1.printStackTrace();
 			}
 		}
-		md.showGUIWindow();
 	}
 	
 	public void valueChanged(ListSelectionEvent e) {

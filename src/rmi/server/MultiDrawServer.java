@@ -7,7 +7,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import plugins.Plugin;
-
 import rmi.Session;
 import rmi.client.MultiDrawClient;
 import tools.shapes.CanvasShape;

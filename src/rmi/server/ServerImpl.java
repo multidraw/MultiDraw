@@ -139,6 +139,9 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 		
 		// Update our plugin list
 		ArrayList<Plugin> plugins = sessionPlugins.get(session);
+		if ( plugins == null ){
+			plugins = new ArrayList<Plugin>();
+		}
 		plugins.add(plugin);
 		sessionPlugins.put(session, plugins);
 		

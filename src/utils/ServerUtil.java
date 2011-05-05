@@ -1,7 +1,14 @@
 package utils;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.rmi.Naming;
 import java.util.ArrayList;
+
+import plugins.Plugin;
 
 import rmi.Session;
 import rmi.client.MultiDrawClient;
@@ -101,5 +108,29 @@ public class ServerUtil {
 
 	public void setShapes(ArrayList<CanvasShape> shapes) {
 		this.shapes = shapes;
+	}
+	
+	public static boolean saveFile(String jarName, byte[] pluginJar, boolean force) throws IOException{
+		File jar = new File(new File("").getAbsolutePath() + "/plugins/"+ jarName);	// Cheap way to get the working directory
+
+		if ( jar.exists() && !force )
+			return false;
+		
+		BufferedOutputStream bs;
+		try {
+			bs = new BufferedOutputStream(new FileOutputStream(jar));
+			bs.write(pluginJar);
+			bs.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}  
+		
+		try{
+			Plugin.loadClass(jar.toURI().toURL());
+		} catch(ClassNotFoundException e){
+			e.printStackTrace();
+		}
+		return true;
+		
 	}
 }

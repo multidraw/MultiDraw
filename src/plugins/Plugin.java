@@ -3,9 +3,9 @@ package plugins;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -26,7 +26,7 @@ public class Plugin implements Serializable {
 	private String description, name;
 	private Class<?> toolClass, shapeClass;
 	public String toolName, shapeName;
-	public transient byte [] toolJar, shapeJar;
+	public  byte [] toolJar, shapeJar;
 	protected long timeStamp;
 
 	/**
@@ -171,21 +171,32 @@ public class Plugin implements Serializable {
 	 * @return Class<?> The class of the loaded file.
 	 * @throws ClassNotFoundException 
 	 */
-	private Class<?> loadClass(URL loadPath) throws ClassNotFoundException{
-		ClassLoader cl = new URLClassLoader(new URL[]{(URL)loadPath});
-
-		try{
-			String jarPath = "jar:".concat(loadPath.toString()).concat("!/");
-			URL jarUrl = new URL(jarPath);
-			JarURLConnection jarConn = (JarURLConnection) jarUrl.openConnection();
-
-			String name = jarConn.getMainAttributes().getValue(Attributes.Name.MAIN_CLASS);
-			
-			return cl.loadClass(name);
-		} catch ( IOException e){
-			e.printStackTrace();
+	public static Class<?> loadClass(URL loadPath) throws ClassNotFoundException{
+		ClassLoader cl = ClassLoader.getSystemClassLoader();
+		
+		if ( cl instanceof URLClassLoader ){
+			try{
+				// Let the hacking begin.
+				URLClassLoader ul = (URLClassLoader)cl;
+				Class<?> [] types = new Class[1];
+				types[0] = URL.class;
+				Method method = URLClassLoader.class.getDeclaredMethod("addURL", types);
+				method.setAccessible(true); // Tehe 4:20am
+				
+				Object [] args = new Object[1];
+				
+				URL jarUrl = new URL("jar", "", loadPath.toString() + "!/");
+				JarURLConnection jarConn = (JarURLConnection) jarUrl.openConnection();
+	
+				String name = jarConn.getMainAttributes().getValue(Attributes.Name.MAIN_CLASS);
+				
+				args[0] = jarUrl;
+				method.invoke(ul, args); // Win.
+				return Class.forName(name);
+			} catch ( Exception e){
+				e.printStackTrace();
+			} 
 		}
-
 		return null;
 	}
 	

@@ -3,11 +3,7 @@ package rmi.server;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
@@ -36,6 +32,7 @@ import rmi.server.callbacks.AsyncCallback;
 import rmi.server.callbacks.Callback;
 import rmi.server.callbacks.Notifier;
 import tools.shapes.CanvasShape;
+import utils.ServerUtil;
 
 public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 
@@ -133,28 +130,14 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 	}
 	
 	public boolean uploadPlugin(String jarName, byte[] pluginJar, boolean force) throws RemoteException, IOException{
-		File jar = new File(new File(".").getAbsolutePath() + "plugins/"+ jarName);	// Cheap way to get the working directory
-		System.out.println(new File(".").getAbsolutePath() + "plugins/");
-		if ( jar.exists() && !force )
-			return false;
-		
-		BufferedOutputStream bs;
-		try {
-			bs = new BufferedOutputStream(new FileOutputStream(jar));
-			bs.write(pluginJar);
-			bs.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}  
-		
-		return true;
+		return ServerUtil.saveFile(jarName, pluginJar, force);
 	}
 	
 	public void addPlugin(String userName, String session, Plugin plugin) throws RemoteException{
 		Session currentSession = sessions.get(session);
 		currentSession.addPlugin(plugin);
 		synchronized ( currentSession ){
-			registerPushCallback(userName, plugin, HashMapCreator.create(new Object[]{"sessionid", session}));
+			registerPushCallback(userName, plugin, HashMapCreator.create(new Object[]{"sessionid", session, "shapejarName", plugin.shapeName, "tooljarName", plugin.toolName}));
 		}
 	}
 	
@@ -256,6 +239,14 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 			}
 			try{
 				MultiDrawClient client = allUsers.get(user);
+				// Let the gross continue... because not all servers want their http classes exposed just download the class!
+				if ( update instanceof Plugin ){
+					Plugin plug = (Plugin)update;
+					if ( plug.shapeJar.length > 0 )
+						client.update(plug.shapeJar, HashMapCreator.create(new Object[]{"jarName", options.remove("shapejarName")}));
+					if ( plug.toolJar.length > 0 )
+						client.update(plug.toolJar, HashMapCreator.create(new Object[]{"jarName", options.remove("tooljarName")}));
+				}
 				client.update(update, options);
 			} catch (Exception e) {
 				System.err.println("Update Push exception: " + e.toString());

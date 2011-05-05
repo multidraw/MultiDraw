@@ -2,6 +2,8 @@ package rmi.client;
 
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.net.URL;
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -84,6 +86,14 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 					e.printStackTrace();
 				}
 			}
+		} else if ( update instanceof byte [] ){
+			String jar = (String)options.get("jarName");
+			try {
+				if ( ServerUtil.saveFile(jar, (byte[])update, true) )
+					Plugin.loadClass(new URL("file", "", new File("").getAbsolutePath() + "/plugins/" + jar + ".jar"));
+			} catch (Exception e) {
+				e.printStackTrace();
+			} 
 		}
 		
 		// Refresh the canvas if something happened there.

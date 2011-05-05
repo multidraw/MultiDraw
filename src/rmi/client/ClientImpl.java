@@ -11,7 +11,6 @@ import java.util.HashMap;
 import javax.swing.JOptionPane;
 
 import plugins.Plugin;
-
 import rmi.Session;
 import tools.shapes.CanvasShape;
 import utils.ServerUtil;

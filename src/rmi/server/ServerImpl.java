@@ -29,7 +29,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import plugins.Plugin;
-
 import rmi.Session;
 import rmi.client.MultiDrawClient;
 import rmi.server.callbacks.AsyncCallback;

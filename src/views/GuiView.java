@@ -11,7 +11,6 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
@@ -73,7 +72,8 @@ public class GuiView extends JTabbedPane implements ActionListener {
 	 * @param contentPane
 	 * @param frame
 	 */
-	public void show(Container contentPane, JFrame frame, DrawingCanvasView currentCanvas) {
+	public void show(Container contentPane, JFrame frame,
+			DrawingCanvasView currentCanvas) {
 		contentPane.removeAll();
 		contentPane.invalidate();
 		contentPane.validate();
@@ -175,7 +175,8 @@ public class GuiView extends JTabbedPane implements ActionListener {
 
 		JPanel toolDesignerPane = new JPanel();
 
-		if (md.utilInstance.getUserName().equals(md.utilInstance.getSession().getDrawer())) {
+		if (md.utilInstance.getUserName().equals(
+				md.utilInstance.getSession().getDrawer())) {
 			@SuppressWarnings("rawtypes")
 			PluginWindow toolDesigner = new PluginWindow(canvas);
 			toolDesignerPane.add(toolDesigner);
@@ -317,7 +318,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 	 * @return new ImageIcon
 	 */
 	protected ImageIcon getImageIcon(String fileName) {
-		return new ImageIcon(fileName);
+		return new ImageIcon(MultiDraw.class.getResource(fileName));
 	}
 
 	public DrawingCanvasView getCanvas() {
@@ -330,8 +331,10 @@ public class GuiView extends JTabbedPane implements ActionListener {
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
-	private void loadPlugins() throws InstantiationException, IllegalAccessException {
-		Collection<Plugin> plugins = md.utilInstance.getSession().getPlugins().keySet();
+	private void loadPlugins() throws InstantiationException,
+			IllegalAccessException {
+		Collection<Plugin> plugins = md.utilInstance.getSession().getPlugins()
+				.keySet();
 
 		for (Plugin plugin : plugins) {
 			if (!md.utilInstance.getSession().getPlugins().get(plugin)) {
@@ -365,7 +368,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 				.keySet());
 
 		for (Plugin plugin : myPlugins) {
-			if(md.utilInstance.getSession().getPlugins().get(plugin) == null)
+			if (md.utilInstance.getSession().getPlugins().get(plugin) == null)
 				plugins.add(plugin);
 		}
 
@@ -402,13 +405,14 @@ public class GuiView extends JTabbedPane implements ActionListener {
 			} catch (RemoteException e) {
 				try {
 					// Upload the plugin and see if that helps?
-					md.utilInstance.getServerInstance().uploadPlugin(plugin.shapeName, plugin.shapeJar, true);
+					md.utilInstance.getServerInstance().uploadPlugin(
+							plugin.shapeName, plugin.shapeJar, true);
 					md.utilInstance.getServerInstance().addPlugin(
 							md.utilInstance.getUserName(),
 							md.utilInstance.getSession().name, plugin);
 				} catch (Exception e1) {
 					e1.printStackTrace();
-				} 
+				}
 			}
 		}
 

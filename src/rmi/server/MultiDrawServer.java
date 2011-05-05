@@ -103,5 +103,13 @@ public interface MultiDrawServer extends Remote {
 	 */
 	public boolean uploadPlugin(String jarName, byte[] pluginJar, boolean force) throws RemoteException, IOException;
 	
+	/**
+	 * Fetches all of the plugins in use for the given session.
+	 * @param session - String the session name
+	 * @param username - String the username of the client to send to.
+	 * @throws RemoteException
+	 */
+	public void getSessionPlugins(String session, String username) throws RemoteException;
+	
 	public void setCanvas(String userName, String session, ArrayList<CanvasShape> updatedShape) throws RemoteException;
 }

@@ -3,12 +3,12 @@ package application;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.HashMap;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import plugins.Plugin;
+import plugins.PluginManager;
 import rmi.server.MultiDrawServer;
 import tools.ToolList;
 import utils.ServerUtil;
@@ -34,10 +34,11 @@ public class MultiDraw extends JFrame {
 	public ServerUtil utilInstance;
 	public boolean serverDown = false;
 	
-	HashMap<Plugin, Boolean> myPlugins = new HashMap<Plugin, Boolean>();
+	private PluginManager pluginManager;
 	
 	public MultiDraw(ServerUtil serv) {
 		this.utilInstance = serv;
+		pluginManager = new PluginManager(); 
 		this.frame  = new JFrame();
 		init();
 	}
@@ -110,6 +111,7 @@ public class MultiDraw extends JFrame {
 					break;
 				case GUI_SCREEN:
 					utilInstance.getServerInstance().leaveSession(utilInstance.getUserName(), utilInstance.getSession().name);
+					pluginManager.clearSessionPlugins();
 					md.showSessionsWindow();
 					break;
 				}
@@ -119,11 +121,11 @@ public class MultiDraw extends JFrame {
 		}
 	}
 	
-	public void addPlugin(Plugin plugin) {
-		myPlugins.put(plugin, false);
+	public void addPlugin(Plugin plugin, boolean isImported){
+		pluginManager.add(plugin, isImported);
 	}
 	
-	public HashMap<Plugin, Boolean> getMyPlugins() {
-		return myPlugins;
+	public PluginManager getPluginManager() {
+		return pluginManager;
 	}
 }

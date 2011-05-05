@@ -40,7 +40,7 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 	private Hashtable<String, MultiDrawClient> allUsers = new Hashtable<String, MultiDrawClient>();
 	private AsyncCallback clientCallback;
 	private DefaultListModel clientListModel;
-	private Hashtable<String, Plugin> plugins = new Hashtable<String, Plugin>();
+	private Hashtable<String, ArrayList<Plugin>> sessionPlugins = new Hashtable<String, ArrayList<Plugin>>();
 
 	public ServerImpl() throws RemoteException {
 		super(1155);
@@ -135,10 +135,34 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 	
 	public void addPlugin(String userName, String session, Plugin plugin) throws RemoteException{
 		Session currentSession = sessions.get(session);
-		currentSession.addPlugin(plugin);
+		currentSession.addPlugin();
+		
+		// Update our plugin list
+		ArrayList<Plugin> plugins = sessionPlugins.get(session);
+		plugins.add(plugin);
+		sessionPlugins.put(session, plugins);
+		
 		synchronized ( currentSession ){
 			registerPushCallback(userName, plugin, HashMapCreator.create(new Object[]{"sessionid", session, "shapejarName", plugin.shapeName, "tooljarName", plugin.toolName}));
 		}
+	}
+	
+	public void getSessionPlugins(final String session, String userName) throws RemoteException{
+		final ArrayList<Plugin> plugins =  sessionPlugins.get(session);
+		final MultiDrawClient client = allUsers.get(userName);
+		
+		clientCallback.doCallback(new Callback() {
+			public void executeCallback(Notifier n, Object arg) {
+				for ( Plugin plugin : plugins ){
+					try {
+						sendPlugin(client, plugin, plugin.toolName, plugin.shapeName);
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
+				}
+				n.resetCallbackTime();
+			}
+		});	
 	}
 	
 	public ArrayList<CanvasShape> connectToSession(String session, String userName) throws RemoteException {
@@ -239,29 +263,31 @@ public class ServerImpl extends UnicastRemoteObject implements MultiDrawServer {
 			}
 			try{
 				MultiDrawClient client = allUsers.get(user);
-				// Let the gross continue... because not all servers want their http classes exposed just download the class!
 				if ( update instanceof Plugin ){
-					Plugin plug = (Plugin)update;
-					if ( plug.shapeJar.length > 0 )
-						client.update(plug.shapeJar, HashMapCreator.create(new Object[]{"jarName", options.remove("shapejarName")}));
-					if ( plug.toolJar.length > 0 )
-						client.update(plug.toolJar, HashMapCreator.create(new Object[]{"jarName", options.remove("tooljarName")}));
-				}
+					sendPlugin(client, (Plugin)update, (String)options.remove("tooljarName"), (String)options.remove("shapejarName"));
+				} else
 				client.update(update, options);
 			} catch (Exception e) {
 				System.err.println("Update Push exception: " + e.toString());
 				e.printStackTrace();
-				if ( e.getCause() instanceof ClassNotFoundException ){
-					for ( Plugin plugin : ((Session)options.get("session")).plugins.keySet() ){
-						try {
-							addPlugin(userName, sessionid, plugin);
-						} catch (RemoteException e1) {
-							e1.printStackTrace();
-						}
-					}
-				}
 			}
 		}
+	}
+	
+	/**
+	 * Sends a plugin to the client.
+	 * @param client
+	 * @param plugin
+	 * @param tool - String the name of the tool.
+	 * @param shape - String the name of the shape.
+	 * @throws RemoteException
+	 */
+	private void sendPlugin(MultiDrawClient client, Plugin plugin, String tool, String shape) throws RemoteException{
+		if ( plugin.shapeJar != null )
+			client.update(plugin.shapeJar, HashMapCreator.create(new Object[]{"jarName", shape}));
+		if ( plugin.toolJar != null )
+			client.update(plugin.toolJar, HashMapCreator.create(new Object[]{"jarName", tool}));
+		client.update(plugin, null);
 	}
 	
 	/**

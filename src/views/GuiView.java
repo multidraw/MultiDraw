@@ -14,10 +14,6 @@ import java.awt.event.KeyEvent;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
-import java.rmi.server.RMIClassLoader;
-import java.util.ArrayList;
-import java.util.Collection;
-
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -32,6 +28,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import plugins.Plugin;
+import plugins.PluginManager;
 import plugins.PluginWindow;
 import rmi.Session;
 import tools.EraserTool;
@@ -73,6 +70,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 	 * @param contentPane
 	 * @param frame
 	 */
+	@SuppressWarnings("unchecked")
 	public void show(Container contentPane, JFrame frame,
 			DrawingCanvasView currentCanvas) {
 		contentPane.removeAll();
@@ -108,7 +106,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 									KeyEvent.CTRL_DOWN_MASK)));
 
 			try {
-				reloadPlugins();
+				loadPlugins();
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
@@ -178,8 +176,7 @@ public class GuiView extends JTabbedPane implements ActionListener {
 
 		if (md.utilInstance.getUserName().equals(
 				md.utilInstance.getSession().getDrawer())) {
-			@SuppressWarnings("rawtypes")
-			PluginWindow toolDesigner = new PluginWindow(canvas);
+			PluginWindow<?> toolDesigner = new PluginWindow(canvas);
 			toolDesignerPane.add(toolDesigner);
 		}
 
@@ -332,15 +329,12 @@ public class GuiView extends JTabbedPane implements ActionListener {
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
-	private void loadPlugins() throws InstantiationException,
-			IllegalAccessException {
-		Collection<Plugin> plugins = md.utilInstance.getSession().getPlugins()
-				.keySet();
-
-		for (Plugin plugin : plugins) {
-			if (!md.utilInstance.getSession().getPlugins().get(plugin)) {
-				Tool tool = (Tool) initializeClass(plugin.getToolClass(),
-						plugin.getShapeClass());
+	private void loadPlugins() throws InstantiationException, IllegalAccessException {
+		PluginManager plugins = md.getPluginManager();
+		
+		for ( Plugin plugin : plugins ) {
+			if ( !plugins.isLoaded(plugin) ) { // if not loaded
+				Tool tool = (Tool) initializeClass(plugin.getToolClass(), plugin.getShapeClass());
 				if (tool != null) {
 					ToolController pluginController = new ToolController(
 							plugin.getName(), plugin.getImage(),
@@ -348,56 +342,25 @@ public class GuiView extends JTabbedPane implements ActionListener {
 
 					toolBar.addTool(pluginController);
 					menuBar.addMenuItem(pluginController);
-					md.utilInstance.getSession().getPlugins().put(plugin, true);
-				} else
-					md.utilInstance.getSession().getPlugins().remove(plugin);
+					plugins.load(plugin);
+				}
 			}
 		}
 	}
 
 	/**
-	 * Reloads all the plugins that have been imported.
-	 * 
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
-	 */
-	private void reloadPlugins() throws InstantiationException,
-			IllegalAccessException {
-		ArrayList<Plugin> plugins = new ArrayList<Plugin>(md.utilInstance
-				.getSession().getPlugins().keySet());
-		ArrayList<Plugin> myPlugins = new ArrayList<Plugin>(md.getMyPlugins()
-				.keySet());
-
-		for (Plugin plugin : myPlugins) {
-			if (md.utilInstance.getSession().getPlugins().get(plugin) == null)
-				plugins.add(plugin);
-		}
-
-		for (Plugin plugin : plugins) {
-			md.utilInstance.getSession().getPlugins().put(plugin, false);
-		}
-		loadPlugins();
-	}
-
-	public void addPlugin(Plugin plugin) throws InstantiationException,
-			IllegalAccessException {
-		addPlugin(plugin, false);
-	}
-
-	/**
 	 * Adds a plugin to the current GUI frame.
 	 * 
-	 * @param plugin
-	 *            - Plugin the plugin to add.
+	 * @param plugin - Plugin the plugin to add.
+	 * @param isImported - true if the plugin is imported, false if imported through session
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 */
-	public void addPlugin(Plugin plugin, boolean isImport)
-			throws InstantiationException, IllegalAccessException {
-		md.utilInstance.getSession().getPlugins().put(plugin, false);
-
-		if (md.utilInstance.getUserName().equals(
-				md.utilInstance.getSession().getDrawer())) {
+	public void addPlugin(Plugin plugin, boolean isImported) throws InstantiationException, IllegalAccessException {
+		md.utilInstance.getSession().addPlugin(); // update the session
+		md.addPlugin(plugin, isImported); // and add the plugin
+		
+		if (md.utilInstance.getUserName().equals(md.utilInstance.getSession().getDrawer())) {
 			try {
 				loadPlugins();
 				md.utilInstance.getServerInstance().addPlugin(
@@ -418,10 +381,6 @@ public class GuiView extends JTabbedPane implements ActionListener {
 					e1.printStackTrace();
 				}
 			}
-		}
-
-		if (isImport) {
-			md.addPlugin(plugin);
 		}
 	}
 

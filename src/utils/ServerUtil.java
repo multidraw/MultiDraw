@@ -111,7 +111,7 @@ public class ServerUtil {
 	}
 	
 	public static boolean saveFile(String jarName, byte[] pluginJar, boolean force) throws IOException{
-		File jar = new File(new File("").getAbsolutePath() + "/plugins/"+ jarName + ".jar");	// Cheap way to get the working directory
+		File jar = new File(getPluginPath(jarName));	// Cheap way to get the working directory
 
 		if ( jar.exists() && !force )
 			return false;
@@ -132,5 +132,14 @@ public class ServerUtil {
 		}
 		return true;
 		
+	}
+	
+	/**
+	 * Returns the filepath of the specified jar file.
+	 * @param jarName String, The name of the Jar file
+	 * @return String the filepath to use.
+	 */
+	public static String getPluginPath(String jarName){
+		return new File("").getAbsolutePath() + "/plugins/"+ jarName + ".jar";
 	}
 }

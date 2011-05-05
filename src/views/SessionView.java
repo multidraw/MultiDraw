@@ -15,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
@@ -141,8 +142,17 @@ public class SessionView extends JPanel implements ActionListener, ListSelection
 		}
 		if(e.getSource().equals(joinSessionBtn)) {
 			try {
-				md.utilInstance.setShapes(md.utilInstance.getServerInstance().connectToSession((String)sessionList.getSelectedValue(), md.utilInstance.getUserName()));
+				// Get the session to know all the plugin information
 				md.utilInstance.setSession(md.utilInstance.getServerInstance().getSession((String)sessionList.getSelectedValue()));
+				
+				if ( md.utilInstance.getSession().getPluginCount() > 0 ){ // if we have plugins grab them
+					md.utilInstance.getServerInstance().getSessionPlugins(md.utilInstance.getSession().name, md.utilInstance.getUserName());
+					JOptionPane.showMessageDialog(this,
+							"Please wait while your plugins are downloaded.",
+							"Loading Plugins", JOptionPane.INFORMATION_MESSAGE);
+				}
+				while( !md.getPluginManager().loaded() );
+				md.utilInstance.setShapes(md.utilInstance.getServerInstance().connectToSession((String)sessionList.getSelectedValue(), md.utilInstance.getUserName()));
 				md.showGUIWindow();
 			} catch(Exception e1) {
 				e1.printStackTrace();
@@ -154,7 +164,9 @@ public class SessionView extends JPanel implements ActionListener, ListSelection
 		joinSessionBtn.setEnabled(true);
 		try {
 			userList.setListData(md.utilInstance.getServerInstance().getSession((String)sessionList.getSelectedValue()).getActiveUsers().toArray());
-		} catch(Exception e1) {	}
+		} catch(Exception e1) {
+			e1.printStackTrace();
+		}
 	}
 	
 	public void updateSessionList(ArrayList<String> sessions){

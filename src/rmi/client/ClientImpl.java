@@ -2,7 +2,6 @@ package rmi.client;
 
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.net.URL;
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
@@ -24,7 +23,7 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 	public transient MultiDraw md;
 
 	public ClientImpl() throws RemoteException{
-		super(1101);
+		super(1100);
 		md = new MultiDraw(new ServerUtil(this));
 	}
 
@@ -78,18 +77,18 @@ public class ClientImpl extends UnicastRemoteObject implements MultiDrawClient {
 		} else if ( update instanceof Plugin ){
 			if ( md.guiView != null ){
 				try {
-					md.guiView.addPlugin((Plugin) update);
+					md.guiView.addPlugin((Plugin) update, false);
 				} catch (InstantiationException e) {
 					e.printStackTrace();
 				} catch (IllegalAccessException e) {
 					e.printStackTrace();
 				}
-			}
-		} else if ( update instanceof byte [] ){
+			} else md.addPlugin((Plugin)update, false);
+		} else if ( update instanceof byte[] ){ // We want to upload the plugin locally.
 			String jar = (String)options.get("jarName");
 			try {
 				if ( ServerUtil.saveFile(jar, (byte[])update, true) )
-					Plugin.loadClass(new URL("file", "", new File("").getAbsolutePath() + "/plugins/" + jar + ".jar"));
+					Plugin.loadClass(new URL("file", "", ServerUtil.getPluginPath(jar)));
 			} catch (Exception e) {
 				e.printStackTrace();
 			} 
